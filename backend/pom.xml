@@ -13,10 +13,6 @@
     <artifactId>backend</artifactId>
     <name>Project-Bugboard26-backend</name>
 
-    <properties>
-        <maven.compiler.release>${maven.compiler.release}</maven.compiler.release>
-    </properties>
-
     <dependencies>
         <!-- Add backend-specific dependencies (e.g. Spring Boot) here -->
     </dependencies>

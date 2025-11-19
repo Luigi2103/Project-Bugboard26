@@ -13,10 +13,6 @@
     <artifactId>frontend</artifactId>
     <name>Project-Bugboard26-frontend</name>
 
-    <properties>
-        <maven.compiler.release>${maven.compiler.release}</maven.compiler.release>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -56,14 +52,9 @@
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
-                <executions>
-                    <execution>
-                        <id>run-javafx</id>
-                        <configuration>
-                            <mainClass>com.example.projectbugboard26/com.example.projectbugboard26.HelloApplication</mainClass>
-                        </configuration>
-                    </execution>
-                </executions>
+                <configuration>
+                    <mainClass>com.example.projectbugboard26/com.example.projectbugboard26.HelloApplication</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>
