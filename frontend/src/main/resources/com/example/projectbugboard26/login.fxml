@@ -34,7 +34,6 @@
                     </font>
                 </Label>
 
-                <!-- Container del form di login -->
                 <VBox alignment="CENTER" spacing="18" fx:id="formBox"
                       fillWidth="true"
                       style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 20, 0, 0, 5);"
@@ -42,6 +41,9 @@
                     <padding>
                         <Insets top="35" bottom="35" left="40" right="40"/>
                     </padding>
+                    <fx:define>
+                        <ToggleGroup fx:id="modeGroup"/>
+                    </fx:define>
 
                     <!-- Label tipo utente -->
                     <Label fx:id="userTypeLabel"
@@ -69,7 +71,6 @@
                                        maxWidth="Infinity"/>
                     </VBox>
 
-                    <!-- Pulsante Login -->
                     <Button fx:id="loginButton"
                             text="Accedi"
                             onAction="#handleLogin"
@@ -79,10 +80,7 @@
                             <Font name="System Bold" size="16"/>
                         </font>
                     </Button>
-
-                    <!-- Toggle Modalità -->
                     <HBox alignment="CENTER" spacing="10" fx:id="modeBox" maxWidth="Infinity">
-                        <ToggleGroup fx:id="modeGroup" />
                         <RadioButton fx:id="userRadio"
                                      text="Utente"
                                      toggleGroup="$modeGroup"
