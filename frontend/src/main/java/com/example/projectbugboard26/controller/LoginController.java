@@ -56,11 +56,7 @@ public class LoginController implements Initializable {
     private enum UserMode { USER, ADMIN }
     private UserMode currentMode = UserMode.USER;
 
-    private static final String COLOR_PRIMARY = "#3498DB";
-    private static final String COLOR_PRIMARY_DARK = "#2C3E50";
-    private static final String STYLE_PRIMARY_BUTTON = "-fx-background-color: linear-gradient(to right, #F5F0D9 0%, " + COLOR_PRIMARY + " 100%); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; -fx-background-radius: 10; -fx-padding: 12 40; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(52, 152, 219, 0.4), 10, 0, 0, 3);";
-    private static final String STYLE_TOGGLE_USER = "-fx-background-color: " + COLOR_PRIMARY + "; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-background-radius: 16; -fx-padding: 8 20; -fx-cursor: hand;";
-    private static final String STYLE_TOGGLE_ADMIN = "-fx-background-color: " + COLOR_PRIMARY_DARK + "; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-background-radius: 16; -fx-padding: 8 20; -fx-cursor: hand;";
+    
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -78,62 +74,16 @@ public class LoginController implements Initializable {
 
         updateUserTypeUI();
 
-        setupHoverEffects();
-
         usernameField.prefWidthProperty().bind(formBox.widthProperty());
         passwordField.prefWidthProperty().bind(formBox.widthProperty());
         loginButton.prefWidthProperty().bind(formBox.widthProperty());
         modeBox.prefWidthProperty().bind(formBox.widthProperty());
-        loginButton.setStyle(STYLE_PRIMARY_BUTTON);
 
         modeGroup.selectedToggleProperty().addListener((obs, oldT, newT) -> {
             currentMode = (newT == adminRadio) ? UserMode.ADMIN : UserMode.USER;
             updateUserTypeUI();
             usernameField.clear();
             passwordField.clear();
-            applyModeStyles();
-        });
-        applyModeStyles();
-    }
-
-    private void setupHoverEffects() {
-        // Hover effect per il pulsante di login
-        loginButton.setOnMouseEntered(e -> {
-            loginButton.setStyle(STYLE_PRIMARY_BUTTON + " -fx-scale-x: 1.03; -fx-scale-y: 1.03;");
-        });
-
-        loginButton.setOnMouseExited(e -> {
-            loginButton.setStyle(STYLE_PRIMARY_BUTTON);
-        });
-
-        userRadio.setOnMouseEntered(e -> userRadio.setStyle(STYLE_TOGGLE_USER + " -fx-scale-x: 1.03; -fx-scale-y: 1.03;"));
-        userRadio.setOnMouseExited(e -> applyModeStyles());
-        adminRadio.setOnMouseEntered(e -> adminRadio.setStyle(STYLE_TOGGLE_ADMIN + " -fx-scale-x: 1.03; -fx-scale-y: 1.03;"));
-        adminRadio.setOnMouseExited(e -> applyModeStyles());
-
-        // Focus effect per i campi di input
-        usernameField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) {
-                usernameField.setStyle("-fx-background-color: #ffffff; " +
-                        "-fx-background-radius: 10; -fx-border-color: #3498DB; " +
-                        "-fx-border-radius: 10; -fx-border-width: 2; -fx-padding: 12; -fx-font-size: 14px;");
-            } else {
-                usernameField.setStyle("-fx-background-color: #f8f9fa; " +
-                        "-fx-background-radius: 10; -fx-border-color: #e0e0e0; " +
-                        "-fx-border-radius: 10; -fx-padding: 12; -fx-font-size: 14px;");
-            }
-        });
-
-        passwordField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) {
-                passwordField.setStyle("-fx-background-color: #ffffff; " +
-                        "-fx-background-radius: 10; -fx-border-color: #3498DB; " +
-                        "-fx-border-radius: 10; -fx-border-width: 2; -fx-padding: 12; -fx-font-size: 14px;");
-            } else {
-                passwordField.setStyle("-fx-background-color: #f8f9fa; " +
-                        "-fx-background-radius: 10; -fx-border-color: #e0e0e0; " +
-                        "-fx-border-radius: 10; -fx-padding: 12; -fx-font-size: 14px;");
-            }
         });
     }
 
@@ -188,13 +138,17 @@ public class LoginController implements Initializable {
     private void updateUserTypeUI() {
         if (currentMode == UserMode.ADMIN) {
             userTypeLabel.setText("Modalità Admin");
-            userTypeLabel.setTextFill(Color.web(COLOR_PRIMARY_DARK));
-            userTypeLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: " + COLOR_PRIMARY_DARK + ";");
+            userTypeLabel.getStyleClass().remove("user-label");
+            if (!userTypeLabel.getStyleClass().contains("admin-label")) {
+                userTypeLabel.getStyleClass().add("admin-label");
+            }
             adminRadio.setSelected(true);
         } else {
             userTypeLabel.setText("Modalità Utente");
-            userTypeLabel.setTextFill(Color.web(COLOR_PRIMARY));
-            userTypeLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: " + COLOR_PRIMARY + ";");
+            userTypeLabel.getStyleClass().remove("admin-label");
+            if (!userTypeLabel.getStyleClass().contains("user-label")) {
+                userTypeLabel.getStyleClass().add("user-label");
+            }
             userRadio.setSelected(true);
         }
     }
@@ -217,14 +171,6 @@ public class LoginController implements Initializable {
         errorFade.play();
     }
 
-    private void applyModeStyles() {
-        if (currentMode == UserMode.ADMIN) {
-            adminRadio.setStyle(STYLE_TOGGLE_ADMIN);
-            userRadio.setStyle("-fx-background-color: transparent; -fx-text-fill: " + COLOR_PRIMARY_DARK + "; -fx-font-weight: bold; -fx-font-size: 12px; -fx-background-radius: 16; -fx-padding: 8 20; -fx-cursor: hand;");
-        } else {
-            userRadio.setStyle(STYLE_TOGGLE_USER);
-            adminRadio.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-background-radius: 16; -fx-padding: 8 20; -fx-cursor: hand;");
-        }
-    }
+    
 }
 
