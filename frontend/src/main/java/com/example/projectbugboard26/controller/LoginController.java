@@ -5,15 +5,18 @@ import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import com.example.projectbugboard26.SceneRouter;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -33,7 +36,11 @@ public class LoginController implements Initializable {
     private Button loginButton;
 
     @FXML
-    private ToggleButton modeToggle;
+    private ToggleGroup modeGroup;
+    @FXML
+    private RadioButton userRadio;
+    @FXML
+    private RadioButton adminRadio;
 
     @FXML
     private Label userTypeLabel;
@@ -43,6 +50,8 @@ public class LoginController implements Initializable {
 
     @FXML
     private VBox formBox;
+    @FXML
+    private HBox modeBox;
 
     private enum UserMode { USER, ADMIN }
     private UserMode currentMode = UserMode.USER;
@@ -74,9 +83,16 @@ public class LoginController implements Initializable {
         usernameField.prefWidthProperty().bind(formBox.widthProperty());
         passwordField.prefWidthProperty().bind(formBox.widthProperty());
         loginButton.prefWidthProperty().bind(formBox.widthProperty());
-        modeToggle.prefWidthProperty().bind(formBox.widthProperty());
+        modeBox.prefWidthProperty().bind(formBox.widthProperty());
         loginButton.setStyle(STYLE_PRIMARY_BUTTON);
-        modeToggle.setSelected(false);
+
+        modeGroup.selectedToggleProperty().addListener((obs, oldT, newT) -> {
+            currentMode = (newT == adminRadio) ? UserMode.ADMIN : UserMode.USER;
+            updateUserTypeUI();
+            usernameField.clear();
+            passwordField.clear();
+            applyModeStyles();
+        });
         applyModeStyles();
     }
 
@@ -90,8 +106,10 @@ public class LoginController implements Initializable {
             loginButton.setStyle(STYLE_PRIMARY_BUTTON);
         });
 
-        modeToggle.setOnMouseEntered(e -> modeToggle.setStyle((currentMode == UserMode.ADMIN ? STYLE_TOGGLE_ADMIN : STYLE_TOGGLE_USER) + " -fx-scale-x: 1.03; -fx-scale-y: 1.03;"));
-        modeToggle.setOnMouseExited(e -> applyModeStyles());
+        userRadio.setOnMouseEntered(e -> userRadio.setStyle(STYLE_TOGGLE_USER + " -fx-scale-x: 1.03; -fx-scale-y: 1.03;"));
+        userRadio.setOnMouseExited(e -> applyModeStyles());
+        adminRadio.setOnMouseEntered(e -> adminRadio.setStyle(STYLE_TOGGLE_ADMIN + " -fx-scale-x: 1.03; -fx-scale-y: 1.03;"));
+        adminRadio.setOnMouseExited(e -> applyModeStyles());
 
         // Focus effect per i campi di input
         usernameField.focusedProperty().addListener((obs, oldVal, newVal) -> {
@@ -162,43 +180,22 @@ public class LoginController implements Initializable {
         System.out.println("Login come " + (currentMode == UserMode.ADMIN ? "Admin" : "Utente"));
         System.out.println("Username: " + username);
 
-        // Qui andrà la logica per navigare alla schermata principale
+        SceneRouter.switchTo("dashboard.fxml", 1100, 800, "BugBoard - Dashboard");
     }
 
-    @FXML
-    private void handleToggleMode() {
-        currentMode = modeToggle.isSelected() ? UserMode.ADMIN : UserMode.USER;
-        FadeTransition labelFade = new FadeTransition(Duration.millis(200), userTypeLabel);
-        labelFade.setFromValue(1.0);
-        labelFade.setToValue(0.3);
-        labelFade.setAutoReverse(true);
-        labelFade.setCycleCount(2);
-        labelFade.setOnFinished(e -> updateUserTypeUI());
-        labelFade.play();
-        FadeTransition fieldFade = new FadeTransition(Duration.millis(150), usernameField);
-        fieldFade.setFromValue(1.0);
-        fieldFade.setToValue(0.5);
-        fieldFade.setAutoReverse(true);
-        fieldFade.setCycleCount(2);
-        fieldFade.setOnFinished(e -> {
-            usernameField.clear();
-            passwordField.clear();
-        });
-        fieldFade.play();
-        applyModeStyles();
-    }
+    
 
     private void updateUserTypeUI() {
         if (currentMode == UserMode.ADMIN) {
             userTypeLabel.setText("Modalità Admin");
             userTypeLabel.setTextFill(Color.web(COLOR_PRIMARY_DARK));
             userTypeLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: " + COLOR_PRIMARY_DARK + ";");
-            modeToggle.setSelected(true);
+            adminRadio.setSelected(true);
         } else {
             userTypeLabel.setText("Modalità Utente");
             userTypeLabel.setTextFill(Color.web(COLOR_PRIMARY));
             userTypeLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: " + COLOR_PRIMARY + ";");
-            modeToggle.setSelected(false);
+            userRadio.setSelected(true);
         }
     }
 
@@ -222,11 +219,11 @@ public class LoginController implements Initializable {
 
     private void applyModeStyles() {
         if (currentMode == UserMode.ADMIN) {
-            modeToggle.setStyle(STYLE_TOGGLE_ADMIN);
-            modeToggle.setText("Modalità Admin");
+            adminRadio.setStyle(STYLE_TOGGLE_ADMIN);
+            userRadio.setStyle("-fx-background-color: transparent; -fx-text-fill: " + COLOR_PRIMARY_DARK + "; -fx-font-weight: bold; -fx-font-size: 12px; -fx-background-radius: 16; -fx-padding: 8 20; -fx-cursor: hand;");
         } else {
-            modeToggle.setStyle(STYLE_TOGGLE_USER);
-            modeToggle.setText("Modalità User");
+            userRadio.setStyle(STYLE_TOGGLE_USER);
+            adminRadio.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-background-radius: 16; -fx-padding: 8 20; -fx-cursor: hand;");
         }
     }
 }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.projectbugboard26.controller.DashboardController"
+            style="-fx-background-color: #f4f6f9;">
+    <center>
+        <StackPane>
+            <Label text="Dashboard" style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;">
+                <font>
+                    <Font name="System Bold" size="32"/>
+                </font>
+            </Label>
+        </StackPane>
+    </center>
+</BorderPane>

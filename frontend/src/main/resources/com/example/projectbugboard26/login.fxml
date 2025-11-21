@@ -81,11 +81,18 @@
                     </Button>
 
                     <!-- Toggle Modalità -->
-                    <ToggleButton fx:id="modeToggle"
-                                  text="Modalità Admin"
-                                  onAction="#handleToggleMode"
-                                  style="-fx-background-radius: 16; -fx-padding: 8 20; -fx-cursor: hand; -fx-font-weight: bold; -fx-text-fill: white;"
-                                  maxWidth="Infinity"/>
+                    <HBox alignment="CENTER" spacing="10" fx:id="modeBox" maxWidth="Infinity">
+                        <ToggleGroup fx:id="modeGroup" />
+                        <RadioButton fx:id="userRadio"
+                                     text="Utente"
+                                     toggleGroup="$modeGroup"
+                                     selected="true"
+                                     style="-fx-background-radius: 16; -fx-padding: 8 20; -fx-cursor: hand; -fx-font-weight: bold; -fx-text-fill: #2C3E50;"/>
+                        <RadioButton fx:id="adminRadio"
+                                     text="Admin"
+                                     toggleGroup="$modeGroup"
+                                     style="-fx-background-radius: 16; -fx-padding: 8 20; -fx-cursor: hand; -fx-font-weight: bold; -fx-text-fill: white; -fx-background-color: transparent;"/>
+                    </HBox>
                 </VBox>
             </VBox>
         </ScrollPane>
