@@ -45,6 +45,7 @@ public class LoginController implements Initializable {
         inizializzaListenerModalita();
         animaFormLogin();
         aggiornaUI();
+        gestisciResponsive();
     }
 
     // --------------------------------------------------------
@@ -109,12 +110,27 @@ public class LoginController implements Initializable {
         tt.play();
     }
 
+    private TranslateTransition shakeTransition;
+
     private void animaErrore() {
-        TranslateTransition shake = new TranslateTransition(Duration.millis(50), contenitoreLogin);
-        shake.setByX(10);
-        shake.setCycleCount(6);
-        shake.setAutoReverse(true);
-        shake.play();
+        // Stop any existing animation to prevent conflict
+        if (shakeTransition != null) {
+            shakeTransition.stop();
+        }
+
+        // Force reset position to ensure consistent starting point
+        contenitoreLogin.setTranslateX(0);
+
+        shakeTransition = new TranslateTransition(Duration.millis(50), contenitoreLogin);
+        shakeTransition.setFromX(0);
+        shakeTransition.setToX(10);
+        shakeTransition.setCycleCount(6);
+        shakeTransition.setAutoReverse(true);
+
+        // Ensure we end up exactly at 0
+        shakeTransition.setOnFinished(e -> contenitoreLogin.setTranslateX(0));
+
+        shakeTransition.play();
 
         lampeggia(pulsanteLogin, 200);
     }
@@ -126,6 +142,38 @@ public class LoginController implements Initializable {
         ft.setCycleCount(2);
         ft.setAutoReverse(true);
         ft.play();
+    }
+
+    // --------------------------------------------------------
+    // RESPONSIVE
+    // --------------------------------------------------------
+
+    private void gestisciResponsive() {
+        if (contenitoreLogin.getScene() != null) {
+            setupWidthListener(contenitoreLogin.getScene());
+        } else {
+            contenitoreLogin.sceneProperty().addListener((obs, oldScene, newScene) -> {
+                if (newScene != null) {
+                    setupWidthListener(newScene);
+                }
+            });
+        }
+    }
+
+    private void setupWidthListener(javafx.scene.Scene scene) {
+        scene.widthProperty().addListener((obs, oldW, newW) -> {
+            double width = newW.doubleValue();
+            if (width < 600) {
+                contenitoreLogin.setPadding(new javafx.geometry.Insets(30, 20, 30, 20));
+            } else {
+                contenitoreLogin.setPadding(new javafx.geometry.Insets(30, 50, 30, 50));
+            }
+        });
+
+        // Initial check
+        if (scene.getWidth() < 600) {
+            contenitoreLogin.setPadding(new javafx.geometry.Insets(30, 20, 30, 20));
+        }
     }
 
     // --------------------------------------------------------

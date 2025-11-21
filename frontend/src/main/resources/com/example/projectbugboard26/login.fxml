@@ -17,8 +17,8 @@
     </stylesheets>
 
     <center>
-        <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="transparent-scroll">
-            <VBox alignment="CENTER" spacing="25" fx:id="contenitoreLogin">
+        <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="transparent-scroll" focusTraversable="false">
+            <VBox alignment="CENTER" spacing="25" fx:id="contenitoreLogin" focusTraversable="false">
                 <padding>
                     <Insets top="30" bottom="30" left="50" right="50"/>
                 </padding>
@@ -30,11 +30,7 @@
                            styleClass="logo-image"/>
 
                 <!-- Titolo -->
-                <Label text="BugBoard" styleClass="title-label">
-                    <font>
-                        <Font name="System Bold" size="36"/>
-                    </font>
-                </Label>
+                <Label text="BugBoard" styleClass="title-label" minWidth="-Infinity" focusTraversable="false" style="-fx-font-size: 36px; -fx-font-weight: bold;"/>
 
                 <VBox alignment="CENTER" spacing="18" fx:id="boxForm"
                       fillWidth="true"
