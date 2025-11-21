@@ -5,6 +5,8 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
+<?import java.lang.String?>
+<?import java.net.URL?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
@@ -75,16 +77,9 @@
                             <Font name="System Bold" size="16"/>
                         </font>
                     </Button>
-                    <HBox alignment="CENTER" spacing="10" fx:id="modeBox" maxWidth="Infinity">
-                        <RadioButton fx:id="userRadio"
-                                     text="Utente"
-                                     toggleGroup="$modeGroup"
-                                     selected="true"
-                                     styleClass="mode-radio mode-user"/>
-                        <RadioButton fx:id="adminRadio"
-                                     text="Admin"
-                                     toggleGroup="$modeGroup"
-                                     styleClass="mode-radio mode-admin"/>
+                    <HBox alignment="CENTER" spacing="0" fx:id="modeBox" maxWidth="Infinity" styleClass="segmented-toggle">
+                        <ToggleButton fx:id="userToggle" text="Utente" toggleGroup="$modeGroup" selected="true" HBox.hgrow="ALWAYS"/>
+                        <ToggleButton fx:id="adminToggle" text="Admin" toggleGroup="$modeGroup" HBox.hgrow="ALWAYS"/>
                     </HBox>
                 </VBox>
             </VBox>

@@ -5,7 +5,7 @@ import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -38,9 +38,11 @@ public class LoginController implements Initializable {
     @FXML
     private ToggleGroup modeGroup;
     @FXML
-    private RadioButton userRadio;
+    private ToggleButton userToggle;
     @FXML
-    private RadioButton adminRadio;
+    private ToggleButton adminToggle;
+    @FXML
+    private HBox modeBox;
 
     @FXML
     private Label userTypeLabel;
@@ -50,13 +52,12 @@ public class LoginController implements Initializable {
 
     @FXML
     private VBox formBox;
-    @FXML
-    private HBox modeBox;
+
 
     private enum UserMode { USER, ADMIN }
     private UserMode currentMode = UserMode.USER;
 
-    
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -80,7 +81,7 @@ public class LoginController implements Initializable {
         modeBox.prefWidthProperty().bind(formBox.widthProperty());
 
         modeGroup.selectedToggleProperty().addListener((obs, oldT, newT) -> {
-            currentMode = (newT == adminRadio) ? UserMode.ADMIN : UserMode.USER;
+            currentMode = (newT == adminToggle) ? UserMode.ADMIN : UserMode.USER;
             updateUserTypeUI();
             usernameField.clear();
             passwordField.clear();
@@ -133,7 +134,7 @@ public class LoginController implements Initializable {
         SceneRouter.switchTo("dashboard.fxml", 1100, 800, "BugBoard - Dashboard");
     }
 
-    
+
 
     private void updateUserTypeUI() {
         if (currentMode == UserMode.ADMIN) {
@@ -142,14 +143,14 @@ public class LoginController implements Initializable {
             if (!userTypeLabel.getStyleClass().contains("admin-label")) {
                 userTypeLabel.getStyleClass().add("admin-label");
             }
-            adminRadio.setSelected(true);
+            adminToggle.setSelected(true);
         } else {
             userTypeLabel.setText("Modalità Utente");
             userTypeLabel.getStyleClass().remove("admin-label");
             if (!userTypeLabel.getStyleClass().contains("user-label")) {
                 userTypeLabel.getStyleClass().add("user-label");
             }
-            userRadio.setSelected(true);
+            userToggle.setSelected(true);
         }
     }
 
@@ -171,6 +172,6 @@ public class LoginController implements Initializable {
         errorFade.play();
     }
 
-    
+
 }
 

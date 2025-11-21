@@ -20,6 +20,7 @@ public final class SceneRouter {
             primaryStage.setTitle(title);
             primaryStage.setScene(scene);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException("Impossibile caricare " + fxml, e);
         }
     }
