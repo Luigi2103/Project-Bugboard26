@@ -35,7 +35,7 @@ public class LoginController implements Initializable {
     private ModalitaUtente modalitaCorrente = ModalitaUtente.UTENTE;
 
     // --------------------------------------------------------
-    // INITIALIZZAZIONE
+    // INIZIALIZZAZIONE
     // --------------------------------------------------------
 
     @Override
