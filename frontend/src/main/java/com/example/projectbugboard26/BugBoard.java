@@ -14,7 +14,9 @@ public class BugBoard extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 900, 800);
         stage.setTitle("BugBoard - Login");
         stage.setScene(scene);
-        stage.setResizable(false);
+        stage.setResizable(true);
+        stage.setMinWidth(360);
+        stage.setMinHeight(600);
         stage.centerOnScreen();
         stage.show();
     }

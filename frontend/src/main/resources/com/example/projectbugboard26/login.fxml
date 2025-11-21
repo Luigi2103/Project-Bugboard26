@@ -9,83 +9,84 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.projectbugboard26.controller.LoginController"
-            style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea 0%, #764ba2 100%);">
+            style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #F5F0D9 0%, #3498DB 100%);">
 
     <center>
         <ScrollPane fitToWidth="true" fitToHeight="true"
                     style="-fx-background: transparent; -fx-background-color: transparent; -fx-padding: 0;">
             <VBox alignment="CENTER" spacing="25" fx:id="loginContainer">
-            <padding>
-                <Insets top="30" bottom="30" left="50" right="50"/>
-            </padding>
-
-            <!-- Logo -->
-            <ImageView fx:id="logoImageView"
-                       fitWidth="200"
-                       preserveRatio="true"
-                       style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 5);"/>
-
-            <!-- Titolo -->
-            <Label text="BugBoard"
-                   style="-fx-text-fill: white; -fx-font-weight: bold;"
-                   styleClass="title-label">
-                <font>
-                    <Font name="System Bold" size="36"/>
-                </font>
-            </Label>
-
-            <!-- Container del form di login -->
-            <VBox alignment="CENTER" spacing="18"
-                  style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 20, 0, 0, 5);"
-                  maxWidth="400">
                 <padding>
-                    <Insets top="35" bottom="35" left="40" right="40"/>
+                    <Insets top="30" bottom="30" left="50" right="50"/>
                 </padding>
 
-                <!-- Label tipo utente -->
-                <Label fx:id="userTypeLabel"
-                       text="Modalità Utente"
-                       style="-fx-font-weight: bold; -fx-font-size: 16px;"
-                       textFill="#3498DB"/>
+                <!-- Logo -->
+                <ImageView fx:id="logoImageView"
+                           fitWidth="200"
+                           preserveRatio="true"
+                           style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 5);"/>
 
-                <!-- Campo Username -->
-                <VBox spacing="5">
-                    <Label text="Username"
-                           style="-fx-text-fill: #2c3e50; -fx-font-weight: bold; -fx-font-size: 12px;"/>
-                    <TextField fx:id="usernameField"
-                               promptText="Inserisci username"
-                               style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-border-color: #e0e0e0; -fx-border-radius: 10; -fx-padding: 12; -fx-font-size: 14px;"
-                               prefWidth="320"/>
-                </VBox>
-
-                <!-- Campo Password -->
-                <VBox spacing="5">
-                    <Label text="Password"
-                           style="-fx-text-fill: #2c3e50; -fx-font-weight: bold; -fx-font-size: 12px;"/>
-                    <PasswordField fx:id="passwordField"
-                                   promptText="Inserisci password"
-                                   style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-border-color: #e0e0e0; -fx-border-radius: 10; -fx-padding: 12; -fx-font-size: 14px;"
-                                   prefWidth="320"/>
-                </VBox>
-
-                <!-- Pulsante Login -->
-                <Button fx:id="loginButton"
-                        text="Accedi"
-                        onAction="#handleLogin"
-                        style="-fx-background-color: linear-gradient(to right, #667eea 0%, #764ba2 100%); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; -fx-background-radius: 10; -fx-padding: 12 40; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(102, 126, 234, 0.4), 10, 0, 0, 3);"
-                        prefWidth="320">
+                <!-- Titolo -->
+                <Label text="BugBoard"
+                       style="-fx-text-fill: white; -fx-font-weight: bold;"
+                       styleClass="title-label">
                     <font>
-                        <Font name="System Bold" size="16"/>
+                        <Font name="System Bold" size="36"/>
                     </font>
-                </Button>
+                </Label>
 
-                <!-- Pulsante Switch -->
-                <Button fx:id="switchButton"
-                        text="Passa ad Admin"
-                        onAction="#handleSwitchUserType"
-                        style="-fx-background-color: #3498DB; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-background-radius: 8; -fx-padding: 8 20; -fx-cursor: hand;"
-                        prefWidth="320"/>
-            </VBox>
+                <!-- Container del form di login -->
+                <VBox alignment="CENTER" spacing="18" fx:id="formBox"
+                      fillWidth="true"
+                      style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 20, 0, 0, 5);"
+                      maxWidth="420">
+                    <padding>
+                        <Insets top="35" bottom="35" left="40" right="40"/>
+                    </padding>
+
+                    <!-- Label tipo utente -->
+                    <Label fx:id="userTypeLabel"
+                           text="Modalità Utente"
+                           style="-fx-font-weight: bold; -fx-font-size: 16px;"
+                           textFill="#3498DB"/>
+
+                    <!-- Campo Username -->
+                    <VBox spacing="5">
+                        <Label text="Username"
+                               style="-fx-text-fill: #2c3e50; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+                        <TextField fx:id="usernameField"
+                                   promptText="Inserisci username"
+                                   style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-border-color: #e0e0e0; -fx-border-radius: 10; -fx-padding: 12; -fx-font-size: 14px;"
+                                   maxWidth="Infinity"/>
+                    </VBox>
+
+                    <!-- Campo Password -->
+                    <VBox spacing="5">
+                        <Label text="Password"
+                               style="-fx-text-fill: #2c3e50; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+                        <PasswordField fx:id="passwordField"
+                                       promptText="Inserisci password"
+                                       style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-border-color: #e0e0e0; -fx-border-radius: 10; -fx-padding: 12; -fx-font-size: 14px;"
+                                       maxWidth="Infinity"/>
+                    </VBox>
+
+                    <!-- Pulsante Login -->
+                    <Button fx:id="loginButton"
+                            text="Accedi"
+                            onAction="#handleLogin"
+                            style="-fx-background-color: linear-gradient(to right, #F5F0D9 0%, #3498DB 100%); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; -fx-background-radius: 10; -fx-padding: 12 40; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(52, 152, 219, 0.4), 10, 0, 0, 3);"
+                            maxWidth="Infinity">
+                        <font>
+                            <Font name="System Bold" size="16"/>
+                        </font>
+                    </Button>
+
+                    <!-- Toggle Modalità -->
+                    <ToggleButton fx:id="modeToggle"
+                                  text="Modalità Admin"
+                                  onAction="#handleToggleMode"
+                                  style="-fx-background-radius: 16; -fx-padding: 8 20; -fx-cursor: hand; -fx-font-weight: bold; -fx-text-fill: white;"
+                                  maxWidth="Infinity"/>
+                </VBox>
             </VBox>
         </ScrollPane>
     </center>
