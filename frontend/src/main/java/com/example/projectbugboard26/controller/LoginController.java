@@ -10,7 +10,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
-import com.example.projectbugboard26.SceneRouter;
+import com.example.projectbugboard26.navigation.SceneRouter;
+import com.example.projectbugboard26.exception.CampoUsernameVuotoException;
+import com.example.projectbugboard26.exception.CampoPasswordVuotoException;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -21,16 +23,13 @@ public class LoginController implements Initializable {
     @FXML private TextField campoUsername;
     @FXML private PasswordField campoPassword;
     @FXML private Button pulsanteLogin;
-
     @FXML private ToggleGroup gruppoModalita;
     @FXML private ToggleButton toggleUtente;
     @FXML private ToggleButton toggleAdmin;
-
     @FXML private HBox boxModalita;
     @FXML private Label etichettaModalita;
     @FXML private VBox contenitoreLogin;
     @FXML private VBox boxForm;
-
     private enum ModalitaUtente { UTENTE, ADMIN }
     private ModalitaUtente modalitaCorrente = ModalitaUtente.UTENTE;
 
@@ -91,19 +90,19 @@ public class LoginController implements Initializable {
     // --------------------------------------------------------
 
     private void animaFormLogin() {
-        fadeIn(contenitoreLogin, 800);
-        slideUp(contenitoreLogin, 600);
-        fadeIn(logoImmagine, 1000);
+        dissolvenzaInEntrata(contenitoreLogin, 800);
+        scorriSu(contenitoreLogin, 600);
+        dissolvenzaInEntrata(logoImmagine, 1000);
     }
 
-    private void fadeIn(javafx.scene.Node nodo, int ms) {
+    private void dissolvenzaInEntrata(javafx.scene.Node nodo, int ms) {
         FadeTransition ft = new FadeTransition(Duration.millis(ms), nodo);
         ft.setFromValue(0);
         ft.setToValue(1);
         ft.play();
     }
 
-    private void slideUp(javafx.scene.Node nodo, int ms) {
+    private void scorriSu(javafx.scene.Node nodo, int ms) {
         TranslateTransition tt = new TranslateTransition(Duration.millis(ms), nodo);
         tt.setFromY(30);
         tt.setToY(0);
@@ -150,17 +149,17 @@ public class LoginController implements Initializable {
 
     private void gestisciResponsive() {
         if (contenitoreLogin.getScene() != null) {
-            setupWidthListener(contenitoreLogin.getScene());
+            impostaListenerLarghezza(contenitoreLogin.getScene());
         } else {
             contenitoreLogin.sceneProperty().addListener((obs, oldScene, newScene) -> {
                 if (newScene != null) {
-                    setupWidthListener(newScene);
+                    impostaListenerLarghezza(newScene);
                 }
             });
         }
     }
 
-    private void setupWidthListener(javafx.scene.Scene scene) {
+    private void impostaListenerLarghezza(javafx.scene.Scene scene) {
         scene.widthProperty().addListener((obs, oldW, newW) -> {
             double width = newW.doubleValue();
             if (width < 600) {
@@ -201,17 +200,28 @@ public class LoginController implements Initializable {
 
     @FXML
     private void gestisciLogin() {
-        if (campoUsername.getText().isEmpty() || campoPassword.getText().isEmpty()) {
+        try {
+            if (campoUsername.getText().isEmpty()) {
+                throw new CampoUsernameVuotoException("Il campo username non può essere vuoto");
+            }
+            if (campoPassword.getText().isEmpty()) {
+                throw new CampoPasswordVuotoException("Il campo password non può essere vuoto");
+            }
+
+            animaClickPulsante();
+
+            System.out.println("Login come " + modalitaCorrente);
+            System.out.println("Username: " + campoUsername.getText());
+
+            SceneRouter.cambiaScena("dashboard.fxml", 1100, 800, "BugBoard - Dashboard");
+
+        } catch (CampoUsernameVuotoException e) {
             animaErrore();
-            return;
-        }
-
-        animaClickPulsante();
-
-        System.out.println("Login come " + modalitaCorrente);
-        System.out.println("Username: " + campoUsername.getText());
-
-        SceneRouter.switchTo("dashboard.fxml", 1100, 800, "BugBoard - Dashboard");
+            mostraErrore("Errore Login", e.getMessage());
+        } catch (CampoPasswordVuotoException e) {
+            animaErrore();
+            mostraErrore("Errore Login", e.getMessage());
+        }   
     }
 
     private void animaClickPulsante() {
@@ -221,5 +231,15 @@ public class LoginController implements Initializable {
         ft.setCycleCount(2);
         ft.setAutoReverse(true);
         ft.play();
+    }
+
+
+
+    private void mostraErrore(String titolo, String messaggio) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(titolo);
+        alert.setHeaderText(null);
+        alert.setContentText(messaggio);
+        alert.showAndWait();
     }
 }
