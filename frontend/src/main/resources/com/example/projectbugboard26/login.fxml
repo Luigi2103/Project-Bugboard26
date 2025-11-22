@@ -51,7 +51,7 @@
 
                     <!-- Campo Username -->
                     <VBox spacing="5">
-                        <Label text="Username" styleClass="field-label"/>
+                        <Label fx:id="etichettaUsername" text="Username" styleClass="field-label"/>
                         <TextField fx:id="campoUsername"
                                    promptText="Inserisci username"
                                    maxWidth="Infinity"/>
@@ -59,7 +59,7 @@
 
                     <!-- Campo Password -->
                     <VBox spacing="5">
-                        <Label text="Password" styleClass="field-label"/>
+                        <Label fx:id="etichettaPassword" text="Password" styleClass="field-label"/>
                         <PasswordField fx:id="campoPassword"
                                        promptText="Inserisci password"
                                        maxWidth="Infinity"/>

@@ -28,10 +28,13 @@ public class LoginController implements Initializable {
     @FXML private ToggleButton toggleAdmin;
     @FXML private HBox boxModalita;
     @FXML private Label etichettaModalita;
+    @FXML private Label etichettaUsername;
+    @FXML private Label etichettaPassword;
     @FXML private VBox contenitoreLogin;
     @FXML private VBox boxForm;
     private enum ModalitaUtente { UTENTE, ADMIN }
     private ModalitaUtente modalitaCorrente = ModalitaUtente.UTENTE;
+    private TranslateTransition shakeTransition;
 
     // --------------------------------------------------------
     // INIZIALIZZAZIONE
@@ -53,15 +56,12 @@ public class LoginController implements Initializable {
 
     private void caricaLogo() {
         try {
-            Image logo = new Image(
-                    getClass().getResource("/com/example/projectbugboard26/foto/logoCompleto.png")
-                            .toExternalForm()
-            );
+            Image logo = new Image(getClass().getResource("/com/example/projectbugboard26/foto/logoCompleto.png").toExternalForm());
             logoImmagine.setImage(logo);
             logoImmagine.setPreserveRatio(true);
             logoImmagine.setFitWidth(200);
         } catch (Exception e) {
-            System.err.println("Errore caricamento logo: " + e.getMessage());
+            mostraErrore("Errore caricamento logo" , "Impossibile caricare il logo");
         }
     }
 
@@ -109,28 +109,21 @@ public class LoginController implements Initializable {
         tt.play();
     }
 
-    private TranslateTransition shakeTransition;
 
     private void animaErrore() {
-        // Stop any existing animation to prevent conflict
+
         if (shakeTransition != null) {
             shakeTransition.stop();
         }
 
-        // Force reset position to ensure consistent starting point
         contenitoreLogin.setTranslateX(0);
-
         shakeTransition = new TranslateTransition(Duration.millis(50), contenitoreLogin);
         shakeTransition.setFromX(0);
         shakeTransition.setToX(10);
         shakeTransition.setCycleCount(6);
         shakeTransition.setAutoReverse(true);
-
-        // Ensure we end up exactly at 0
         shakeTransition.setOnFinished(e -> contenitoreLogin.setTranslateX(0));
-
         shakeTransition.play();
-
         lampeggia(pulsanteLogin, 200);
     }
 
@@ -192,6 +185,12 @@ public class LoginController implements Initializable {
     private void aggiornaStileEtichetta(boolean admin) {
         etichettaModalita.getStyleClass().removeAll("admin-label", "user-label");
         etichettaModalita.getStyleClass().add(admin ? "admin-label" : "user-label");
+        
+        etichettaUsername.getStyleClass().removeAll("admin-field-label", "user-field-label", "field-label");
+        etichettaUsername.getStyleClass().add(admin ? "admin-field-label" : "user-field-label");
+        
+        etichettaPassword.getStyleClass().removeAll("admin-field-label", "user-field-label", "field-label");
+        etichettaPassword.getStyleClass().add(admin ? "admin-field-label" : "user-field-label");
     }
 
     // --------------------------------------------------------
@@ -201,13 +200,7 @@ public class LoginController implements Initializable {
     @FXML
     private void gestisciLogin() {
         try {
-            if (campoUsername.getText().isEmpty()) {
-                throw new CampoUsernameVuotoException("Il campo username non può essere vuoto");
-            }
-            if (campoPassword.getText().isEmpty()) {
-                throw new CampoPasswordVuotoException("Il campo password non può essere vuoto");
-            }
-
+            controlloCampi();
             animaClickPulsante();
 
             System.out.println("Login come " + modalitaCorrente);
@@ -222,6 +215,16 @@ public class LoginController implements Initializable {
             animaErrore();
             mostraErrore("Errore Login", e.getMessage());
         }   
+    }
+
+
+    private void controlloCampi() throws CampoUsernameVuotoException, CampoPasswordVuotoException {
+        if (campoUsername.getText().isEmpty()) {
+            throw new CampoUsernameVuotoException("Il campo username non può essere vuoto");
+        }
+        if (campoPassword.getText().isEmpty()) {
+            throw new CampoPasswordVuotoException("Il campo password non può essere vuoto");
+        }
     }
 
     private void animaClickPulsante() {
