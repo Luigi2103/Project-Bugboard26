@@ -44,3 +44,6 @@ build/
 /.idea/misc.xml
 /out/artifacts/frontend_jar/frontend.jar
 /.idea/artifacts/frontend_jar.xml
+
+# Database Configuration
+config.properties
