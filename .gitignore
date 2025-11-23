@@ -42,3 +42,5 @@ build/
 /.idea/copilot.data.migration.ask2agent.xml
 /.idea/copilot.data.migration.edit.xml
 /.idea/misc.xml
+/out/artifacts/frontend_jar/frontend.jar
+/.idea/artifacts/frontend_jar.xml

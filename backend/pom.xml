@@ -15,6 +15,7 @@
 
     <modules>
         <module>login-service</module>
+        <module>Utility</module>
     </modules>
 </project>
 
