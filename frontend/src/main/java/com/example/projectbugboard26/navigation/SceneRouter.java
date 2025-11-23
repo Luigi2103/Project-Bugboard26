@@ -4,7 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
-import com.example.projectbugboard26.BugBoard;
+import com.example.projectbugboard26.app.BugBoard;
 
 import java.io.IOException;
 

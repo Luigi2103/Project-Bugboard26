@@ -1,4 +1,4 @@
-package com.example.projectbugboard26;
+package com.example.projectbugboard26.app;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -13,7 +13,7 @@ public class BugBoard extends Application {
 
         stage.getIcons().add(new Image(getClass().getResource("/com/example/projectbugboard26/foto/logoCompleto.png").toExternalForm()));
         SceneRouter.inizializza(stage);
-        SceneRouter.cambiaScena("login.fxml", 900, 800, "BugBoard - Login");
+        SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/login.fxml", 900, 800, "BugBoard - Login");
         stage.setResizable(true);
         stage.setMinWidth(360);
         stage.setMinHeight(600);

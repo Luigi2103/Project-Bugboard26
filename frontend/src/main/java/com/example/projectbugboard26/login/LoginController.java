@@ -1,4 +1,4 @@
-package com.example.projectbugboard26.controller;
+package com.example.projectbugboard26.login;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
@@ -11,8 +11,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import com.example.projectbugboard26.navigation.SceneRouter;
-import com.example.projectbugboard26.exception.CampoUsernameVuotoException;
-import com.example.projectbugboard26.exception.CampoPasswordVuotoException;
+import com.example.projectbugboard26.login.exception.CampoUsernameVuotoException;
+import com.example.projectbugboard26.login.exception.CampoPasswordVuotoException;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -206,7 +206,7 @@ public class LoginController implements Initializable {
             System.out.println("Login come " + modalitaCorrente);
             System.out.println("Username: " + campoUsername.getText());
 
-            SceneRouter.cambiaScena("dashboard.fxml", 1100, 800, "BugBoard - Dashboard");
+            // SceneRouter.cambiaScena("dashboard.fxml", 1100, 800, "BugBoard - Dashboard");
 
         } catch (CampoUsernameVuotoException e) {
             animaErrore();

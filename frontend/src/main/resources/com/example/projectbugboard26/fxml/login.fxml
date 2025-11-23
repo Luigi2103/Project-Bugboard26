@@ -10,10 +10,10 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.projectbugboard26.controller.LoginController"
+            fx:controller="com.example.projectbugboard26.login.LoginController"
             styleClass="login-root">
     <stylesheets>
-        <URL value="@css/login.css"/>
+        <URL value="@../css/login.css"/>
     </stylesheets>
 
     <center>

@@ -1,4 +1,4 @@
-package com.example.projectbugboard26;
+package com.example.projectbugboard26.app;
 
 import javafx.application.Application;
 
