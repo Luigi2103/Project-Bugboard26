@@ -11,6 +11,11 @@
     </parent>
 
     <artifactId>Utility</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>DB</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
