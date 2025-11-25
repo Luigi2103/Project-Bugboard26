@@ -19,20 +19,37 @@ import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
 
-    @FXML private ImageView logoImmagine;
-    @FXML private TextField campoUsername;
-    @FXML private PasswordField campoPassword;
-    @FXML private Button pulsanteLogin;
-    @FXML private ToggleGroup gruppoModalita;
-    @FXML private ToggleButton toggleUtente;
-    @FXML private ToggleButton toggleAdmin;
-    @FXML private HBox boxModalita;
-    @FXML private Label etichettaModalita;
-    @FXML private Label etichettaUsername;
-    @FXML private Label etichettaPassword;
-    @FXML private VBox contenitoreLogin;
-    @FXML private VBox boxForm;
-    private enum ModalitaUtente { UTENTE, ADMIN }
+    @FXML
+    private ImageView logoImmagine;
+    @FXML
+    private TextField campoUsername;
+    @FXML
+    private PasswordField campoPassword;
+    @FXML
+    private Button pulsanteLogin;
+    @FXML
+    private ToggleGroup gruppoModalita;
+    @FXML
+    private ToggleButton toggleUtente;
+    @FXML
+    private ToggleButton toggleAdmin;
+    @FXML
+    private HBox boxModalita;
+    @FXML
+    private Label etichettaModalita;
+    @FXML
+    private Label etichettaUsername;
+    @FXML
+    private Label etichettaPassword;
+    @FXML
+    private VBox contenitoreLogin;
+    @FXML
+    private VBox boxForm;
+
+    private enum ModalitaUtente {
+        UTENTE, ADMIN
+    }
+
     private ModalitaUtente modalitaCorrente = ModalitaUtente.UTENTE;
     private TranslateTransition shakeTransition;
 
@@ -56,12 +73,13 @@ public class LoginController implements Initializable {
 
     private void caricaLogo() {
         try {
-            Image logo = new Image(getClass().getResource("/com/example/projectbugboard26/foto/logoCompleto.png").toExternalForm());
+            Image logo = new Image(
+                    getClass().getResource("/com/example/projectbugboard26/foto/logoCompleto.png").toExternalForm());
             logoImmagine.setImage(logo);
             logoImmagine.setPreserveRatio(true);
             logoImmagine.setFitWidth(200);
         } catch (Exception e) {
-            mostraErrore("Errore caricamento logo" , "Impossibile caricare il logo");
+            mostraErrore("Errore caricamento logo", "Impossibile caricare il logo");
         }
     }
 
@@ -108,7 +126,6 @@ public class LoginController implements Initializable {
         tt.setToY(0);
         tt.play();
     }
-
 
     private void animaErrore() {
 
@@ -178,17 +195,19 @@ public class LoginController implements Initializable {
         etichettaModalita.setText(isAdmin ? "Modalità Amministratore" : "Modalità Utente");
         aggiornaStileEtichetta(isAdmin);
 
-        if (isAdmin) toggleAdmin.setSelected(true);
-        else toggleUtente.setSelected(true);
+        if (isAdmin)
+            toggleAdmin.setSelected(true);
+        else
+            toggleUtente.setSelected(true);
     }
 
     private void aggiornaStileEtichetta(boolean admin) {
         etichettaModalita.getStyleClass().removeAll("admin-label", "user-label");
         etichettaModalita.getStyleClass().add(admin ? "admin-label" : "user-label");
-        
+
         etichettaUsername.getStyleClass().removeAll("admin-field-label", "user-field-label", "field-label");
         etichettaUsername.getStyleClass().add(admin ? "admin-field-label" : "user-field-label");
-        
+
         etichettaPassword.getStyleClass().removeAll("admin-field-label", "user-field-label", "field-label");
         etichettaPassword.getStyleClass().add(admin ? "admin-field-label" : "user-field-label");
     }
@@ -206,7 +225,9 @@ public class LoginController implements Initializable {
             System.out.println("Login come " + modalitaCorrente);
             System.out.println("Username: " + campoUsername.getText());
 
-            // SceneRouter.cambiaScena("dashboard.fxml", 1100, 800, "BugBoard - Dashboard");
+            // Naviga alla schermata di inserimento utente
+            SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/insert_user.fxml", 900, 800,
+                    "BugBoard - Registra Utente");
 
         } catch (CampoUsernameVuotoException e) {
             animaErrore();
@@ -214,9 +235,8 @@ public class LoginController implements Initializable {
         } catch (CampoPasswordVuotoException e) {
             animaErrore();
             mostraErrore("Errore Login", e.getMessage());
-        }   
+        }
     }
-
 
     private void controlloCampi() throws CampoUsernameVuotoException, CampoPasswordVuotoException {
         if (campoUsername.getText().isEmpty()) {
@@ -235,8 +255,6 @@ public class LoginController implements Initializable {
         ft.setAutoReverse(true);
         ft.play();
     }
-
-
 
     private void mostraErrore(String titolo, String messaggio) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
