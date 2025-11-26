@@ -11,8 +11,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import com.example.projectbugboard26.navigation.SceneRouter;
-import com.example.projectbugboard26.login.exception.CampoUsernameVuotoException;
-import com.example.projectbugboard26.login.exception.CampoPasswordVuotoException;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -41,6 +39,10 @@ public class LoginController implements Initializable {
     private Label etichettaUsername;
     @FXML
     private Label etichettaPassword;
+    @FXML
+    private Label erroreUsername;
+    @FXML
+    private Label errorePassword;
     @FXML
     private VBox contenitoreLogin;
     @FXML
@@ -79,7 +81,7 @@ public class LoginController implements Initializable {
             logoImmagine.setPreserveRatio(true);
             logoImmagine.setFitWidth(200);
         } catch (Exception e) {
-            mostraErrore("Errore caricamento logo", "Impossibile caricare il logo");
+            System.err.println("Errore caricamento logo: " + e.getMessage());
         }
     }
 
@@ -101,6 +103,7 @@ public class LoginController implements Initializable {
     private void pulisciCampi() {
         campoUsername.clear();
         campoPassword.clear();
+        resetErrorStyles();
     }
 
     // --------------------------------------------------------
@@ -193,23 +196,11 @@ public class LoginController implements Initializable {
         boolean isAdmin = modalitaCorrente == ModalitaUtente.ADMIN;
 
         etichettaModalita.setText(isAdmin ? "Modalità Amministratore" : "Modalità Utente");
-        aggiornaStileEtichetta(isAdmin);
 
         if (isAdmin)
             toggleAdmin.setSelected(true);
         else
             toggleUtente.setSelected(true);
-    }
-
-    private void aggiornaStileEtichetta(boolean admin) {
-        etichettaModalita.getStyleClass().removeAll("admin-label", "user-label");
-        etichettaModalita.getStyleClass().add(admin ? "admin-label" : "user-label");
-
-        etichettaUsername.getStyleClass().removeAll("admin-field-label", "user-field-label", "field-label");
-        etichettaUsername.getStyleClass().add(admin ? "admin-field-label" : "user-field-label");
-
-        etichettaPassword.getStyleClass().removeAll("admin-field-label", "user-field-label", "field-label");
-        etichettaPassword.getStyleClass().add(admin ? "admin-field-label" : "user-field-label");
     }
 
     // --------------------------------------------------------
@@ -218,33 +209,34 @@ public class LoginController implements Initializable {
 
     @FXML
     private void gestisciLogin() {
-        try {
-            controlloCampi();
-            animaClickPulsante();
+        resetErrorStyles();
+        boolean isValid = true;
 
-            System.out.println("Login come " + modalitaCorrente);
-            System.out.println("Username: " + campoUsername.getText());
-
-            // Naviga alla schermata di inserimento utente
-            SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/insert_user.fxml", 900, 800,
-                    "BugBoard - Registra Utente");
-
-        } catch (CampoUsernameVuotoException e) {
-            animaErrore();
-            mostraErrore("Errore Login", e.getMessage());
-        } catch (CampoPasswordVuotoException e) {
-            animaErrore();
-            mostraErrore("Errore Login", e.getMessage());
-        }
-    }
-
-    private void controlloCampi() throws CampoUsernameVuotoException, CampoPasswordVuotoException {
         if (campoUsername.getText().isEmpty()) {
-            throw new CampoUsernameVuotoException("Il campo username non può essere vuoto");
+            setErrorStyle(campoUsername);
+            mostraErroreInline(erroreUsername, "Il campo username non può essere vuoto");
+            isValid = false;
         }
+
         if (campoPassword.getText().isEmpty()) {
-            throw new CampoPasswordVuotoException("Il campo password non può essere vuoto");
+            setErrorStyle(campoPassword);
+            mostraErroreInline(errorePassword, "Il campo password non può essere vuoto");
+            isValid = false;
         }
+
+        if (!isValid) {
+            animaErrore();
+            return;
+        }
+
+        animaClickPulsante();
+
+        System.out.println("Login come " + modalitaCorrente);
+        System.out.println("Username: " + campoUsername.getText());
+
+        // Naviga alla schermata di inserimento utente
+        SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/insert_user.fxml", 900, 800,
+                "BugBoard - Registra Utente");
     }
 
     private void animaClickPulsante() {
@@ -256,11 +248,28 @@ public class LoginController implements Initializable {
         ft.play();
     }
 
-    private void mostraErrore(String titolo, String messaggio) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(titolo);
-        alert.setHeaderText(null);
-        alert.setContentText(messaggio);
-        alert.showAndWait();
+    private void setErrorStyle(Control control) {
+        if (!control.getStyleClass().contains("text-field-error")) {
+            control.getStyleClass().add("text-field-error");
+        }
+    }
+
+    private void removeErrorStyle(Control control) {
+        control.getStyleClass().remove("text-field-error");
+    }
+
+    private void resetErrorStyles() {
+        removeErrorStyle(campoUsername);
+        removeErrorStyle(campoPassword);
+        erroreUsername.setVisible(false);
+        erroreUsername.setManaged(false);
+        errorePassword.setVisible(false);
+        errorePassword.setManaged(false);
+    }
+
+    private void mostraErroreInline(Label label, String messaggio) {
+        label.setText(messaggio);
+        label.setVisible(true);
+        label.setManaged(true);
     }
 }

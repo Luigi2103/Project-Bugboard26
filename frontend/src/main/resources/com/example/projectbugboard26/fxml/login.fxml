@@ -47,7 +47,7 @@
                     <!-- Label Modalità -->
                     <Label fx:id="etichettaModalita"
                            text="Modalità Utente"
-                           styleClass="user-label"/>
+                           styleClass="mode-label-static"/>
 
                     <!-- Campo Username -->
                     <VBox spacing="5">
@@ -55,6 +55,11 @@
                         <TextField fx:id="campoUsername"
                                    promptText="Inserisci username"
                                    maxWidth="Infinity"/>
+                        <Label fx:id="erroreUsername"
+                               text=""
+                               visible="false"
+                               managed="false"
+                               styleClass="error-label"/>
                     </VBox>
 
                     <!-- Campo Password -->
@@ -63,6 +68,11 @@
                         <PasswordField fx:id="campoPassword"
                                        promptText="Inserisci password"
                                        maxWidth="Infinity"/>
+                        <Label fx:id="errorePassword"
+                               text=""
+                               visible="false"
+                               managed="false"
+                               styleClass="error-label"/>
                     </VBox>
 
                     <!-- Pulsante Login -->
