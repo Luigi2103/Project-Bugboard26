@@ -46,4 +46,5 @@ build/
 /.idea/artifacts/frontend_jar.xml
 
 # Database Configuration
-config.properties
+backend/login-service/src/main/resources/application.properties
+

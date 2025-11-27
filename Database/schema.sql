@@ -26,7 +26,6 @@ CREATE TABLE Utente (
                         Cognome VARCHAR(100) NOT NULL,
                         CF VARCHAR(16) NOT NULL UNIQUE,
                         Sesso CHAR(1) NOT NULL CHECK (Sesso IN ('M', 'F')),
-                        Eta INTEGER NOT NULL CHECK (Eta >= 18 AND Eta <= 70),
                         Username VARCHAR(255) NOT NULL UNIQUE,
                         Password VARCHAR(255) NOT NULL,
                         IsAdmin BOOLEAN NOT NULL DEFAULT FALSE,

@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
+import javafx.application.Platform;
 import com.example.projectbugboard26.navigation.SceneRouter;
 
 import java.net.URL;
@@ -67,6 +68,7 @@ public class LoginController implements Initializable {
         animaFormLogin();
         aggiornaUI();
         gestisciResponsive();
+        Platform.runLater(() -> contenitoreLogin.requestFocus());
     }
 
     // --------------------------------------------------------
@@ -262,14 +264,11 @@ public class LoginController implements Initializable {
         removeErrorStyle(campoUsername);
         removeErrorStyle(campoPassword);
         erroreUsername.setVisible(false);
-        erroreUsername.setManaged(false);
         errorePassword.setVisible(false);
-        errorePassword.setManaged(false);
     }
 
     private void mostraErroreInline(Label label, String messaggio) {
         label.setText(messaggio);
         label.setVisible(true);
-        label.setManaged(true);
     }
 }

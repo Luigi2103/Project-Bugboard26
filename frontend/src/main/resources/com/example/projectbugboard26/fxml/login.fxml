@@ -18,26 +18,26 @@
 
     <center>
         <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="transparent-scroll" focusTraversable="false">
-            <VBox alignment="CENTER" spacing="25" fx:id="contenitoreLogin" focusTraversable="false">
+            <VBox alignment="CENTER" spacing="15" fx:id="contenitoreLogin" focusTraversable="false">
                 <padding>
-                    <Insets top="30" bottom="30" left="50" right="50"/>
+                    <Insets top="20" bottom="20" left="40" right="40"/>
                 </padding>
 
                 <!-- Logo -->
                 <ImageView fx:id="logoImmagine"
-                           fitWidth="200"
+                           fitWidth="180"
                            preserveRatio="true"
                            styleClass="logo-image"/>
 
                 <!-- Titolo -->
                 <Label text="BugBoard" styleClass="title-label" minWidth="-Infinity" focusTraversable="false" style="-fx-font-size: 36px; -fx-font-weight: bold;"/>
 
-                <VBox alignment="CENTER" spacing="18" fx:id="boxForm"
+                <VBox alignment="CENTER" spacing="12" fx:id="boxForm"
                       fillWidth="true"
                       styleClass="form-box"
                       maxWidth="420">
                     <padding>
-                        <Insets top="35" bottom="35" left="40" right="40"/>
+                        <Insets top="25" bottom="25" left="30" right="30"/>
                     </padding>
 
                     <fx:define>
@@ -56,9 +56,9 @@
                                    promptText="Inserisci username"
                                    maxWidth="Infinity"/>
                         <Label fx:id="erroreUsername"
-                               text=""
+                               text=" "
                                visible="false"
-                               managed="false"
+                               minHeight="17"
                                styleClass="error-label"/>
                     </VBox>
 
@@ -69,9 +69,9 @@
                                        promptText="Inserisci password"
                                        maxWidth="Infinity"/>
                         <Label fx:id="errorePassword"
-                               text=""
+                               text=" "
                                visible="false"
-                               managed="false"
+                               minHeight="17"
                                styleClass="error-label"/>
                     </VBox>
 
