@@ -214,34 +214,73 @@ public class LoginController implements Initializable {
     @FXML
     private void gestisciLogin() {
         resetErrorStyles();
-        boolean isValid = true;
 
-        if (campoUsername.getText().isEmpty()) {
-            setErrorStyle(campoUsername);
-            mostraErroreInline(erroreUsername, "Il campo username non può essere vuoto");
-            isValid = false;
-        }
-
-        if (campoPassword.getText().isEmpty()) {
-            setErrorStyle(campoPassword);
-            mostraErroreInline(errorePassword, "Il campo password non può essere vuoto");
-            isValid = false;
-        }
-
-        if (!isValid) {
+        if (!controlloInputValidi()) {
             animaErrore();
             return;
         }
 
         animaClickPulsante();
 
-        System.out.println("Login come " + modalitaCorrente);
-        System.out.println("Username: " + campoUsername.getText());
+        String username = campoUsername.getText();
+        String password = campoPassword.getText();
+        boolean isAdminSelected = gruppoModalita.getSelectedToggle() == toggleAdmin;
 
-        // Naviga alla schermata di inserimento utente
-        SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/insert_user.fxml", 900, 930,
-                "BugBoard - Registra Utente");
+        new Thread(() -> inviaRichiestaLogin(username, password)).start();
     }
+
+
+    private void inviaRichiestaLogin(String username, String password) {
+        try {
+            String requestBody = preparaRequestBody(username, password);
+
+            java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
+            java.net.http.HttpRequest request = java.net.http.HttpRequest.newBuilder()
+                    .uri(java.net.URI.create("http://localhost:8081/api/auth/login"))
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .POST(java.net.http.HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
+
+            java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+
+            gestisciRisposta(response);
+
+        } catch (Exception e) {
+            Platform.runLater(() -> {
+                mostraErroreInline(errorePassword, "Errore di connessione al server");
+                animaErrore();
+            });
+        }
+    }
+
+
+
+    private String preparaRequestBody(String username, String password) {
+        return "username=" + java.net.URLEncoder.encode(username, java.nio.charset.StandardCharsets.UTF_8)
+                + "&password=" + java.net.URLEncoder.encode(password, java.nio.charset.StandardCharsets.UTF_8);
+    }
+
+
+
+    private void gestisciRisposta(java.net.http.HttpResponse<String> response) {
+        Platform.runLater(() -> {
+            if (response.statusCode() == 200) {
+                SceneRouter.cambiaScena(
+                        "/com/example/projectbugboard26/fxml/insert_user.fxml",
+                        900, 930,
+                        "BugBoard - Registra Utente"
+                );
+            } else {
+                setErrorStyle(campoUsername);
+                setErrorStyle(campoPassword);
+                mostraErroreInline(errorePassword, "Credenziali non valide");
+                animaErrore();
+            }
+        });
+    }
+
+
+
 
     @FXML
     private void vaiARecuperoPassword() {
@@ -278,5 +317,27 @@ public class LoginController implements Initializable {
     private void mostraErroreInline(Label label, String messaggio) {
         label.setText(messaggio);
         label.setVisible(true);
+    }
+
+    private boolean controlloInputValidi() {
+        return controlloUsernameNonVuoto() && controlloPasswordNonVuota();
+    }
+
+    private boolean controlloPasswordNonVuota() {
+        if (campoPassword.getText().isEmpty()) {
+            setErrorStyle(campoPassword);
+            mostraErroreInline(errorePassword, "Il campo password non può essere vuoto");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean controlloUsernameNonVuoto() {
+        if (campoUsername.getText().isEmpty()) {
+            setErrorStyle(campoUsername);
+            mostraErroreInline(erroreUsername, "Il campo username non può essere vuoto");
+            return false;
+        }
+        return true;
     }
 }

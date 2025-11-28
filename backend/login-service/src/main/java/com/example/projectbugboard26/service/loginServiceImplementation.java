@@ -16,8 +16,11 @@ public class loginServiceImplementation implements loginService {
 
     @Override
     public boolean login(String username, String rawPassword) {
-        return userRepository.findByUsername(username)
-                .map(user -> passwordEncoder.matches(rawPassword, user.getPasswordHash()))
-                .orElse(false);
+        var userOpt = userRepository.findByUsername(username);
+
+        if (userOpt.isEmpty()) {return false;}
+
+        var user = userOpt.get();
+        return passwordEncoder.matches(rawPassword, user.getPasswordHash());
     }
 }

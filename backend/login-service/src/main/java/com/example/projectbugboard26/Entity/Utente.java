@@ -12,20 +12,23 @@ public class Utente extends Persona {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, name="Mail")
+    @Column(nullable = false, name = "mail")
     private String email;
 
-    @Column(unique = true, nullable = false , name="Username")
+    @Column(unique = true, nullable = false, name = "username")
     private String username;
 
-    @Column(nullable = false, name="Password")
+    @Column(nullable = false, name = "password")
     private String passwordHash;
 
-    @Column(nullable = false, name = "IsAdmin")
+    @Column(nullable = false, name = "isadmin")
     private boolean isAdmin = false;
 
-    public Utente() {}
-    public Utente(String nome, String cognome, String codiceFiscale, char sesso, Date dataDiNascita, Long id, String email, String username, String passwordHash, boolean isAdmin) {
+    public Utente() {
+    }
+
+    public Utente(String nome, String cognome, String codiceFiscale, char sesso, Date dataDiNascita, Long id,
+                  String email, String username, String passwordHash, boolean isAdmin) {
         super(nome, cognome, codiceFiscale, sesso, dataDiNascita);
         this.id = id;
         this.email = email;
@@ -37,6 +40,7 @@ public class Utente extends Persona {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -44,6 +48,7 @@ public class Utente extends Persona {
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -51,6 +56,7 @@ public class Utente extends Persona {
     public String getUsername() {
         return username;
     }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -58,6 +64,7 @@ public class Utente extends Persona {
     public String getPasswordHash() {
         return passwordHash;
     }
+
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
@@ -65,8 +72,8 @@ public class Utente extends Persona {
     public boolean isAdmin() {
         return isAdmin;
     }
+
     public void setAdmin(boolean admin) {
         isAdmin = admin;
     }
 }
-

@@ -6,6 +6,7 @@ module com.example.projectbugboard26 {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.graphics;
+    requires java.net.http;
 
     exports com.example.projectbugboard26.login;
 

@@ -8,23 +8,24 @@ import java.util.Date;
 @MappedSuperclass
 public abstract class Persona {
 
-    @Column(nullable = false , name = "Nome")
+    @Column(nullable = false, name = "nome")
     private String nome;
 
-    @Column(nullable = false, name = "Cognome")
+    @Column(nullable = false, name = "cognome")
     private String cognome;
 
-    @Column(nullable = false, unique = true, name = "CF")
+    @Column(nullable = false, unique = true, name = "cf")
     private String codiceFiscale;
 
-    @Column(nullable = false,name="Sesso")
+    @Column(nullable = false, name = "sesso")
     private char sesso;
 
-    @Column(nullable = false,name = "DataDiNascita")
+    @Column(nullable = false, name = "datadinascita")
     private Date dataDiNascita;
 
+    public Persona() {
+    }
 
-    public Persona() {}
     public Persona(String nome, String cognome, String codiceFiscale, char sesso, Date dataDiNascita) {
         this.nome = nome;
         this.cognome = cognome;
@@ -33,10 +34,10 @@ public abstract class Persona {
         this.dataDiNascita = dataDiNascita;
     }
 
-
     public String getNome() {
         return nome;
     }
+
     public void setNome(String nome) {
         this.nome = nome;
     }
@@ -44,6 +45,7 @@ public abstract class Persona {
     public String getCognome() {
         return cognome;
     }
+
     public void setCognome(String cognome) {
         this.cognome = cognome;
     }
@@ -51,6 +53,7 @@ public abstract class Persona {
     public String getCodiceFiscale() {
         return codiceFiscale;
     }
+
     public void setCodiceFiscale(String codiceFiscale) {
         this.codiceFiscale = codiceFiscale;
     }
@@ -58,6 +61,7 @@ public abstract class Persona {
     public char getSesso() {
         return sesso;
     }
+
     public void setSesso(char sesso) {
         this.sesso = sesso;
     }
@@ -65,15 +69,9 @@ public abstract class Persona {
     public Date getDataDiNascita() {
         return dataDiNascita;
     }
+
     public void setDataDiNascita(Date dataDiNascita) {
         this.dataDiNascita = dataDiNascita;
     }
 
-
 }
-
-
-
-
-
-
