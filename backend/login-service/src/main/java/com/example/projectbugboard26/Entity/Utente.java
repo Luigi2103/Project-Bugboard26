@@ -2,81 +2,71 @@ package com.example.projectbugboard26.Entity;
 
 import jakarta.persistence.*;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "Utente")
-public class Utente {
+public class Utente extends Persona {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String nome;
-
-    @Column(nullable = false)
-    private String cognome;
-
-    @Column(nullable = false)
+    @Column(nullable = false, name="Mail")
     private String email;
 
-    @Column(nullable = false, unique = true)
-    private String codiceFiscale;
-
-    @Column(nullable = false)
-    private char sesso;
-
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false , name="Username")
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name="Password")
     private String passwordHash;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "IsAdmin")
     private boolean isAdmin = false;
 
-    //---------------------------------------COSTRUTTORI---------------------------------------------
-    public Utente(Long id, String nome, String cognome, String email, String codiceFiscale, char sesso, String username, String passwordHash, boolean isAdmin) {
+    public Utente() {}
+    public Utente(String nome, String cognome, String codiceFiscale, char sesso, Date dataDiNascita, Long id, String email, String username, String passwordHash, boolean isAdmin) {
+        super(nome, cognome, codiceFiscale, sesso, dataDiNascita);
         this.id = id;
-        this.nome = nome;
-        this.cognome = cognome;
         this.email = email;
-        this.codiceFiscale = codiceFiscale;
-        this.sesso = sesso;
         this.username = username;
         this.passwordHash = passwordHash;
         this.isAdmin = isAdmin;
     }
 
-    public Utente() {} //Serve necessariamente per JPA
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    //--------------------------GETTER & SETTER-------------------------------------------------------
-    public Long getId() {return id;}
-    public void setId(Long id) {this.id = id;}
+    public String getUsername() {
+        return username;
+    }
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-    public String getNome() {return nome;}
-    public void setNome(String nome) {this.nome = nome;}
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
 
-    public String getCognome() {return cognome;}
-    public void setCognome(String cognome) {this.cognome = cognome;}
-
-    public String getEmail() {return email;}
-    public void setEmail(String email) {this.email = email;}
-
-    public String getCodiceFiscale() {return codiceFiscale;}
-    public void setCodiceFiscale(String codiceFiscale) {this.codiceFiscale = codiceFiscale;}
-
-    public char getSesso() {return sesso;}
-    public void setSesso(char sesso) {this.sesso = sesso;}
-
-    public String getUsername() {return username;}
-    public void setUsername(String username) {this.username = username;}
-
-    public String getPasswordHash() {return passwordHash;}
-    public void setPasswordHash(String passwordHash) {this.passwordHash = passwordHash;}
-
-    public boolean isAdmin() {return isAdmin;}
-    public void setAdmin(boolean admin) {isAdmin = admin;}
-
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
 }
 
