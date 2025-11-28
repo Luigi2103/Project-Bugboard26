@@ -237,7 +237,7 @@ public class LoginController implements Initializable {
         System.out.println("Username: " + campoUsername.getText());
 
         // Naviga alla schermata di inserimento utente
-        SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/insert_user.fxml", 900, 800,
+        SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/insert_user.fxml", 900, 930,
                 "BugBoard - Registra Utente");
     }
 

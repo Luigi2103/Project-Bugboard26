@@ -17,20 +17,20 @@
 
     <center>
         <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="transparent-scroll" focusTraversable="false">
-            <VBox alignment="CENTER" spacing="25" fx:id="contenitoreInserimento" focusTraversable="false">
+            <VBox alignment="CENTER" spacing="15" fx:id="contenitoreInserimento" focusTraversable="false">
                 <padding>
-                    <Insets top="30" bottom="30" left="50" right="50"/>
+                    <Insets top="15" bottom="15" left="50" right="50"/>
                 </padding>
 
                 <!-- Titolo -->
-                <Label text="Registra Nuovo Utente" styleClass="title-label" minWidth="-Infinity" focusTraversable="false" style="-fx-font-size: 32px; -fx-font-weight: bold;"/>
+                <Label text="Registra Nuovo Utente" styleClass="title-label" minWidth="-Infinity" focusTraversable="false" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
 
-                <VBox alignment="CENTER" spacing="18" fx:id="boxForm"
+                <VBox alignment="CENTER" spacing="12" fx:id="boxForm"
                       fillWidth="true"
                       styleClass="form-box"
                       maxWidth="450">
                     <padding>
-                        <Insets top="35" bottom="35" left="40" right="40"/>
+                        <Insets top="20" bottom="20" left="40" right="40"/>
                     </padding>
 
                     <fx:define>
@@ -38,7 +38,7 @@
                     </fx:define>
 
                     <!-- Label Intestazione -->
-                    <Label text="Informazioni Utente" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #2c3e50;"/>
+                    <Label text="Informazioni Utente" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #2c3e50;"/>
 
                     <!-- Toggle Ruolo -->
                     <HBox alignment="CENTER" spacing="0" fx:id="boxRuolo"
@@ -55,7 +55,7 @@
                     </HBox>
 
                     <!-- Grid Layout per campi in due colonne -->
-                    <GridPane hgap="15" vgap="15" maxWidth="Infinity">
+                    <GridPane hgap="10" vgap="10" maxWidth="Infinity">
                         <columnConstraints>
                             <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
                             <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
@@ -76,7 +76,7 @@
                                        maxWidth="Infinity"/>
                         </VBox>
 
-                        <!-- Seconda riga: Codice Fiscale e Data di Nascita -->
+                        <!-- Seconda riga: Codice Fiscale e Sesso -->
                         <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="1">
                             <Label text="Codice Fiscale" styleClass="field-label"/>
                             <TextField fx:id="campoCodiceFiscale"
@@ -86,29 +86,37 @@
                         </VBox>
 
                         <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <Label text="Sesso" styleClass="field-label"/>
+                            <ComboBox fx:id="comboSesso"
+                                      promptText="Seleziona sesso"
+                                      maxWidth="Infinity"/>
+                        </VBox>
+
+                        <!-- Terza riga: Data di Nascita (full width) -->
+                        <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
                             <Label text="Data di Nascita" styleClass="field-label"/>
                             <DatePicker fx:id="campoDataNascita"
                                         promptText="Seleziona data"
                                         maxWidth="Infinity"/>
                         </VBox>
 
-                        <!-- Terza riga: Username (full width) -->
-                        <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
+                        <!-- Quarta riga: Username (full width) -->
+                        <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2">
                             <Label text="Username" styleClass="field-label"/>
                             <TextField fx:id="campoUsername"
                                        promptText="Inserisci username"
                                        maxWidth="Infinity"/>
                         </VBox>
 
-                        <!-- Quarta riga: Password e Conferma Password -->
-                        <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                        <!-- Quinta riga: Password e Conferma Password -->
+                        <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="4">
                             <Label text="Password" styleClass="field-label"/>
                             <PasswordField fx:id="campoPassword"
                                            promptText="Inserisci password"
                                            maxWidth="Infinity"/>
                         </VBox>
 
-                        <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                        <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="4">
                             <Label text="Conferma Password" styleClass="field-label"/>
                             <PasswordField fx:id="campoConfermaPassword"
                                            promptText="Ripeti password"

@@ -2,6 +2,7 @@ package com.example.projectbugboard26.inserimentoutente;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -24,6 +25,8 @@ public class InsertUserController {
     private TextField campoCognome;
     @FXML
     private TextField campoCodiceFiscale;
+    @FXML
+    private ComboBox<String> comboSesso;
     @FXML
     private DatePicker campoDataNascita;
     @FXML
@@ -51,6 +54,9 @@ public class InsertUserController {
 
     @FXML
     public void initialize() {
+        // Popola il ComboBox Sesso
+        comboSesso.getItems().addAll("M", "F");
+
         pulsanteRegistra.disableProperty().bind(createCampiVuotiBinding());
         // Annulla si abilita quando almeno un campo è compilato (tutti vuoti =
         // disabilitato)
@@ -71,6 +77,7 @@ public class InsertUserController {
         return isTrimmedEmpty(campoNome)
                 .or(isTrimmedEmpty(campoCognome))
                 .or(isTrimmedEmpty(campoCodiceFiscale))
+                .or(comboSesso.valueProperty().isNull())
                 .or(campoDataNascita.valueProperty().isNull())
                 .or(isTrimmedEmpty(campoUsername))
                 .or(campoPassword.textProperty().isEmpty())
@@ -81,6 +88,7 @@ public class InsertUserController {
         return isTrimmedEmpty(campoNome)
                 .and(isTrimmedEmpty(campoCognome))
                 .and(isTrimmedEmpty(campoCodiceFiscale))
+                .and(comboSesso.valueProperty().isNull())
                 .and(campoDataNascita.valueProperty().isNull())
                 .and(isTrimmedEmpty(campoUsername))
                 .and(campoPassword.textProperty().isEmpty())
@@ -98,6 +106,7 @@ public class InsertUserController {
         String nome = campoNome.getText();
         String cognome = campoCognome.getText();
         String codiceFiscale = campoCodiceFiscale.getText();
+        String sesso = comboSesso.getValue();
         LocalDate dataNascita = campoDataNascita.getValue();
         String username = campoUsername.getText();
         String password = campoPassword.getText();
@@ -110,7 +119,7 @@ public class InsertUserController {
         String ruolo = toggleAdmin.isSelected() ? "AMMINISTRATORE" : "UTENTE";
 
         // TODO eliminare questo metodo, è solo per testare se la GUI funziona
-        logUserRegistration(nome, cognome, codiceFiscale, dataNascita, username, ruolo);
+        logUserRegistration(nome, cognome, codiceFiscale, sesso, dataNascita, username, ruolo);
 
         // Reset dei campi dopo registrazione avvenuta con successo (simulato)
         pulisciCampi();
@@ -171,13 +180,14 @@ public class InsertUserController {
         }
     }
 
-    private void logUserRegistration(String nome, String cognome, String codiceFiscale, LocalDate dataNascita,
-            String username, String ruolo) {
+    private void logUserRegistration(String nome, String cognome, String codiceFiscale, String sesso,
+            LocalDate dataNascita, String username, String ruolo) {
         // Qui andrebbe la logica per salvare l'utente
         System.out.println("Registrazione utente:");
         System.out.println("Nome: " + nome);
         System.out.println("Cognome: " + cognome);
         System.out.println("Codice Fiscale: " + codiceFiscale);
+        System.out.println("Sesso: " + sesso);
         System.out.println("Data di Nascita: "
                 + (dataNascita != null ? dataNascita.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "N/A"));
         System.out.println("Username: " + username);
@@ -201,6 +211,7 @@ public class InsertUserController {
         campoNome.clear();
         campoCognome.clear();
         campoCodiceFiscale.clear();
+        comboSesso.setValue(null);
         campoDataNascita.setValue(null);
         campoUsername.clear();
         campoPassword.clear();
