@@ -15,8 +15,8 @@ public class controller {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password) {
-        boolean success = authService.login(username, password);
+    public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password, @RequestParam String modalita) {
+        boolean success = authService.login(username, password, modalita);
 
         if (success) {
             return ResponseEntity.ok("Login ok");

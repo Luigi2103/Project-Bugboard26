@@ -224,15 +224,16 @@ public class LoginController implements Initializable {
 
         String username = campoUsername.getText();
         String password = campoPassword.getText();
-        boolean isAdminSelected = gruppoModalita.getSelectedToggle() == toggleAdmin;
+        boolean isAdmin = gruppoModalita.getSelectedToggle() == toggleAdmin;
 
-        new Thread(() -> inviaRichiestaLogin(username, password)).start();
+        new Thread(() -> inviaRichiestaLogin(username, password,isAdmin)).start();
     }
 
 
-    private void inviaRichiestaLogin(String username, String password) {
+    private void inviaRichiestaLogin(String username, String password ,boolean isAdmin) {
         try {
-            String requestBody = preparaRequestBody(username, password);
+            String modalita = isAdmin ? "admin" : "utente";
+            String requestBody = preparaRequestBody(username, password,modalita);
 
             java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
             java.net.http.HttpRequest request = java.net.http.HttpRequest.newBuilder()
@@ -255,9 +256,10 @@ public class LoginController implements Initializable {
 
 
 
-    private String preparaRequestBody(String username, String password) {
+    private String preparaRequestBody(String username, String password , String modalita) {
         return "username=" + java.net.URLEncoder.encode(username, java.nio.charset.StandardCharsets.UTF_8)
-                + "&password=" + java.net.URLEncoder.encode(password, java.nio.charset.StandardCharsets.UTF_8);
+                + "&password=" + java.net.URLEncoder.encode(password, java.nio.charset.StandardCharsets.UTF_8)
+                + "&modalita=" + java.net.URLEncoder.encode(modalita, java.nio.charset.StandardCharsets.UTF_8);
     }
 
 

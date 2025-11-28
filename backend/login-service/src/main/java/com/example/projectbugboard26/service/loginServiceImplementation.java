@@ -3,6 +3,8 @@ package com.example.projectbugboard26.service;
 import com.example.projectbugboard26.repository.repositoryUtente;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.example.projectbugboard26.Entity.Utente;
+import java.util.Optional;
 
 @Service
 public class loginServiceImplementation implements loginService {
@@ -15,12 +17,19 @@ public class loginServiceImplementation implements loginService {
     }
 
     @Override
-    public boolean login(String username, String rawPassword) {
-        var userOpt = userRepository.findByUsername(username);
+    public boolean login(String username, String rawPassword, String modalita) {
+        Optional<Utente> userOpt = userRepository.findByUsername(username);
 
-        if (userOpt.isEmpty()) {return false;}
+        if (userOpt.isEmpty()) {
+            return false;
+        }
 
-        var user = userOpt.get();
+        Utente user = userOpt.get();
+        boolean isModeAdmin = modalita.equalsIgnoreCase("admin");
+        if (isModeAdmin != user.isAdmin()) {
+            return false;
+        }
+
         return passwordEncoder.matches(rawPassword, user.getPasswordHash());
     }
 }

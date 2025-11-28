@@ -11,8 +11,7 @@ public class BugBoard extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
-        stage.getIcons().add(new Image(
-                getClass().getResource("/com/example/projectbugboard26/foto/logoCompleto.png").toExternalForm()));
+        stage.getIcons().add(new Image(getClass().getResource("/com/example/projectbugboard26/foto/logoCompleto.png").toExternalForm()));
         SceneRouter.inizializza(stage);
         // PROVVISORIO: Per testare la schermata di inserimento utente, cambiare a
         // insert_user.fxml
