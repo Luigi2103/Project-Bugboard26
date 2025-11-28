@@ -51,13 +51,25 @@ public class InsertUserController {
     private Label erroreCodiceFiscale;
     @FXML
     private Label errorePassword;
+    @FXML
+    private Label erroreNome;
+    @FXML
+    private Label erroreCognome;
+    @FXML
+    private Label erroreSesso;
+    @FXML
+    private Label erroreDataNascita;
+    @FXML
+    private Label erroreUsername;
+    @FXML
+    private Label erroreCampoPassword;
 
     @FXML
     public void initialize() {
         // Popola il ComboBox Sesso
         comboSesso.getItems().addAll("M", "F");
 
-        pulsanteRegistra.disableProperty().bind(createCampiVuotiBinding());
+        // pulsanteRegistra.disableProperty().bind(createCampiVuotiBinding());
         // Annulla si abilita quando almeno un campo è compilato (tutti vuoti =
         // disabilitato)
         pulsanteAnnulla.disableProperty().bind(createTuttiCampiVuotiBinding());
@@ -101,6 +113,10 @@ public class InsertUserController {
                 textField.textProperty());
     }
 
+    private boolean isTextEmpty(TextField textField) {
+        return textField.getText() == null || textField.getText().trim().isEmpty();
+    }
+
     @FXML
     private void registraUtente() {
         String nome = campoNome.getText();
@@ -111,6 +127,56 @@ public class InsertUserController {
         String username = campoUsername.getText();
         String password = campoPassword.getText();
         String confermaPassword = campoConfermaPassword.getText();
+
+        resetErrorStyles();
+        boolean campiVuoti = false;
+
+        if (isTextEmpty(campoNome)) {
+            setErrorStyle(campoNome);
+            mostraErroreInline(erroreNome, "Campo obbligatorio");
+            campiVuoti = true;
+        }
+        if (isTextEmpty(campoCognome)) {
+            setErrorStyle(campoCognome);
+            mostraErroreInline(erroreCognome, "Campo obbligatorio");
+            campiVuoti = true;
+        }
+        if (isTextEmpty(campoCodiceFiscale)) {
+            setErrorStyle(campoCodiceFiscale);
+            mostraErroreInline(erroreCodiceFiscale, "Campo obbligatorio");
+            campiVuoti = true;
+        }
+        if (comboSesso.getValue() == null) {
+            setErrorStyle(comboSesso);
+            mostraErroreInline(erroreSesso, "Campo obbligatorio");
+            campiVuoti = true;
+        }
+        if (campoDataNascita.getValue() == null) {
+            setErrorStyle(campoDataNascita);
+            mostraErroreInline(erroreDataNascita, "Campo obbligatorio");
+            campiVuoti = true;
+        }
+        if (isTextEmpty(campoUsername)) {
+            setErrorStyle(campoUsername);
+            mostraErroreInline(erroreUsername, "Campo obbligatorio");
+            campiVuoti = true;
+        }
+        if (campoPassword.getText().isEmpty()) {
+            setErrorStyle(campoPassword);
+            mostraErroreInline(erroreCampoPassword, "Campo obbligatorio");
+            campiVuoti = true;
+        }
+        if (campoConfermaPassword.getText().isEmpty()) {
+            setErrorStyle(campoConfermaPassword);
+            mostraErroreInline(errorePassword, "Campo obbligatorio"); // Reuse errorePassword for confirm field empty
+            campiVuoti = true;
+        }
+
+        if (campiVuoti) {
+            // mostraErrore("Compilare tutti i campi obbligatori"); // Non più necessario
+            // messaggio globale
+            return;
+        }
 
         if (!validateInput(password, confermaPassword, codiceFiscale)) {
             return;
@@ -126,7 +192,7 @@ public class InsertUserController {
     }
 
     private boolean validateInput(String password, String confermaPassword, String codiceFiscale) {
-        resetErrorStyles();
+        // resetErrorStyles(); // Già fatto in registraUtente
         boolean isValid = true;
 
         if (!password.equals(confermaPassword)) {
@@ -159,16 +225,29 @@ public class InsertUserController {
         removeErrorStyle(campoPassword);
         removeErrorStyle(campoConfermaPassword);
         removeErrorStyle(campoCodiceFiscale);
+        removeErrorStyle(campoNome);
+        removeErrorStyle(campoCognome);
+        removeErrorStyle(campoUsername);
+        removeErrorStyle(comboSesso);
+        removeErrorStyle(campoDataNascita);
+
         if (etichettaErrore != null) {
             etichettaErrore.setVisible(false);
         }
-        if (erroreCodiceFiscale != null) {
-            erroreCodiceFiscale.setVisible(false);
-            erroreCodiceFiscale.setManaged(false);
-        }
-        if (errorePassword != null) {
-            errorePassword.setVisible(false);
-            errorePassword.setManaged(false);
+        nascondiErrore(erroreCodiceFiscale);
+        nascondiErrore(errorePassword);
+        nascondiErrore(erroreNome);
+        nascondiErrore(erroreCognome);
+        nascondiErrore(erroreSesso);
+        nascondiErrore(erroreDataNascita);
+        nascondiErrore(erroreUsername);
+        nascondiErrore(erroreCampoPassword);
+    }
+
+    private void nascondiErrore(Label label) {
+        if (label != null) {
+            label.setVisible(false);
+            label.setManaged(false);
         }
     }
 
@@ -198,13 +277,6 @@ public class InsertUserController {
     private void annulla() {
         System.out.println("Operazione annullata");
         pulisciCampi();
-    }
-
-    private void mostraErrore(String messaggio) {
-        if (etichettaErrore != null) {
-            etichettaErrore.setText(messaggio);
-            etichettaErrore.setVisible(true);
-        }
     }
 
     private void pulisciCampi() {

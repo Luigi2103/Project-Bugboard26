@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import java.net.URL?>
+<?import java.lang.String?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.projectbugboard26.recovery.RecoveryController"
+            styleClass="login-root">
+    <stylesheets>
+        <URL value="@../css/login.css"/>
+        <URL value="@../css/recovery.css"/>
+    </stylesheets>
+
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="transparent-scroll" focusTraversable="false">
+            <VBox alignment="CENTER" spacing="15" fx:id="contenitoreRecovery" focusTraversable="false">
+                <padding>
+                    <Insets top="20" bottom="20" left="40" right="40"/>
+                </padding>
+
+                <!-- Logo -->
+                <ImageView fx:id="logoImmagine"
+                           fitWidth="180"
+                           preserveRatio="true"
+                           styleClass="logo-image"/>
+
+                <!-- Titolo -->
+                <Label text="Recupero Password" styleClass="title-label" style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+
+                <VBox alignment="CENTER" spacing="12" fx:id="boxForm"
+                      fillWidth="true"
+                      styleClass="form-box"
+                      maxWidth="420">
+                    <padding>
+                        <Insets top="25" bottom="25" left="30" right="30"/>
+                    </padding>
+
+                    <!-- Campo Username -->
+                    <VBox spacing="5">
+                        <Label text="Username" styleClass="field-label"/>
+                        <TextField fx:id="campoUsername"
+                                   promptText="Inserisci username"
+                                   maxWidth="Infinity"/>
+                        <Label fx:id="erroreUsername"
+                               text=" "
+                               visible="false"
+                               styleClass="error-label"/>
+                    </VBox>
+
+                    <!-- Campo Password Attuale -->
+                    <VBox spacing="5">
+                        <Label text="Password Attuale" styleClass="field-label"/>
+                        <StackPane alignment="CENTER_RIGHT">
+                            <TextField fx:id="campoPasswordVisibile" promptText="Password attuale" visible="false" maxWidth="Infinity"/>
+                            <PasswordField fx:id="campoPassword" promptText="Password attuale" maxWidth="Infinity"/>
+                            <Button fx:id="togglePassword" text="👁" onAction="#togglePasswordVisibility" styleClass="icon-button">
+                                <StackPane.margin>
+                                    <Insets right="5"/>
+                                </StackPane.margin>
+                            </Button>
+                        </StackPane>
+                        <Label fx:id="errorePassword"
+                               text=" "
+                               visible="false"
+                               styleClass="error-label"/>
+                    </VBox>
+
+                    <!-- Campo Nuova Password -->
+                    <VBox spacing="5">
+                        <Label text="Nuova Password" styleClass="field-label"/>
+                        <StackPane alignment="CENTER_RIGHT">
+                            <TextField fx:id="campoNuovaPasswordVisibile" promptText="Nuova password" visible="false" maxWidth="Infinity"/>
+                            <PasswordField fx:id="campoNuovaPassword" promptText="Nuova password" maxWidth="Infinity"/>
+                            <Button fx:id="toggleNuovaPassword" text="👁" onAction="#toggleNuovaPasswordVisibility" styleClass="icon-button">
+                                <StackPane.margin>
+                                    <Insets right="5"/>
+                                </StackPane.margin>
+                            </Button>
+                        </StackPane>
+                        <Label fx:id="erroreNuovaPassword"
+                               text=" "
+                               visible="false"
+                               styleClass="error-label"/>
+                    </VBox>
+
+                    <!-- Pulsanti Azione -->
+                    <HBox spacing="15" alignment="CENTER" style="-fx-padding: 10 0 0 0;">
+                        <Button fx:id="pulsanteAnnulla"
+                                text="Annulla"
+                                onAction="#gestisciAnnulla"
+                                styleClass="secondary-button"
+                                maxWidth="Infinity"
+                                HBox.hgrow="ALWAYS"/>
+                        
+                        <Button fx:id="pulsanteConferma"
+                                text="Conferma"
+                                onAction="#gestisciConferma"
+                                styleClass="login-button"
+                                maxWidth="Infinity"
+                                HBox.hgrow="ALWAYS"/>
+                    </HBox>
+
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>

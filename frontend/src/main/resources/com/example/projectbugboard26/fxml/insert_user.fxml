@@ -67,6 +67,7 @@
                             <TextField fx:id="campoNome"
                                        promptText="Inserisci nome"
                                        maxWidth="Infinity"/>
+                            <Label fx:id="erroreNome" text="Campo obbligatorio" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
                         </VBox>
 
                         <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="0">
@@ -74,6 +75,7 @@
                             <TextField fx:id="campoCognome"
                                        promptText="Inserisci cognome"
                                        maxWidth="Infinity"/>
+                            <Label fx:id="erroreCognome" text="Campo obbligatorio" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
                         </VBox>
 
                         <!-- Seconda riga: Codice Fiscale e Sesso -->
@@ -90,6 +92,7 @@
                             <ComboBox fx:id="comboSesso"
                                       promptText="Seleziona sesso"
                                       maxWidth="Infinity"/>
+                            <Label fx:id="erroreSesso" text="Campo obbligatorio" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
                         </VBox>
 
                         <!-- Terza riga: Data di Nascita (full width) -->
@@ -98,6 +101,7 @@
                             <DatePicker fx:id="campoDataNascita"
                                         promptText="Seleziona data"
                                         maxWidth="Infinity"/>
+                            <Label fx:id="erroreDataNascita" text="Campo obbligatorio" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
                         </VBox>
 
                         <!-- Quarta riga: Username (full width) -->
@@ -106,6 +110,7 @@
                             <TextField fx:id="campoUsername"
                                        promptText="Inserisci username"
                                        maxWidth="Infinity"/>
+                            <Label fx:id="erroreUsername" text="Campo obbligatorio" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
                         </VBox>
 
                         <!-- Quinta riga: Password e Conferma Password -->
@@ -114,6 +119,7 @@
                             <PasswordField fx:id="campoPassword"
                                            promptText="Inserisci password"
                                            maxWidth="Infinity"/>
+                            <Label fx:id="erroreCampoPassword" text="Campo obbligatorio" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
                         </VBox>
 
                         <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="4">

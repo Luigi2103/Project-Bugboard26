@@ -99,6 +99,12 @@
                                       toggleGroup="$gruppoModalita"
                                       HBox.hgrow="ALWAYS"/>
                     </HBox>
+
+                    <!-- Link Recupero Password -->
+                    <Button fx:id="linkRecuperoPassword"
+                            text="Recupera Password"
+                            styleClass="link-label"
+                            onAction="#vaiARecuperoPassword"/>
                 </VBox>
             </VBox>
         </ScrollPane>

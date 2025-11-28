@@ -14,4 +14,5 @@ module com.example.projectbugboard26 {
     exports com.example.projectbugboard26.login.exception;
 
     opens com.example.projectbugboard26.inserimentoutente to javafx.fxml;
+    opens com.example.projectbugboard26.recovery to javafx.fxml;
 }

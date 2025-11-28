@@ -48,6 +48,8 @@ public class LoginController implements Initializable {
     private VBox contenitoreLogin;
     @FXML
     private VBox boxForm;
+    @FXML
+    private Button linkRecuperoPassword;
 
     private enum ModalitaUtente {
         UTENTE, ADMIN
@@ -239,6 +241,12 @@ public class LoginController implements Initializable {
         // Naviga alla schermata di inserimento utente
         SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/insert_user.fxml", 900, 930,
                 "BugBoard - Registra Utente");
+    }
+
+    @FXML
+    private void vaiARecuperoPassword() {
+        SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/recovery.fxml", 900, 930,
+                "BugBoard - Recupero Password");
     }
 
     private void animaClickPulsante() {
