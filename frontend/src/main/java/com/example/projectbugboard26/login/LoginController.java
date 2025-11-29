@@ -57,6 +57,9 @@ public class LoginController implements Initializable {
 
     private ModalitaUtente modalitaCorrente = ModalitaUtente.UTENTE;
     private TranslateTransition shakeTransition;
+    private final LoginApiService loginApiService;
+
+    public LoginController(LoginApiService loginApiService) { this.loginApiService = loginApiService; }
 
     // --------------------------------------------------------
     // INIZIALIZZAZIONE
@@ -79,8 +82,7 @@ public class LoginController implements Initializable {
 
     private void caricaLogo() {
         try {
-            Image logo = new Image(
-                    getClass().getResource("/com/example/projectbugboard26/foto/logoCompleto.png").toExternalForm());
+            Image logo = new Image(getClass().getResource("/com/example/projectbugboard26/foto/logoCompleto.png").toExternalForm());
             logoImmagine.setImage(logo);
             logoImmagine.setPreserveRatio(true);
             logoImmagine.setFitWidth(200);
@@ -226,52 +228,25 @@ public class LoginController implements Initializable {
         String password = campoPassword.getText();
         boolean isAdmin = gruppoModalita.getSelectedToggle() == toggleAdmin;
 
-        new Thread(() -> inviaRichiestaLogin(username, password,isAdmin)).start();
+        new Thread(() -> inviaRichiestaLogin(username, password, isAdmin)).start();
     }
 
-
-    private void inviaRichiestaLogin(String username, String password ,boolean isAdmin) {
+    private void inviaRichiestaLogin(String username, String password, boolean isAdmin) {
         try {
-            String modalita = isAdmin ? "admin" : "utente";
-            String requestBody = preparaRequestBody(username, password,modalita);
-
-            java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
-            java.net.http.HttpRequest request = java.net.http.HttpRequest.newBuilder()
-                    .uri(java.net.URI.create("http://localhost:8081/api/auth/login"))
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .POST(java.net.http.HttpRequest.BodyPublishers.ofString(requestBody))
-                    .build();
-
-            java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
-
-            gestisciRisposta(response);
-
+            boolean success = loginApiService.login(username, password, isAdmin);
+            gestisciRisultatoLogin(success);
         } catch (Exception e) {
             Platform.runLater(() -> {
-                mostraErroreInline(errorePassword, "Errore di connessione al server");
+                mostraErroreInline(errorePassword, "Errore di connessione al server: " + e.getMessage());
                 animaErrore();
             });
         }
     }
 
-
-
-    private String preparaRequestBody(String username, String password , String modalita) {
-        return "username=" + java.net.URLEncoder.encode(username, java.nio.charset.StandardCharsets.UTF_8)
-                + "&password=" + java.net.URLEncoder.encode(password, java.nio.charset.StandardCharsets.UTF_8)
-                + "&modalita=" + java.net.URLEncoder.encode(modalita, java.nio.charset.StandardCharsets.UTF_8);
-    }
-
-
-
-    private void gestisciRisposta(java.net.http.HttpResponse<String> response) {
+    private void gestisciRisultatoLogin(boolean success) {
         Platform.runLater(() -> {
-            if (response.statusCode() == 200) {
-                SceneRouter.cambiaScena(
-                        "/com/example/projectbugboard26/fxml/insert_user.fxml",
-                        900, 930,
-                        "BugBoard - Registra Utente"
-                );
+            if (success) {
+                SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/insert_user.fxml", 900, 930, "BugBoard - Registra Utente");
             } else {
                 setErrorStyle(campoUsername);
                 setErrorStyle(campoPassword);
@@ -281,13 +256,9 @@ public class LoginController implements Initializable {
         });
     }
 
-
-
-
     @FXML
     private void vaiARecuperoPassword() {
-        SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/recovery.fxml", 900, 930,
-                "BugBoard - Recupero Password");
+        SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/recovery.fxml", 900, 930, "BugBoard - Recupero Password");
     }
 
     private void animaClickPulsante() {
