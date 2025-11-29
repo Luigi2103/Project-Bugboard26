@@ -283,9 +283,9 @@ public class InsertUserController {
 
     @FXML
     private void tornaIndietro() {
-        // Torna alla home
+        // Torna al login
         com.example.projectbugboard26.navigation.SceneRouter.cambiaScena(
-                "/com/example/projectbugboard26/fxml/home.fxml", 900, 800, "BugBoard - Home");
+                "/com/example/projectbugboard26/fxml/login.fxml", 900, 800, "BugBoard - Login");
     }
 
     private void pulisciCampi() {
