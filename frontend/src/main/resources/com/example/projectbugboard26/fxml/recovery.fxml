@@ -17,6 +17,16 @@
         <URL value="@../css/recovery.css"/>
     </stylesheets>
 
+    <!-- Top Navigation -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 20;">
+            <Button fx:id="pulsanteIndietro" 
+                    text="← Indietro" 
+                    onAction="#tornaIndietro"
+                    styleClass="back-button"/>
+        </HBox>
+    </top>
+
     <center>
         <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="transparent-scroll" focusTraversable="false">
             <VBox alignment="CENTER" spacing="15" fx:id="contenitoreRecovery" focusTraversable="false">
@@ -91,9 +101,9 @@
 
                     <!-- Pulsanti Azione -->
                     <HBox spacing="15" alignment="CENTER" style="-fx-padding: 10 0 0 0;">
-                        <Button fx:id="pulsanteAnnulla"
-                                text="Annulla"
-                                onAction="#gestisciAnnulla"
+                        <Button fx:id="pulsanteCancella"
+                                text="Cancella Tutto"
+                                onAction="#cancellaTutto"
                                 styleClass="secondary-button"
                                 maxWidth="Infinity"
                                 HBox.hgrow="ALWAYS"/>

@@ -15,6 +15,16 @@
         <URL value="@../css/insert_user.css"/>
     </stylesheets>
 
+    <!-- Top Navigation -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 20;">
+            <Button fx:id="pulsanteIndietro" 
+                    text="← Indietro" 
+                    onAction="#tornaIndietro"
+                    styleClass="back-button"/>
+        </HBox>
+    </top>
+
     <center>
         <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="transparent-scroll" focusTraversable="false">
             <VBox alignment="CENTER" spacing="15" fx:id="contenitoreInserimento" focusTraversable="false">
@@ -136,9 +146,9 @@
 
                     <!-- Pulsanti Azione -->
                     <HBox spacing="15" alignment="CENTER">
-                        <Button fx:id="pulsanteAnnulla"
-                                text="Annulla"
-                                onAction="#annulla"
+                        <Button fx:id="pulsanteCancella"
+                                text="Cancella Tutto"
+                                onAction="#cancellaTutto"
                                 style="-fx-background-color: #95a5a6; -fx-text-fill: #2C3E50; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"
                                 maxWidth="Infinity"
                                 HBox.hgrow="ALWAYS">

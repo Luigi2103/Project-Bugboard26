@@ -19,6 +19,10 @@
     <!-- Top Navigation -->
     <top>
         <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 20;">
+            <Button fx:id="pulsanteIndietro" 
+                    text="← Indietro" 
+                    onAction="#tornaIndietro"
+                    styleClass="back-button"/>
             <MenuButton fx:id="menuNavigazione" text="Menu" styleClass="menu-button-custom">
                 <items>
                     <MenuItem text="Inserimento Issue" onAction="#vaiAInserimentoIssue"/>

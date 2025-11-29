@@ -25,6 +25,10 @@ public class LoginController implements Initializable {
     @FXML
     private PasswordField campoPassword;
     @FXML
+    private TextField campoPasswordVisibile;
+    @FXML
+    private Button togglePassword;
+    @FXML
     private Button pulsanteLogin;
     @FXML
     private ToggleGroup gruppoModalita;
@@ -57,9 +61,12 @@ public class LoginController implements Initializable {
 
     private ModalitaUtente modalitaCorrente = ModalitaUtente.UTENTE;
     private TranslateTransition shakeTransition;
+    private boolean passwordVisibile = false;
     private final LoginApiService loginApiService;
 
-    public LoginController(LoginApiService loginApiService) { this.loginApiService = loginApiService; }
+    public LoginController(LoginApiService loginApiService) {
+        this.loginApiService = loginApiService;
+    }
 
     // --------------------------------------------------------
     // INIZIALIZZAZIONE
@@ -70,6 +77,7 @@ public class LoginController implements Initializable {
         caricaLogo();
         inizializzaBindings();
         inizializzaListenerModalita();
+        inizializzaTogglePassword();
         animaFormLogin();
         aggiornaUI();
         gestisciResponsive();
@@ -82,7 +90,8 @@ public class LoginController implements Initializable {
 
     private void caricaLogo() {
         try {
-            Image logo = new Image(getClass().getResource("/com/example/projectbugboard26/foto/logoCompleto.png").toExternalForm());
+            Image logo = new Image(
+                    getClass().getResource("/com/example/projectbugboard26/foto/logoCompleto.png").toExternalForm());
             logoImmagine.setImage(logo);
             logoImmagine.setPreserveRatio(true);
             logoImmagine.setFitWidth(200);
@@ -102,8 +111,32 @@ public class LoginController implements Initializable {
         gruppoModalita.selectedToggleProperty().addListener((obs, vecchio, nuovo) -> {
             modalitaCorrente = (nuovo == toggleAdmin) ? ModalitaUtente.ADMIN : ModalitaUtente.UTENTE;
             aggiornaUI();
-            pulisciCampi();
+            // Non pulire i campi quando si cambia modalità
         });
+
+        // Enter su username passa a password
+        campoUsername.setOnAction(e -> campoPassword.requestFocus());
+    }
+
+    private void inizializzaTogglePassword() {
+        // Sincronizza testo tra i campi
+        campoPasswordVisibile.textProperty().bindBidirectional(campoPassword.textProperty());
+        // Gestione visibilità iniziale
+        aggiornaVisibilitaPassword(false);
+    }
+
+    @FXML
+    private void togglePasswordVisibility() {
+        passwordVisibile = !passwordVisibile;
+        aggiornaVisibilitaPassword(passwordVisibile);
+    }
+
+    private void aggiornaVisibilitaPassword(boolean visibile) {
+        campoPassword.setVisible(!visibile);
+        campoPasswordVisibile.setVisible(visibile);
+        togglePassword.setText(visibile ? "👁" : "👁‍🗨");
+        togglePassword.getStyleClass().removeAll("icon-visible", "icon-hidden");
+        togglePassword.getStyleClass().add(visibile ? "icon-visible" : "icon-hidden");
     }
 
     private void pulisciCampi() {
@@ -246,7 +279,8 @@ public class LoginController implements Initializable {
     private void gestisciRisultatoLogin(boolean success) {
         Platform.runLater(() -> {
             if (success) {
-                SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/insert_user.fxml", 900, 930, "BugBoard - Registra Utente");
+                SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/insert_user.fxml", 900, 930,
+                        "BugBoard - Registra Utente");
             } else {
                 setErrorStyle(campoUsername);
                 setErrorStyle(campoPassword);
@@ -258,7 +292,8 @@ public class LoginController implements Initializable {
 
     @FXML
     private void vaiARecuperoPassword() {
-        SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/recovery.fxml", 900, 930, "BugBoard - Recupero Password");
+        SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/recovery.fxml", 900, 930,
+                "BugBoard - Recupero Password");
     }
 
     private void animaClickPulsante() {

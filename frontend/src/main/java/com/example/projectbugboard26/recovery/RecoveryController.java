@@ -54,7 +54,9 @@ public class RecoveryController implements Initializable {
     private Label erroreNuovaPassword;
 
     @FXML
-    private Button pulsanteAnnulla;
+    private Button pulsanteCancella;
+    @FXML
+    private Button pulsanteIndietro;
     @FXML
     private Button pulsanteConferma;
 
@@ -66,6 +68,7 @@ public class RecoveryController implements Initializable {
         caricaLogo();
         inizializzaBindings();
         inizializzaTogglePassword();
+        inizializzaBindingCancella();
         animaIngresso();
         Platform.runLater(() -> contenitoreRecovery.requestFocus());
     }
@@ -127,6 +130,30 @@ public class RecoveryController implements Initializable {
 
     @FXML
     private void gestisciAnnulla() {
+        // Torna al login
+        SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/login.fxml", 900, 930, "BugBoard - Login");
+    }
+
+    private void inizializzaBindingCancella() {
+        // Cancella Tutto si abilita se almeno un campo è compilato
+        pulsanteCancella.disableProperty().bind(
+                campoUsername.textProperty().isEmpty()
+                        .and(campoPassword.textProperty().isEmpty())
+                        .and(campoNuovaPassword.textProperty().isEmpty()));
+    }
+
+    @FXML
+    private void cancellaTutto() {
+        campoUsername.clear();
+        campoPassword.clear();
+        campoPasswordVisibile.clear();
+        campoNuovaPassword.clear();
+        campoNuovaPasswordVisibile.clear();
+        resetErrori();
+    }
+
+    @FXML
+    private void tornaIndietro() {
         // Torna al login
         SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/login.fxml", 900, 930, "BugBoard - Login");
     }

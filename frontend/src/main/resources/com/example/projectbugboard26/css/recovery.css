@@ -6,6 +6,8 @@
     -fx-text-fill: #7f8c8d;
     -fx-font-size: 14px;
     -fx-padding: 5 10;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
 }
 
 .icon-button:hover {

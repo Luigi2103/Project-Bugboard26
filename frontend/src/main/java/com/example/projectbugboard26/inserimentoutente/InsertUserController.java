@@ -38,7 +38,9 @@ public class InsertUserController {
     @FXML
     private Button pulsanteRegistra;
     @FXML
-    private Button pulsanteAnnulla;
+    private Button pulsanteCancella;
+    @FXML
+    private Button pulsanteIndietro;
     @FXML
     private Label etichettaErrore;
     @FXML
@@ -70,9 +72,9 @@ public class InsertUserController {
         comboSesso.getItems().addAll("M", "F");
 
         // pulsanteRegistra.disableProperty().bind(createCampiVuotiBinding());
-        // Annulla si abilita quando almeno un campo è compilato (tutti vuoti =
+        // Cancella Tutto si abilita quando almeno un campo è compilato (tutti vuoti =
         // disabilitato)
-        pulsanteAnnulla.disableProperty().bind(createTuttiCampiVuotiBinding());
+        pulsanteCancella.disableProperty().bind(createTuttiCampiVuotiBinding());
         inizializzaListenerRuolo();
         campoDataNascita.setEditable(false);
     }
@@ -274,9 +276,16 @@ public class InsertUserController {
     }
 
     @FXML
-    private void annulla() {
-        System.out.println("Operazione annullata");
+    private void cancellaTutto() {
+        System.out.println("Cancellazione campi");
         pulisciCampi();
+    }
+
+    @FXML
+    private void tornaIndietro() {
+        // Torna alla home
+        com.example.projectbugboard26.navigation.SceneRouter.cambiaScena(
+                "/com/example/projectbugboard26/fxml/home.fxml", 900, 800, "BugBoard - Home");
     }
 
     private void pulisciCampi() {
