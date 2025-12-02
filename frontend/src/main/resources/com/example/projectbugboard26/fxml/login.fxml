@@ -51,9 +51,9 @@
 
                     <!-- Campo Username -->
                     <VBox spacing="5">
-                        <Label fx:id="etichettaUsername" text="Username" styleClass="field-label"/>
+                        <Label fx:id="etichettaUsername" text="Username o Email" styleClass="field-label"/>
                         <TextField fx:id="campoUsername"
-                                   promptText="Inserisci username"
+                                   promptText="Inserisci username o email"
                                    maxWidth="Infinity"/>
                         <Label fx:id="erroreUsername"
                                text=" "

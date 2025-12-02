@@ -19,7 +19,7 @@ public class loginServiceImplementation implements loginService {
 
     @Override
     public boolean login(String username, String rawPassword, String modalita) {
-        Optional<User> userOpt = userRepository.findByUsername(username);
+        Optional<User> userOpt = userRepository.findByUsernameOrEmail(username, username);
 
         if (userOpt.isEmpty()) {
             return false;
