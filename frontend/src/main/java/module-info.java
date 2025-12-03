@@ -7,6 +7,7 @@ module com.example.projectbugboard26 {
     requires javafx.fxml;
     requires javafx.graphics;
     requires java.net.http;
+    requires com.fasterxml.jackson.databind;
 
     exports com.example.projectbugboard26.login;
 

@@ -1,5 +1,7 @@
 package com.example.projectbugboard26.service;
 
+import com.example.projectbugboard26.DTO.RichiestaLogin;
+import com.example.projectbugboard26.DTO.RispostaLogin;
 import com.example.projectbugboard26.repository.repositoryUtente;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,19 +20,20 @@ public class loginServiceImplementation implements loginService {
     }
 
     @Override
-    public boolean login(String username, String rawPassword, String modalita) {
-        Optional<User> userOpt = userRepository.findByUsernameOrEmail(username, username);
+    public boolean login(RichiestaLogin loginReq) {
 
-        if (userOpt.isEmpty()) {
-            return false;
-        }
+        Optional<User> userOptional = userRepository.findByUsernameOrEmail(loginReq.getUsername(), loginReq.getUsername());
 
-        User user = userOpt.get();
-        boolean isModeAdmin = modalita.equalsIgnoreCase("admin");
-        if (isModeAdmin != user.isAdmin()) {
-            return false;
-        }
+        if (userOptional.isEmpty()) {return false;}
 
-        return passwordEncoder.matches(rawPassword, user.getPasswordHash());
+        User user = userOptional.get();
+
+
+        String modalitaRichiesta = loginReq.getModalita();
+        boolean isAdminRichiesto = "admin".equalsIgnoreCase(modalitaRichiesta);
+
+        if (user.isAdmin() != isAdminRichiesto) {return false;}
+
+        return passwordEncoder.matches(loginReq.getPassword(), user.getPasswordHash());
     }
 }

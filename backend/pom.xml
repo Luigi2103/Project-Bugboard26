@@ -21,6 +21,7 @@
     <modules>
         <module>login-service</module>
         <module>api-gateway</module>
+        <module>InserimentoUtente-service</module>
         <!-- altri moduli -->
     </modules>
 
