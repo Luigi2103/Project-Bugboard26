@@ -48,3 +48,4 @@ build/
 # Database Configuration
 backend/login-service/src/main/resources/application.properties
 
+/backend/InserimentoUtente-service/src/main/resources/application.properties

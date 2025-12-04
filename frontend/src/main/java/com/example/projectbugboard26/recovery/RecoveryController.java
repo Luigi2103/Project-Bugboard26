@@ -7,7 +7,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.animation.FadeTransition;
@@ -15,6 +14,9 @@ import javafx.animation.TranslateTransition;
 import javafx.util.Duration;
 import javafx.application.Platform;
 import com.example.projectbugboard26.navigation.SceneRouter;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -112,21 +114,56 @@ public class RecoveryController implements Initializable {
     }
 
     private void aggiornaVisibilitaPassword(boolean visibile) {
+
+        FontAwesomeIconView icon = new FontAwesomeIconView(
+                visibile ? FontAwesomeIcon.EYE_SLASH : FontAwesomeIcon.EYE
+        );
+        icon.setSize("18");
+
+
+        togglePassword.setGraphic(icon);
+        togglePassword.setText(null);
+
+
         campoPassword.setVisible(!visibile);
         campoPasswordVisibile.setVisible(visibile);
-        // Aggiorna icona/testo bottone
-        togglePassword.setText(visibile ? "👁" : "👁‍🗨"); // Placeholder icons
-        togglePassword.getStyleClass().removeAll("icon-visible", "icon-hidden");
-        togglePassword.getStyleClass().add(visibile ? "icon-visible" : "icon-hidden");
+
+
+        if (visibile) {
+            campoPasswordVisibile.requestFocus();
+            campoPasswordVisibile.positionCaret(campoPasswordVisibile.getText().length());
+        } else {
+            campoPassword.requestFocus();
+            campoPassword.positionCaret(campoPassword.getText().length());
+        }
     }
 
+
     private void aggiornaVisibilitaNuovaPassword(boolean visibile) {
+
+        FontAwesomeIconView icon = new FontAwesomeIconView(
+                visibile ? FontAwesomeIcon.EYE_SLASH : FontAwesomeIcon.EYE
+        );
+        icon.setSize("18");
+
+
+        toggleNuovaPassword.setGraphic(icon);
+        toggleNuovaPassword.setText(null);
+
+
         campoNuovaPassword.setVisible(!visibile);
         campoNuovaPasswordVisibile.setVisible(visibile);
-        toggleNuovaPassword.setText(visibile ? "👁" : "👁‍🗨");
-        toggleNuovaPassword.getStyleClass().removeAll("icon-visible", "icon-hidden");
-        toggleNuovaPassword.getStyleClass().add(visibile ? "icon-visible" : "icon-hidden");
+
+
+        if (visibile) {
+            campoNuovaPasswordVisibile.requestFocus();
+            campoNuovaPasswordVisibile.positionCaret(campoNuovaPasswordVisibile.getText().length());
+        } else {
+            campoNuovaPassword.requestFocus();
+            campoNuovaPassword.positionCaret(campoNuovaPassword.getText().length());
+        }
     }
+
 
     @FXML
     private void gestisciAnnulla() {

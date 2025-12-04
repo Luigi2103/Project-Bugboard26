@@ -70,10 +70,6 @@ public class InsertUserController {
     public void initialize() {
         // Popola il ComboBox Sesso
         comboSesso.getItems().addAll("M", "F");
-
-        // pulsanteRegistra.disableProperty().bind(createCampiVuotiBinding());
-        // Cancella Tutto si abilita quando almeno un campo è compilato (tutti vuoti =
-        // disabilitato)
         pulsanteCancella.disableProperty().bind(createTuttiCampiVuotiBinding());
         inizializzaListenerRuolo();
         campoDataNascita.setEditable(false);
@@ -174,11 +170,7 @@ public class InsertUserController {
             campiVuoti = true;
         }
 
-        if (campiVuoti) {
-            // mostraErrore("Compilare tutti i campi obbligatori"); // Non più necessario
-            // messaggio globale
-            return;
-        }
+        if (campiVuoti) {return;}
 
         if (!validateInput(password, confermaPassword, codiceFiscale)) {
             return;
@@ -189,12 +181,10 @@ public class InsertUserController {
         // TODO eliminare questo metodo, è solo per testare se la GUI funziona
         logUserRegistration(nome, cognome, codiceFiscale, sesso, dataNascita, username, ruolo);
 
-        // Reset dei campi dopo registrazione avvenuta con successo (simulato)
         pulisciCampi();
     }
 
     private boolean validateInput(String password, String confermaPassword, String codiceFiscale) {
-        // resetErrorStyles(); // Già fatto in registraUtente
         boolean isValid = true;
 
         if (!password.equals(confermaPassword)) {

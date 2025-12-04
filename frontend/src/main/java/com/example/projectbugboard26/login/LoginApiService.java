@@ -16,7 +16,8 @@ public class LoginApiService {
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public RispostaLogin login(String username, String password, boolean isAdmin) throws Exception {
+    public RispostaLogin login(String username, String password, boolean isAdmin)
+            throws Exception {
         String modalita = isAdmin ? "admin" : "utente";
 
         Map<String, String> loginData = new HashMap<>();
