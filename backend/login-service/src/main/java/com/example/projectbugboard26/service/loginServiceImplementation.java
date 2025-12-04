@@ -10,7 +10,7 @@ import com.example.projectbugboard26.Entity.User;
 import java.util.Optional;
 
 @Service
-public class loginServiceImplementation implements loginService {
+public class loginServiceImplementation implements LoginService {
     private final repositoryUtente userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -20,20 +20,24 @@ public class loginServiceImplementation implements loginService {
     }
 
     @Override
-    public boolean login(RichiestaLogin loginReq) {
+    public RispostaLogin login(RichiestaLogin req) {
 
-        Optional<User> userOptional = userRepository.findByUsernameOrEmail(loginReq.getUsername(), loginReq.getUsername());
+        Optional<User> userOpt = userRepository.findByUsernameOrEmail(req.getUsername(), req.getUsername());
+        if (userOpt.isEmpty()) {
+            return new RispostaLogin(false, "utente non trovato", req.getModalita());
+        }
 
-        if (userOptional.isEmpty()) {return false;}
+        User user = userOpt.get();
 
-        User user = userOptional.get();
+        boolean adminRichiesto = "admin".equalsIgnoreCase(req.getModalita());
+        if (user.isAdmin() != adminRichiesto) {
+            return new RispostaLogin(false, "modalità non autorizzata", req.getModalita());
+        }
 
+        if (!passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
+            return new RispostaLogin(false, "password errata", req.getModalita());
+        }
 
-        String modalitaRichiesta = loginReq.getModalita();
-        boolean isAdminRichiesto = "admin".equalsIgnoreCase(modalitaRichiesta);
-
-        if (user.isAdmin() != isAdminRichiesto) {return false;}
-
-        return passwordEncoder.matches(loginReq.getPassword(), user.getPasswordHash());
+        return new RispostaLogin(true, "login eseguito", req.getModalita());
     }
 }

@@ -16,7 +16,7 @@ public class LoginApiService {
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public boolean login(String username, String password, boolean isAdmin) throws Exception {
+    public RispostaLogin login(String username, String password, boolean isAdmin) throws Exception {
         String modalita = isAdmin ? "admin" : "utente";
 
         Map<String, String> loginData = new HashMap<>();
@@ -34,6 +34,6 @@ public class LoginApiService {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        return response.statusCode() == 200;
+        return objectMapper.readValue(response.body(), RispostaLogin.class);
     }
 }

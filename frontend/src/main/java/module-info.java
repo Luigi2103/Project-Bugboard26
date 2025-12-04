@@ -8,10 +8,11 @@ module com.example.projectbugboard26 {
     requires javafx.graphics;
     requires java.net.http;
     requires com.fasterxml.jackson.databind;
+    requires de.jensd.fx.glyphs.fontawesome;
 
     exports com.example.projectbugboard26.login;
 
-    opens com.example.projectbugboard26.login to javafx.fxml;
+    opens com.example.projectbugboard26.login to javafx.fxml, com.fasterxml.jackson.databind;
 
     exports com.example.projectbugboard26.login.exception;
 

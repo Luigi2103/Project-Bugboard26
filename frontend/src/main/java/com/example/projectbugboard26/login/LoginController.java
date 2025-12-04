@@ -12,6 +12,8 @@ import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import javafx.application.Platform;
 import com.example.projectbugboard26.navigation.SceneRouter;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -132,18 +134,27 @@ public class LoginController implements Initializable {
     }
 
     private void aggiornaVisibilitaPassword(boolean visibile) {
+        FontAwesomeIconView icon = new FontAwesomeIconView(
+                visibile ? FontAwesomeIcon.EYE_SLASH : FontAwesomeIcon.EYE
+        );
+        icon.setSize("18");
+
+        togglePassword.setGraphic(icon);
+        togglePassword.setText(null);
+
         campoPassword.setVisible(!visibile);
         campoPasswordVisibile.setVisible(visibile);
-        togglePassword.setText(visibile ? "👁" : "👁‍🗨");
-        togglePassword.getStyleClass().removeAll("icon-visible", "icon-hidden");
-        togglePassword.getStyleClass().add(visibile ? "icon-visible" : "icon-hidden");
+
+        // Allinea anche il focus
+        if (visibile) {
+            campoPasswordVisibile.requestFocus();
+            campoPasswordVisibile.positionCaret(campoPasswordVisibile.getText().length());
+        } else {
+            campoPassword.requestFocus();
+            campoPassword.positionCaret(campoPassword.getText().length());
+        }
     }
 
-    private void pulisciCampi() {
-        campoUsername.clear();
-        campoPassword.clear();
-        resetErrorStyles();
-    }
 
     // --------------------------------------------------------
     // ANIMAZIONI
@@ -266,8 +277,9 @@ public class LoginController implements Initializable {
 
     private void inviaRichiestaLogin(String username, String password, boolean isAdmin) {
         try {
-            boolean success = loginApiService.login(username, password, isAdmin);
-            gestisciRisultatoLogin(success);
+            RispostaLogin risposta = loginApiService.login(username, password,
+                    isAdmin);
+            gestisciRisultatoLogin(risposta);
         } catch (Exception e) {
             Platform.runLater(() -> {
                 mostraErroreInline(errorePassword, "Errore di connessione al server: " + e.getMessage());
@@ -276,15 +288,15 @@ public class LoginController implements Initializable {
         }
     }
 
-    private void gestisciRisultatoLogin(boolean success) {
+    private void gestisciRisultatoLogin(RispostaLogin risposta) {
         Platform.runLater(() -> {
-            if (success) {
+            if (risposta.isSuccess()) {
                 SceneRouter.cambiaScena("/com/example/projectbugboard26/fxml/insert_user.fxml", 900, 930,
                         "BugBoard - Registra Utente");
             } else {
                 setErrorStyle(campoUsername);
                 setErrorStyle(campoPassword);
-                mostraErroreInline(errorePassword, "Credenziali non valide");
+                mostraErroreInline(errorePassword, risposta.getMessage());
                 animaErrore();
             }
         });
