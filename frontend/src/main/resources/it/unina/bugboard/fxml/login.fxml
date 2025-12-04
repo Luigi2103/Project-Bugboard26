@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import java.lang.String?>
+<?import java.net.URL?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="it.unina.bugboard.login.LoginController"
+            styleClass="login-root">
+    <stylesheets>
+        <URL value="@../css/login.css"/>
+    </stylesheets>
+
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="transparent-scroll" focusTraversable="false">
+            <VBox alignment="CENTER" spacing="15" fx:id="contenitoreLogin" focusTraversable="false">
+                <padding>
+                    <Insets top="20" bottom="20" left="40" right="40"/>
+                </padding>
+
+                <!-- Logo -->
+                <ImageView fx:id="logoImmagine"
+                           fitWidth="180"
+                           preserveRatio="true"
+                           styleClass="logo-image"/>
+
+                <!-- Titolo -->
+                <Label text="BugBoard" styleClass="title-label" minWidth="-Infinity" focusTraversable="false" style="-fx-font-size: 36px; -fx-font-weight: bold;"/>
+
+                <VBox alignment="CENTER" spacing="12" fx:id="boxForm"
+                      fillWidth="true"
+                      styleClass="form-box"
+                      maxWidth="420">
+                    <padding>
+                        <Insets top="25" bottom="25" left="30" right="30"/>
+                    </padding>
+
+                    <fx:define>
+                        <ToggleGroup fx:id="gruppoModalita"/>
+                    </fx:define>
+
+                    <!-- Label Modalità -->
+                    <Label fx:id="etichettaModalita"
+                           text="Modalità Utente"
+                           styleClass="mode-label-static"/>
+
+                    <!-- Campo Username -->
+                    <VBox spacing="5">
+                        <Label fx:id="etichettaUsername" text="Username o Email" styleClass="field-label"/>
+                        <TextField fx:id="campoUsername"
+                                   promptText="Inserisci username o email"
+                                   maxWidth="Infinity"/>
+                        <Label fx:id="erroreUsername"
+                               text=" "
+                               visible="false"
+                               minHeight="17"
+                               styleClass="error-label"/>
+                    </VBox>
+
+                    <!-- Campo Password -->
+                    <VBox spacing="5">
+                        <Label fx:id="etichettaPassword" text="Password" styleClass="field-label"/>
+                        <StackPane alignment="CENTER_RIGHT">
+                            <TextField fx:id="campoPasswordVisibile" promptText="Inserisci password" visible="false" maxWidth="Infinity"/>
+                            <PasswordField fx:id="campoPassword" promptText="Inserisci password" maxWidth="Infinity"/>
+                            <Button fx:id="togglePassword" text="👁" onAction="#togglePasswordVisibility" styleClass="icon-button">
+                                <StackPane.margin>
+                                    <Insets right="5"/>
+                                </StackPane.margin>
+                            </Button>
+                        </StackPane>
+                        <Label fx:id="errorePassword"
+                               text=" "
+                               visible="false"
+                               minHeight="17"
+                               styleClass="error-label"/>
+                    </VBox>
+
+                    <!-- Pulsante Login -->
+                    <Button fx:id="pulsanteLogin"
+                            text="Accedi"
+                            onAction="#gestisciLogin"
+                            styleClass="login-button"
+                            maxWidth="Infinity">
+                        <font>
+                            <Font name="System Bold" size="16"/>
+                        </font>
+                    </Button>
+
+                    <!-- Toggle modalità -->
+                    <HBox alignment="CENTER" spacing="0" fx:id="boxModalita"
+                          maxWidth="Infinity" styleClass="segmented-toggle">
+                        <ToggleButton fx:id="toggleUtente"
+                                      text="Utente"
+                                      toggleGroup="$gruppoModalita"
+                                      selected="true"
+                                      HBox.hgrow="ALWAYS"/>
+                        <ToggleButton fx:id="toggleAdmin"
+                                      text="Admin"
+                                      toggleGroup="$gruppoModalita"
+                                      HBox.hgrow="ALWAYS"/>
+                    </HBox>
+
+                    <!-- Link Recupero Password -->
+                    <Button fx:id="linkRecuperoPassword"
+                            text="Recupera Password"
+                            styleClass="link-label"
+                            onAction="#vaiARecuperoPassword"/>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>
