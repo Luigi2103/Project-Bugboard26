@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.example.projectbugboard26</groupId>
+        <groupId>it.unina.bugboard</groupId>
         <artifactId>backend</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
@@ -15,6 +15,11 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>it.unina.bugboard</groupId>
+            <artifactId>jwt-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

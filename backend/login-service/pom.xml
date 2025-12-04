@@ -7,7 +7,7 @@
 
     <!-- Parent corretto -->
     <parent>
-        <groupId>com.example.projectbugboard26</groupId>
+        <groupId>it.unina.bugboard</groupId>
         <artifactId>backend</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -50,7 +50,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.example.projectbugboard26</groupId>
+            <groupId>it.unina.bugboard</groupId>
             <artifactId>jwt-common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>

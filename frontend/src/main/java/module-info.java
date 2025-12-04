@@ -1,7 +1,7 @@
-module com.example.projectbugboard26 {
-    exports com.example.projectbugboard26.app to javafx.graphics;
+module it.unina.bugboard {
+    exports it.unina.bugboard.app to javafx.graphics;
 
-    opens com.example.projectbugboard26.app to javafx.fxml;
+    opens it.unina.bugboard.app to javafx.fxml;
 
     requires javafx.controls;
     requires javafx.fxml;
@@ -10,12 +10,15 @@ module com.example.projectbugboard26 {
     requires com.fasterxml.jackson.databind;
     requires de.jensd.fx.glyphs.fontawesome;
 
-    exports com.example.projectbugboard26.login;
+    exports it.unina.bugboard.login;
 
-    opens com.example.projectbugboard26.login to javafx.fxml, com.fasterxml.jackson.databind;
+    opens it.unina.bugboard.login to javafx.fxml, com.fasterxml.jackson.databind;
 
-    exports com.example.projectbugboard26.login.exception;
+    exports it.unina.bugboard.login.exception;
 
-    opens com.example.projectbugboard26.inserimentoutente to javafx.fxml;
-    opens com.example.projectbugboard26.recovery to javafx.fxml;
+    opens it.unina.bugboard.inserimentoutente to javafx.fxml;
+    opens it.unina.bugboard.recovery to javafx.fxml;
+
+    opens it.unina.bugboard.fxml;
+    opens it.unina.bugboard.foto;
 }

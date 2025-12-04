@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import java.net.URL?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="it.unina.bugboard.inserimentoutente.InsertUserController"
+            styleClass="login-root">
+    <stylesheets>
+        <URL value="@../css/insert_user.css"/>
+    </stylesheets>
+
+    <!-- Top Navigation -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 20;">
+            <Button fx:id="pulsanteIndietro" 
+                    text="← Indietro" 
+                    onAction="#tornaIndietro"
+                    styleClass="back-button"/>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="transparent-scroll" focusTraversable="false">
+            <VBox alignment="CENTER" spacing="15" fx:id="contenitoreInserimento" focusTraversable="false">
+                <padding>
+                    <Insets top="15" bottom="15" left="50" right="50"/>
+                </padding>
+
+                <!-- Titolo -->
+                <Label text="Registra Nuovo Utente" styleClass="title-label" minWidth="-Infinity" focusTraversable="false" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+                <VBox alignment="CENTER" spacing="12" fx:id="boxForm"
+                      fillWidth="true"
+                      styleClass="form-box"
+                      maxWidth="450">
+                    <padding>
+                        <Insets top="20" bottom="20" left="40" right="40"/>
+                    </padding>
+
+                    <fx:define>
+                        <ToggleGroup fx:id="gruppoRuolo"/>
+                    </fx:define>
+
+                    <!-- Label Intestazione -->
+                    <Label text="Informazioni Utente" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #2c3e50;"/>
+
+                    <!-- Toggle Ruolo -->
+                    <HBox alignment="CENTER" spacing="0" fx:id="boxRuolo"
+                          maxWidth="Infinity" styleClass="segmented-toggle">
+                        <ToggleButton fx:id="toggleUtente"
+                                      text="Utente Standard"
+                                      toggleGroup="$gruppoRuolo"
+                                      selected="true"
+                                      HBox.hgrow="ALWAYS"/>
+                        <ToggleButton fx:id="toggleAdmin"
+                                      text="Amministratore"
+                                      toggleGroup="$gruppoRuolo"
+                                      HBox.hgrow="ALWAYS"/>
+                    </HBox>
+
+                    <!-- Grid Layout per campi in due colonne -->
+                    <GridPane hgap="10" vgap="10" maxWidth="Infinity">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                            <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                        </columnConstraints>
+
+                        <!-- Prima riga: Nome e Cognome -->
+                        <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <Label text="Nome" styleClass="field-label"/>
+                            <TextField fx:id="campoNome"
+                                       promptText="Inserisci nome"
+                                       maxWidth="Infinity"/>
+                            <Label fx:id="erroreNome" text="Campo obbligatorio" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
+                        </VBox>
+
+                        <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <Label text="Cognome" styleClass="field-label"/>
+                            <TextField fx:id="campoCognome"
+                                       promptText="Inserisci cognome"
+                                       maxWidth="Infinity"/>
+                            <Label fx:id="erroreCognome" text="Campo obbligatorio" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
+                        </VBox>
+
+                        <!-- Seconda riga: Codice Fiscale e Sesso -->
+                        <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <Label text="Codice Fiscale" styleClass="field-label"/>
+                            <TextField fx:id="campoCodiceFiscale"
+                                       promptText="Inserisci codice fiscale"
+                                       maxWidth="Infinity"/>
+                            <Label fx:id="erroreCodiceFiscale" text="Codice Fiscale non valido" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
+                        </VBox>
+
+                        <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <Label text="Sesso" styleClass="field-label"/>
+                            <ComboBox fx:id="comboSesso"
+                                      promptText="Seleziona sesso"
+                                      maxWidth="Infinity"/>
+                            <Label fx:id="erroreSesso" text="Campo obbligatorio" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
+                        </VBox>
+
+                        <!-- Terza riga: Data di Nascita (full width) -->
+                        <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
+                            <Label text="Data di Nascita" styleClass="field-label"/>
+                            <DatePicker fx:id="campoDataNascita"
+                                        promptText="Seleziona data"
+                                        maxWidth="Infinity"/>
+                            <Label fx:id="erroreDataNascita" text="Campo obbligatorio" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
+                        </VBox>
+
+                        <!-- Quarta riga: Username (full width) -->
+                        <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2">
+                            <Label text="Username" styleClass="field-label"/>
+                            <TextField fx:id="campoUsername"
+                                       promptText="Inserisci username"
+                                       maxWidth="Infinity"/>
+                            <Label fx:id="erroreUsername" text="Campo obbligatorio" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
+                        </VBox>
+
+                        <!-- Quinta riga: Password e Conferma Password -->
+                        <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="4">
+                            <Label text="Password" styleClass="field-label"/>
+                            <PasswordField fx:id="campoPassword"
+                                           promptText="Inserisci password"
+                                           maxWidth="Infinity"/>
+                            <Label fx:id="erroreCampoPassword" text="Campo obbligatorio" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
+                        </VBox>
+
+                        <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                            <Label text="Conferma Password" styleClass="field-label"/>
+                            <PasswordField fx:id="campoConfermaPassword"
+                                           promptText="Ripeti password"
+                                           maxWidth="Infinity"/>
+                            <Label fx:id="errorePassword" text="Le password non coincidono" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
+                        </VBox>
+                    </GridPane>
+                    
+                    <!-- Label Errore -->
+                    <Label fx:id="etichettaErrore" text="" textFill="red" visible="false" wrapText="true"/>
+
+                    <!-- Pulsanti Azione -->
+                    <HBox spacing="15" alignment="CENTER">
+                        <Button fx:id="pulsanteCancella"
+                                text="Cancella Tutto"
+                                onAction="#cancellaTutto"
+                                style="-fx-background-color: #95a5a6; -fx-text-fill: #2C3E50; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"
+                                maxWidth="Infinity"
+                                HBox.hgrow="ALWAYS">
+                            <padding>
+                                <Insets top="10" right="20" bottom="10" left="20"/>
+                            </padding>
+                        </Button>
+                        
+                        <Button fx:id="pulsanteRegistra"
+                                text="Registra"
+                                onAction="#registraUtente"
+                                styleClass="login-button"
+                                maxWidth="Infinity"
+                                HBox.hgrow="ALWAYS">
+                        </Button>
+                    </HBox>
+
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>

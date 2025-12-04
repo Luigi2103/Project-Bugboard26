@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="it.unina.bugboard.home.HomeController"
+            styleClass="home-root"
+            prefWidth="900" prefHeight="800">
+
+    <stylesheets>
+        <URL value="@../css/home.css"/>
+    </stylesheets>
+
+    <!-- Top Navigation -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 20;">
+            <Button fx:id="pulsanteIndietro" 
+                    text="← Indietro" 
+                    onAction="#tornaIndietro"
+                    styleClass="back-button"/>
+            <MenuButton fx:id="menuNavigazione" text="Menu" styleClass="menu-button-custom">
+                <items>
+                    <MenuItem text="Inserimento Issue" onAction="#vaiAInserimentoIssue"/>
+                    <MenuItem text="Inserimento Utente" onAction="#vaiAInserimentoUtente"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="Logout" onAction="#logout"/>
+                </items>
+            </MenuButton>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="transparent-scroll">
+            <VBox alignment="TOP_CENTER" spacing="25" maxWidth="800">
+                <padding>
+                    <Insets top="10" bottom="30" left="30" right="30"/>
+                </padding>
+
+                <!-- User Section -->
+                <VBox alignment="CENTER" spacing="15">
+                    <ImageView fx:id="iconaUtente"
+                               fitWidth="120" fitHeight="120"
+                               preserveRatio="true"
+                               styleClass="user-icon"/>
+                    <Label fx:id="labelBenvenuto" text="Benvenuto, Utente" styleClass="welcome-label"/>
+                </VBox>
+
+                <!-- Tasks Section -->
+                <VBox spacing="10" VBox.vgrow="ALWAYS">
+                    <Label text="I tuoi Progetti (Tasks)" styleClass="section-header"/>
+                    
+                    <TextField fx:id="campoRicercaTask"
+                               promptText="Cerca progetto..."
+                               styleClass="search-field"/>
+
+                    <ListView fx:id="listaTasks"
+                              prefHeight="200"
+                              styleClass="task-list-view"/>
+                </VBox>
+
+                <!-- Issues Carousel Section -->
+                <VBox spacing="10">
+                    <Label text="Issues nel Progetto Selezionato" styleClass="section-header"/>
+                    
+                    <ScrollPane vbarPolicy="NEVER" hbarPolicy="AS_NEEDED" 
+                                fitToHeight="true" 
+                                styleClass="carousel-scroll"
+                                minHeight="160">
+                        <content>
+                            <HBox fx:id="carouselIssues" spacing="15" alignment="CENTER_LEFT">
+                                <padding>
+                                    <Insets top="10" bottom="10" left="10" right="10"/>
+                                </padding>
+                                <!-- Issues will be added here dynamically via Controller -->
+                            </HBox>
+                        </content>
+                    </ScrollPane>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>
