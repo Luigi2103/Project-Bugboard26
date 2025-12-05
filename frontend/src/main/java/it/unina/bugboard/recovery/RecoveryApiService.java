@@ -1,5 +1,6 @@
 package it.unina.bugboard.recovery;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 
@@ -8,30 +9,40 @@ import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.unina.bugboard.recovery.exception.ErroreServizioAPIexeception;
 
 public class RecoveryApiService {
 
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public RecoveryRespond updateApi(String username, String password) throws Exception {
+    public RecoveryRespond updateApi(String username, String password) throws ErroreServizioAPIexeception {
 
-        Map<String, String> UpdateData = new HashMap<>();
-        UpdateData.put("username", username);
-        UpdateData.put("password", password);
+        try {
+            Map<String, String> updateData = new HashMap<>();
+            updateData.put("username", username);
+            updateData.put("password", password);
 
-        String json = objectMapper.writeValueAsString(UpdateData);
+            String json = objectMapper.writeValueAsString(updateData);
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8081/api/auth/update"))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(json))
-                .build();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8081/api/auth/update"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
+                    .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        return objectMapper.readValue(response.body(), RecoveryRespond.class);
+            return objectMapper.readValue(response.body(), RecoveryRespond.class);
+
+        } catch (IOException | InterruptedException e) {
+            // Interrompi il thread se necessario
+            Thread.currentThread().interrupt();
+            // Rilancia come eccezione personalizzata
+            throw new ErroreServizioAPIexeception("Errore durante la chiamata al servizio Recovery API");
+        }
     }
 
 }

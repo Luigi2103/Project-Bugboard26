@@ -16,7 +16,7 @@ import javafx.application.Platform;
 import it.unina.bugboard.navigation.SceneRouter;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-
+import java.util.logging.Logger;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -63,6 +63,12 @@ public class RecoveryController implements Initializable {
 
     private boolean passwordVisibile = false;
     private boolean nuovaPasswordVisibile = false;
+    private static final String LOGIN_FXML = "/it/unina/bugboard/fxml/login.fxml";
+    private static final int LOGIN_WIDTH = 900;
+    private static final int LOGIN_HEIGHT = 930;
+    private static final String LOGIN_TITLE = "BugBoard - Login";
+
+    Logger logger = Logger.getLogger(RecoveryController.class.getName());
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -80,7 +86,7 @@ public class RecoveryController implements Initializable {
                     getClass().getResource("/it/unina/bugboard/foto/logoCompleto.png").toExternalForm());
             logoImmagine.setImage(logo);
         } catch (Exception e) {
-            System.err.println("Errore caricamento logo: " + e.getMessage());
+            logger.info("Errore caricamento logo: " + e.getMessage());
         }
     }
 
@@ -157,7 +163,7 @@ public class RecoveryController implements Initializable {
     @FXML
     private void gestisciAnnulla() {
         // Torna al login
-        SceneRouter.cambiaScena("/it/unina/bugboard/fxml/login.fxml", 900, 930, "BugBoard - Login");
+        SceneRouter.cambiaScena(LOGIN_FXML, LOGIN_WIDTH, LOGIN_HEIGHT, LOGIN_TITLE);
     }
 
     private void inizializzaBindingCancella() {
@@ -181,7 +187,7 @@ public class RecoveryController implements Initializable {
     @FXML
     private void tornaIndietro() {
         // Torna al login
-        SceneRouter.cambiaScena("/it/unina/bugboard/fxml/login.fxml", 900, 930, "BugBoard - Login");
+        SceneRouter.cambiaScena(LOGIN_FXML, LOGIN_WIDTH, LOGIN_HEIGHT, LOGIN_TITLE);
     }
 
     @FXML
@@ -202,20 +208,25 @@ public class RecoveryController implements Initializable {
             valid = false;
         }
 
+        if(!campoNuovaPassword.getText().equals(campoPassword.getText())) {
+            mostraErrore(erroreNuovaPassword, "Le password non coincidono");
+            valid = false;
+        }
+
         if (valid) {
-            System.out.println("Recupero password per: " + campoUsername.getText());
-            System.out.println("Vecchia: " + campoPassword.getText());
-            System.out.println("Nuova: " + campoNuovaPassword.getText());
+            logger.info("Recupero password per: " + campoUsername.getText());
+            logger.info("Vecchia: " + campoPassword.getText());
+            logger.info("Nuova: " + campoNuovaPassword.getText());
 
             try {
                 RecoveryApiService apiService = new RecoveryApiService();
                 RecoveryRespond response = apiService.updateApi(campoUsername.getText(), campoNuovaPassword.getText());
 
                 if (response.isSuccess()) {
-                    System.out.println("Password aggiornata con successo! " + response.getMessage());
-                    SceneRouter.cambiaScena("/it/unina/bugboard/fxml/login.fxml", 900, 930, "BugBoard - Login");
+                    logger.info("Password aggiornata con successo! " + response.getMessage());
+                    SceneRouter.cambiaScena(LOGIN_FXML, LOGIN_WIDTH, LOGIN_HEIGHT, LOGIN_TITLE);
                 } else {
-                    System.err.println("Errore aggiornamento: " + response.getMessage());
+                    logger.info("Errore aggiornamento: " + response.getMessage());
                     mostraErrore(erroreNuovaPassword,
                             response.getMessage() != null ? response.getMessage() : "Errore durante l'aggiornamento");
                     animaShake();
@@ -229,7 +240,8 @@ public class RecoveryController implements Initializable {
         } else {
             animaShake();
         }
-    }
+}
+
 
     private void mostraErrore(Label label, String msg) {
         label.setText(msg);

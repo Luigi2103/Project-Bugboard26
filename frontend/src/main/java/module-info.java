@@ -9,6 +9,8 @@ module it.unina.bugboard {
     requires java.net.http;
     requires com.fasterxml.jackson.databind;
     requires de.jensd.fx.glyphs.fontawesome;
+    requires java.logging;
+    requires org.slf4j;
 
     exports it.unina.bugboard.login;
 
@@ -22,4 +24,7 @@ module it.unina.bugboard {
     opens it.unina.bugboard.foto;
     exports it.unina.bugboard.recovery;
     opens it.unina.bugboard.recovery to com.fasterxml.jackson.databind, javafx.fxml;
+
+    exports it.unina.bugboard.recovery.exception;
+
 }

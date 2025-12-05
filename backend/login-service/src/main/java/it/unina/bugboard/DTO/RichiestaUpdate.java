@@ -14,9 +14,7 @@ public class RichiestaUpdate {
     public String getPassword() {
         return Password;
     }
-    public void setPassword(String password) {
-        Password = password;
-    }
+    public void setPassword(String password) {Password = password;}
 
 
 }
