@@ -9,7 +9,6 @@ import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.unina.bugboard.recovery.exception.ErroreServizioAPIexeception;
 
@@ -38,9 +37,7 @@ public class RecoveryApiService {
             return objectMapper.readValue(response.body(), RecoveryRespond.class);
 
         } catch (IOException | InterruptedException e) {
-            // Interrompi il thread se necessario
             Thread.currentThread().interrupt();
-            // Rilancia come eccezione personalizzata
             throw new ErroreServizioAPIexeception("Errore durante la chiamata al servizio Recovery API");
         }
     }

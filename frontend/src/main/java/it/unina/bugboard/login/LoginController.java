@@ -65,7 +65,7 @@ public class LoginController implements Initializable {
     private TranslateTransition shakeTransition;
     private boolean passwordVisibile = false;
     private final LoginApiService loginApiService;
-
+    private static final String MSG_TXTFIELD_ERROR="text-field-error";
     public LoginController(LoginApiService loginApiService) {
         this.loginApiService = loginApiService;
     }
@@ -316,13 +316,13 @@ public class LoginController implements Initializable {
     }
 
     private void setErrorStyle(Control control) {
-        if (!control.getStyleClass().contains("text-field-error")) {
-            control.getStyleClass().add("text-field-error");
+        if (!control.getStyleClass().contains(MSG_TXTFIELD_ERROR)) {
+            control.getStyleClass().add(MSG_TXTFIELD_ERROR);
         }
     }
 
     private void removeErrorStyle(Control control) {
-        control.getStyleClass().remove("text-field-error");
+        control.getStyleClass().remove(MSG_TXTFIELD_ERROR);
     }
 
     private void resetErrorStyles() {

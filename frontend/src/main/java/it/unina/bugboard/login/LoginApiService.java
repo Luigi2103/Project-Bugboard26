@@ -10,33 +10,38 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.unina.bugboard.login.exception.LoginApiException;
 
 public class LoginApiService {
 
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public RispostaLogin login(String username, String password, boolean isAdmin)
-            throws Exception {
-        String modalita = isAdmin ? "admin" : "utente";
+    public RispostaLogin login(String username, String password, boolean isAdmin) {
+        try {
+            String modalita = isAdmin ? "admin" : "utente";
 
-        Map<String, String> loginData = new HashMap<>();
-        loginData.put("username", username);
-        loginData.put("password", password);
-        loginData.put("modalita", modalita);
+            Map<String, String> loginData = new HashMap<>();
+            loginData.put("username", username);
+            loginData.put("password", password);
+            loginData.put("modalita", modalita);
 
-        String jsonBody = objectMapper.writeValueAsString(loginData);
+            String jsonBody = objectMapper.writeValueAsString(loginData);
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8081/api/auth/login"))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
-                .build();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8081/api/auth/login"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                    .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        // Parse response body regardless of status code because backend sends
-        // RispostaLogin even on error
-        return objectMapper.readValue(response.body(), RispostaLogin.class);
+            return objectMapper.readValue(response.body(), RispostaLogin.class);
+
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+            throw new LoginApiException("Errore durante il login", e);
+        }
     }
+
 }

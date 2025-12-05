@@ -1,92 +1,59 @@
 package it.unina.bugboard.inserimentoutente;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.Bindings;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public class InsertUserController {
 
-    @FXML
-    private VBox contenitoreInserimento;
-    @FXML
-    private TextField campoNome;
-    @FXML
-    private TextField campoCognome;
-    @FXML
-    private TextField campoCodiceFiscale;
-    @FXML
-    private ComboBox<String> comboSesso;
-    @FXML
-    private DatePicker campoDataNascita;
-    @FXML
-    private TextField campoUsername;
-    @FXML
-    private PasswordField campoPassword;
-    @FXML
-    private PasswordField campoConfermaPassword;
-    @FXML
-    private Button pulsanteRegistra;
-    @FXML
-    private Button pulsanteCancella;
-    @FXML
-    private Button pulsanteIndietro;
-    @FXML
-    private Label etichettaErrore;
-    @FXML
-    private ToggleGroup gruppoRuolo;
-    @FXML
-    private ToggleButton toggleUtente;
-    @FXML
-    private ToggleButton toggleAdmin;
-    @FXML
-    private Label erroreCodiceFiscale;
-    @FXML
-    private Label errorePassword;
-    @FXML
-    private Label erroreNome;
-    @FXML
-    private Label erroreCognome;
-    @FXML
-    private Label erroreSesso;
-    @FXML
-    private Label erroreDataNascita;
-    @FXML
-    private Label erroreUsername;
-    @FXML
-    private Label erroreCampoPassword;
+    @FXML private VBox contenitoreInserimento;
+    @FXML private TextField campoNome;
+    @FXML private TextField campoCognome;
+    @FXML private TextField campoCodiceFiscale;
+    @FXML private ComboBox<String> comboSesso;
+    @FXML private DatePicker campoDataNascita;
+    @FXML private TextField campoUsername;
+    @FXML private PasswordField campoPassword;
+    @FXML private PasswordField campoConfermaPassword;
+    @FXML private Button pulsanteRegistra;
+    @FXML private Button pulsanteCancella;
+    @FXML private Button pulsanteIndietro;
+    @FXML private Label etichettaErrore;
+    @FXML private ToggleGroup gruppoRuolo;
+    @FXML private ToggleButton toggleUtente;
+    @FXML private ToggleButton toggleAdmin;
+
+    @FXML private Label erroreCodiceFiscale;
+    @FXML private Label errorePassword;
+    @FXML private Label erroreNome;
+    @FXML private Label erroreCognome;
+    @FXML private Label erroreSesso;
+    @FXML private Label erroreDataNascita;
+    @FXML private Label erroreUsername;
+    @FXML private Label erroreCampoPassword;
+
+    private static final String MSG_CAMPO_OBBLIGATORIO = "Campo obbligatorio";
+    private static final String MSG_TXTFIELD_OBBLIGATORIO = "text-field-error";
+    private final InsertUserApiService insertUserApiService;
+
+
+
+    public InsertUserController(InsertUserApiService insertUserApiService) {this.insertUserApiService = insertUserApiService;}
 
     @FXML
     public void initialize() {
-        // Popola il ComboBox Sesso
         comboSesso.getItems().addAll("M", "F");
-
-        // pulsanteRegistra.disableProperty().bind(createCampiVuotiBinding());
-        // Cancella Tutto si abilita quando almeno un campo è compilato (tutti vuoti =
-        // disabilitato)
         pulsanteCancella.disableProperty().bind(createTuttiCampiVuotiBinding());
         inizializzaListenerRuolo();
         campoDataNascita.setEditable(false);
     }
-
     private void inizializzaListenerRuolo() {
         gruppoRuolo.selectedToggleProperty().addListener((obs, vecchio, nuovo) -> {
-            if (nuovo == null) {
-                vecchio.setSelected(true);
-            }
+            if (nuovo == null) vecchio.setSelected(true);
         });
     }
-
     private BooleanBinding createTuttiCampiVuotiBinding() {
         return isTrimmedEmpty(campoNome)
                 .and(isTrimmedEmpty(campoCognome))
@@ -97,184 +64,172 @@ public class InsertUserController {
                 .and(campoPassword.textProperty().isEmpty())
                 .and(campoConfermaPassword.textProperty().isEmpty());
     }
-
     private BooleanBinding isTrimmedEmpty(TextField textField) {
         return Bindings.createBooleanBinding(
                 () -> textField.getText() == null || textField.getText().trim().isEmpty(),
-                textField.textProperty());
+                textField.textProperty()
+        );
     }
-
     private boolean isTextEmpty(TextField textField) {
         return textField.getText() == null || textField.getText().trim().isEmpty();
     }
 
+    // ================================================================
+    //                         VALIDAZIONE
+    // ================================================================
+
     @FXML
     private void registraUtente() {
-        String nome = campoNome.getText();
-        String cognome = campoCognome.getText();
-        String codiceFiscale = campoCodiceFiscale.getText();
-        String sesso = comboSesso.getValue();
-        LocalDate dataNascita = campoDataNascita.getValue();
-        String username = campoUsername.getText();
-        String password = campoPassword.getText();
-        String confermaPassword = campoConfermaPassword.getText();
-
         resetErrorStyles();
-        boolean campiVuoti = false;
 
-        if (isTextEmpty(campoNome)) {
-            setErrorStyle(campoNome);
-            mostraErroreInline(erroreNome, "Campo obbligatorio");
-            campiVuoti = true;
-        }
-        if (isTextEmpty(campoCognome)) {
-            setErrorStyle(campoCognome);
-            mostraErroreInline(erroreCognome, "Campo obbligatorio");
-            campiVuoti = true;
-        }
-        if (isTextEmpty(campoCodiceFiscale)) {
-            setErrorStyle(campoCodiceFiscale);
-            mostraErroreInline(erroreCodiceFiscale, "Campo obbligatorio");
-            campiVuoti = true;
-        }
-        if (comboSesso.getValue() == null) {
-            setErrorStyle(comboSesso);
-            mostraErroreInline(erroreSesso, "Campo obbligatorio");
-            campiVuoti = true;
-        }
-        if (campoDataNascita.getValue() == null) {
-            setErrorStyle(campoDataNascita);
-            mostraErroreInline(erroreDataNascita, "Campo obbligatorio");
-            campiVuoti = true;
-        }
-        if (isTextEmpty(campoUsername)) {
-            setErrorStyle(campoUsername);
-            mostraErroreInline(erroreUsername, "Campo obbligatorio");
-            campiVuoti = true;
-        }
-        if (campoPassword.getText().isEmpty()) {
-            setErrorStyle(campoPassword);
-            mostraErroreInline(erroreCampoPassword, "Campo obbligatorio");
-            campiVuoti = true;
-        }
-        if (campoConfermaPassword.getText().isEmpty()) {
-            setErrorStyle(campoConfermaPassword);
-            mostraErroreInline(errorePassword, "Campo obbligatorio"); // Reuse errorePassword for confirm field empty
-            campiVuoti = true;
-        }
+        if (!verificaCampiObbligatori()) return;
+        if (!verificaPassword()) return;
+        if (!verificaCodiceFiscale()) return;
 
-        if (campiVuoti) {
-            // mostraErrore("Compilare tutti i campi obbligatori"); // Non più necessario
-            // messaggio globale
-            return;
-        }
-
-        if (!validateInput(password, confermaPassword, codiceFiscale)) {
-            return;
-        }
-
+        // Ruolo selezionato
         String ruolo = toggleAdmin.isSelected() ? "AMMINISTRATORE" : "UTENTE";
 
-        // TODO eliminare questo metodo, è solo per testare se la GUI funziona
-        logUserRegistration(nome, cognome, codiceFiscale, sesso, dataNascita, username, ruolo);
 
-        // Reset dei campi dopo registrazione avvenuta con successo (simulato)
+
+        // TODO: richiesta al backend
+
         pulisciCampi();
     }
 
-    private boolean validateInput(String password, String confermaPassword, String codiceFiscale) {
-        // resetErrorStyles(); // Già fatto in registraUtente
-        boolean isValid = true;
+    private boolean verificaCampiObbligatori() {
+        boolean validi = true;
 
-        if (!password.equals(confermaPassword)) {
+        if (isTextEmpty(campoNome)) {
+            setErrorStyle(campoNome);
+            mostraErroreInline(erroreNome, MSG_CAMPO_OBBLIGATORIO);
+            validi = false;
+        }
+
+        if (isTextEmpty(campoCognome)) {
+            setErrorStyle(campoCognome);
+            mostraErroreInline(erroreCognome, MSG_CAMPO_OBBLIGATORIO);
+            validi = false;
+        }
+
+        if (isTextEmpty(campoCodiceFiscale)) {
+            setErrorStyle(campoCodiceFiscale);
+            mostraErroreInline(erroreCodiceFiscale, MSG_CAMPO_OBBLIGATORIO);
+            validi = false;
+        }
+
+        if (comboSesso.getValue() == null) {
+            setErrorStyle(comboSesso);
+            mostraErroreInline(erroreSesso, MSG_CAMPO_OBBLIGATORIO);
+            validi = false;
+        }
+
+        if (campoDataNascita.getValue() == null) {
+            setErrorStyle(campoDataNascita);
+            mostraErroreInline(erroreDataNascita, MSG_CAMPO_OBBLIGATORIO);
+            validi = false;
+        }
+
+        if (isTextEmpty(campoUsername)) {
+            setErrorStyle(campoUsername);
+            mostraErroreInline(erroreUsername, MSG_CAMPO_OBBLIGATORIO);
+            validi = false;
+        }
+
+        if (campoPassword.getText().isEmpty()) {
+            setErrorStyle(campoPassword);
+            mostraErroreInline(erroreCampoPassword, MSG_CAMPO_OBBLIGATORIO);
+            validi = false;
+        }
+
+        if (campoConfermaPassword.getText().isEmpty()) {
+            setErrorStyle(campoConfermaPassword);
+            mostraErroreInline(errorePassword, MSG_CAMPO_OBBLIGATORIO);
+            validi = false;
+        }
+
+        return validi;
+    }
+
+    private boolean verificaPassword() {
+        String p1 = campoPassword.getText();
+        String p2 = campoConfermaPassword.getText();
+
+        if (!p1.equals(p2)) {
             setErrorStyle(campoPassword);
             setErrorStyle(campoConfermaPassword);
             mostraErroreInline(errorePassword, "Le password non coincidono");
-            isValid = false;
+            return false;
         }
 
-        if (codiceFiscale.length() != 16) {
+        return true;
+    }
+
+    private boolean verificaCodiceFiscale() {
+        String cf = campoCodiceFiscale.getText();
+
+        if (cf.length() != 16) {
             setErrorStyle(campoCodiceFiscale);
-            mostraErroreInline(erroreCodiceFiscale, "Codice Fiscale non valido (deve essere 16 caratteri)");
-            isValid = false;
+            mostraErroreInline(erroreCodiceFiscale, "Il Codice Fiscale deve essere di 16 caratteri");
+            return false;
         }
 
-        return isValid;
+        return true;
     }
 
-    private void setErrorStyle(javafx.scene.control.Control control) {
-        if (!control.getStyleClass().contains("text-field-error")) {
-            control.getStyleClass().add("text-field-error");
+    // ================================================================
+    //                         ERRORI UI
+    // ================================================================
+
+    private void setErrorStyle(Control control) {
+        if (!control.getStyleClass().contains(MSG_TXTFIELD_OBBLIGATORIO)) {
+            control.getStyleClass().add(MSG_TXTFIELD_OBBLIGATORIO);
         }
     }
 
-    private void removeErrorStyle(javafx.scene.control.Control control) {
-        control.getStyleClass().remove("text-field-error");
+    private void removeErrorStyle(Control control) {
+        control.getStyleClass().remove(MSG_TXTFIELD_OBBLIGATORIO);
     }
 
     private void resetErrorStyles() {
-        removeErrorStyle(campoPassword);
-        removeErrorStyle(campoConfermaPassword);
-        removeErrorStyle(campoCodiceFiscale);
-        removeErrorStyle(campoNome);
-        removeErrorStyle(campoCognome);
-        removeErrorStyle(campoUsername);
-        removeErrorStyle(comboSesso);
-        removeErrorStyle(campoDataNascita);
+        Control[] campi = {
+                campoNome, campoCognome, campoCodiceFiscale,
+                comboSesso, campoDataNascita, campoUsername,
+                campoPassword, campoConfermaPassword
+        };
 
-        if (etichettaErrore != null) {
-            etichettaErrore.setVisible(false);
-        }
-        nascondiErrore(erroreCodiceFiscale);
-        nascondiErrore(errorePassword);
-        nascondiErrore(erroreNome);
-        nascondiErrore(erroreCognome);
-        nascondiErrore(erroreSesso);
-        nascondiErrore(erroreDataNascita);
-        nascondiErrore(erroreUsername);
-        nascondiErrore(erroreCampoPassword);
-    }
+        Label[] labels = {
+                erroreNome, erroreCognome, erroreCodiceFiscale,
+                erroreSesso, erroreDataNascita, erroreUsername,
+                erroreCampoPassword, errorePassword
+        };
 
-    private void nascondiErrore(Label label) {
-        if (label != null) {
-            label.setVisible(false);
-            label.setManaged(false);
-        }
+        for (Control c : campi) removeErrorStyle(c);
+        for (Label l : labels) nascondiErrore(l);
     }
 
     private void mostraErroreInline(Label label, String messaggio) {
-        if (label != null) {
-            label.setText(messaggio);
-            label.setVisible(true);
-            label.setManaged(true);
-        }
+        label.setText(messaggio);
+        label.setVisible(true);
+        label.setManaged(true);
     }
 
-    private void logUserRegistration(String nome, String cognome, String codiceFiscale, String sesso,
-            LocalDate dataNascita, String username, String ruolo) {
-        // Qui andrebbe la logica per salvare l'utente
-        System.out.println("Registrazione utente:");
-        System.out.println("Nome: " + nome);
-        System.out.println("Cognome: " + cognome);
-        System.out.println("Codice Fiscale: " + codiceFiscale);
-        System.out.println("Sesso: " + sesso);
-        System.out.println("Data di Nascita: "
-                + (dataNascita != null ? dataNascita.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "N/A"));
-        System.out.println("Username: " + username);
-        System.out.println("Ruolo: " + ruolo);
+    private void nascondiErrore(Label label) {
+        label.setVisible(false);
+        label.setManaged(false);
     }
+
+    // ================================================================
+    //                           ALTRO
+    // ================================================================
 
     @FXML
     private void cancellaTutto() {
-        System.out.println("Cancellazione campi");
         pulisciCampi();
     }
 
     @FXML
     private void tornaIndietro() {
-        // Torna al login
-        it.unina.bugboard.navigation.SceneRouter.cambiaScena(
-                "/it/unina/bugboard/fxml/login.fxml", 900, 800, "BugBoard - Login");
+        it.unina.bugboard.navigation.SceneRouter.cambiaScena("/it/unina/bugboard/fxml/login.fxml", 900, 800, "BugBoard - Login");
     }
 
     private void pulisciCampi() {
@@ -286,10 +241,7 @@ public class InsertUserController {
         campoUsername.clear();
         campoPassword.clear();
         campoConfermaPassword.clear();
-
         resetErrorStyles();
-
-        // Reset del toggle al valore predefinito (Utente)
         toggleUtente.setSelected(true);
     }
 }

@@ -10,16 +10,9 @@ import java.io.IOException;
 public class BugBoard extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-
-        // Uso il percorso assoluto per l'icona
-        stage.getIcons()
-                .add(new Image(getClass().getResource("/it/unina/bugboard/foto/logoCompleto.png").toExternalForm()));
-
+        stage.getIcons().add(new Image(getClass().getResource("/it/unina/bugboard/foto/logoCompleto.png").toExternalForm()));
         SceneRouter.inizializza(stage);
-
-        // Uso il percorso assoluto per il FXML
         SceneRouter.cambiaScena("/it/unina/bugboard/fxml/login.fxml", 900, 850, "BugBoard - Login");
-
         stage.setResizable(true);
         stage.setMinWidth(360);
         stage.setMinHeight(600);
