@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/inserimento-utente")
-@CrossOrigin(origins = "*") // Permette chiamate dal frontend (utile in dev)
 public class InserimentoUtenteController {
 
     private final InserimentoUtenteService inserimentoUtenteService;
