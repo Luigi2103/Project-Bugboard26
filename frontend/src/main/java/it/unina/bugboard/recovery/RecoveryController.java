@@ -206,10 +206,26 @@ public class RecoveryController implements Initializable {
             System.out.println("Recupero password per: " + campoUsername.getText());
             System.out.println("Vecchia: " + campoPassword.getText());
             System.out.println("Nuova: " + campoNuovaPassword.getText());
-            // Logica di cambio password qui
 
-            // Torna al login dopo successo (simulato)
-            SceneRouter.cambiaScena("/it/unina/bugboard/fxml/login.fxml", 900, 930, "BugBoard - Login");
+            try {
+                RecoveryApiService apiService = new RecoveryApiService();
+                RecoveryRespond response = apiService.updateApi(campoUsername.getText(), campoNuovaPassword.getText());
+
+                if (response.isSuccess()) {
+                    System.out.println("Password aggiornata con successo! " + response.getMessage());
+                    SceneRouter.cambiaScena("/it/unina/bugboard/fxml/login.fxml", 900, 930, "BugBoard - Login");
+                } else {
+                    System.err.println("Errore aggiornamento: " + response.getMessage());
+                    mostraErrore(erroreNuovaPassword,
+                            response.getMessage() != null ? response.getMessage() : "Errore durante l'aggiornamento");
+                    animaShake();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                mostraErrore(erroreNuovaPassword, "Errore di connessione al server");
+                animaShake();
+            }
+
         } else {
             animaShake();
         }
