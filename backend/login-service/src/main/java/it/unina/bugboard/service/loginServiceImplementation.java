@@ -1,7 +1,9 @@
 package it.unina.bugboard.service;
 
 import it.unina.bugboard.DTO.RichiestaLogin;
+import it.unina.bugboard.DTO.RichiestaUpdate;
 import it.unina.bugboard.DTO.RispostaLogin;
+import it.unina.bugboard.DTO.RispostaUpdate;
 import it.unina.bugboard.repository.repositoryUtente;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,7 +12,7 @@ import it.unina.bugboard.Entity.User;
 import java.util.Optional;
 
 @Service
-public class loginServiceImplementation implements LoginService {
+public class loginServiceImplementation implements LoginService{
     private final repositoryUtente userRepository;
     private final PasswordEncoder passwordEncoder;
     private final it.unina.bugboard.JwtUtils jwtUtils;
@@ -46,16 +48,20 @@ public class loginServiceImplementation implements LoginService {
     }
 
     @Override
-    public RispostaLogin updatepassword(RichiestaLogin loginReq) {
+    public RispostaUpdate update(RichiestaUpdate updateReq) {
 
-        Optional<User> usr = userRepository.findByUsername(loginReq.getUsername());
+        Optional<User> userOpt = userRepository.findByUsername(updateReq.getUsername());
+        if (userOpt.isEmpty()) {
+            return new RispostaUpdate("utente non trovato", false);
+        }
 
+        User user = userOpt.get();
 
+        user.setPasswordHash(passwordEncoder.encode(updateReq.getPassword()));
 
+        userRepository.save(user);
 
-
-
-
-        return null;
+        return new RispostaUpdate("Password Cambiata Con Successo", true);
     }
+
 }

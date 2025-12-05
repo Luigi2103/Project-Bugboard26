@@ -17,4 +17,6 @@ public class RichiestaUpdate {
     public void setPassword(String password) {
         Password = password;
     }
+
+
 }

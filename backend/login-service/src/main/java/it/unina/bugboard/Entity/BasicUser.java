@@ -35,4 +35,6 @@ public abstract class BasicUser {
         this.passwordHash = passwordHash;
     }
 
+
+
 }
