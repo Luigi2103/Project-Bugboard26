@@ -5,4 +5,5 @@ import it.unina.bugboard.DTO.RispostaLogin;
 
 public interface LoginService {
     RispostaLogin login(RichiestaLogin loginReq);
+    RispostaLogin updatepassword(RichiestaLogin loginReq);
 }

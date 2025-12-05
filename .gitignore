@@ -50,3 +50,4 @@ backend/login-service/src/main/resources/application.properties
 
 /backend/InserimentoUtente-service/src/main/resources/application.properties
 /backend/api-gateway/src/main/resources/application.yml
+/backend/login-service/login-service/src/main/resources/application.properties

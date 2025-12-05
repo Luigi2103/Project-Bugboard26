@@ -44,4 +44,18 @@ public class loginServiceImplementation implements LoginService {
         String token = jwtUtils.generateToken(user.getUsername(), user.isAdmin() ? "ADMIN" : "USER");
         return new RispostaLogin(true, "login eseguito", req.getModalita(), token);
     }
+
+    @Override
+    public RispostaLogin updatepassword(RichiestaLogin loginReq) {
+
+        Optional<User> usr = userRepository.findByUsername(loginReq.getUsername());
+
+
+
+
+
+
+
+        return null;
+    }
 }
