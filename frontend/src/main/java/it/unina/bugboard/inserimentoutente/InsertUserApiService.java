@@ -15,6 +15,11 @@ public class InsertUserApiService {
 
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final it.unina.bugboard.common.SessionManager sessionManager;
+
+    public InsertUserApiService(it.unina.bugboard.common.SessionManager sessionManager) {
+        this.sessionManager = sessionManager;
+    }
 
     public RispostaInserimentoUser inserisciUtente(String nome, String cognome, String codiceFiscale,
                                                    char sesso, LocalDate dataNascita, String username, String password, String email, boolean isAdmin) {
@@ -24,10 +29,12 @@ public class InsertUserApiService {
                     password, email, isAdmin);
 
             String jsonBody = objectMapper.writeValueAsString(insertData);
+            String token = this.sessionManager.getToken();
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("http://localhost:8080/api/inserimentoUtente"))
                     .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + token)
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                     .build();
 
@@ -35,7 +42,7 @@ public class InsertUserApiService {
             return objectMapper.readValue(response.body(), RispostaInserimentoUser.class);
         } catch (Exception e) {
             Thread.currentThread().interrupt();
-            throw new InsertUserAPIException("Errore durante il inserimentoUtente", e);
+            throw new InsertUserAPIException("Errore durante inserimento utente", e);
         }
     }
 

@@ -18,16 +18,18 @@ import java.util.Map;
 
 public final class SceneRouter {
     private static Stage primaryStage;
+    private static final it.unina.bugboard.common.SessionManager sessionManager = new it.unina.bugboard.common.SessionManager();
     private static final LoginApiService loginApiService = new LoginApiService();
-    private static final InsertUserApiService insertUserApiService = new InsertUserApiService();
+    private static final InsertUserApiService insertUserApiService = new InsertUserApiService(sessionManager);
     private static final Map<Class<?>, Callback<Class<?>, Object>> controllerFactories = new HashMap<>();
 
     static {
-        controllerFactories.put(LoginController.class, param -> new LoginController(loginApiService));
+        controllerFactories.put(LoginController.class, param -> new LoginController(loginApiService, sessionManager));
         controllerFactories.put(InsertUserController.class, param -> new InsertUserController(insertUserApiService));
     }
 
-    private SceneRouter() {}
+    private SceneRouter() {
+    }
 
     public static void inizializza(Stage stage) {
         primaryStage = stage;
@@ -62,8 +64,7 @@ public final class SceneRouter {
                     } catch (Exception e) {
                         throw new SceneLoadException(
                                 "Errore durante la creazione del controller: " + param.getName(),
-                                e
-                        );
+                                e);
                     }
                 }
             });

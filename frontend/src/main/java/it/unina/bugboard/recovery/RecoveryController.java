@@ -91,17 +91,14 @@ public class RecoveryController implements Initializable {
     }
 
     private void inizializzaBindings() {
-        // Bindings per responsive width se necessario, simile al login
         campoUsername.prefWidthProperty().bind(boxForm.widthProperty());
-        // ... altri binding
     }
 
     private void inizializzaTogglePassword() {
-        // Sincronizza testo tra i campi
+
         campoPasswordVisibile.textProperty().bindBidirectional(campoPassword.textProperty());
         campoNuovaPasswordVisibile.textProperty().bindBidirectional(campoNuovaPassword.textProperty());
 
-        // Gestione visibilità iniziale
         aggiornaVisibilitaPassword(false);
         aggiornaVisibilitaNuovaPassword(false);
     }

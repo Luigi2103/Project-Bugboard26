@@ -14,9 +14,10 @@ import javafx.application.Platform;
 import it.unina.bugboard.navigation.SceneRouter;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-
+import java.util.logging.Logger;
 import java.net.URL;
 import java.util.ResourceBundle;
+import  it.unina.bugboard.common.SessionManager;
 
 public class LoginController implements Initializable {
 
@@ -65,9 +66,14 @@ public class LoginController implements Initializable {
     private TranslateTransition shakeTransition;
     private boolean passwordVisibile = false;
     private final LoginApiService loginApiService;
-    private static final String MSG_TXTFIELD_ERROR="text-field-error";
-    public LoginController(LoginApiService loginApiService) {
+    private final SessionManager sessionManager;
+    private static final String MSG_TXTFIELD_ERROR = "text-field-error";
+    Logger logger = Logger.getLogger(LoginController.class.getName());
+
+
+    public LoginController(LoginApiService loginApiService, SessionManager sessionManager) {
         this.loginApiService = loginApiService;
+        this.sessionManager = sessionManager;
     }
 
     // --------------------------------------------------------
@@ -98,7 +104,7 @@ public class LoginController implements Initializable {
             logoImmagine.setPreserveRatio(true);
             logoImmagine.setFitWidth(200);
         } catch (Exception e) {
-            System.err.println("Errore caricamento logo: " + e.getMessage());
+            logger.info("Errore caricamento logo: " + e.getMessage());
         }
     }
 
@@ -283,6 +289,10 @@ public class LoginController implements Initializable {
     private void gestisciRisultatoLogin(RispostaLogin risposta) {
         Platform.runLater(() -> {
             if (risposta.isSuccess()) {
+                // Save token to SessionManager
+                this.sessionManager.setToken(risposta.getToken());
+                this.sessionManager.setUsername(campoUsername.getText());
+
                 SceneRouter.cambiaScena("/it/unina/bugboard/fxml/insert_user.fxml", 900, 930,
                         "BugBoard - Registra Utente");
             } else {

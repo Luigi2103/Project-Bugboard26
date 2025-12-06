@@ -1,6 +1,6 @@
 package it.unina.bugboard.controller;
 
-import it.unina.bugboard.Service.InserimentoUtenteService;
+import it.unina.bugboard.service.InserimentoUtenteService;
 import it.unina.bugboard.dto.RichiestaInserimentoUtente;
 import it.unina.bugboard.dto.RispostaInserimentoUtente;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class InserimentoUtenteController {
     @PostMapping
     public ResponseEntity<RispostaInserimentoUtente> inserisciUtente(
             @RequestBody RichiestaInserimentoUtente richiesta) {
-        RispostaInserimentoUtente risposta = inserimentoUtenteService.InserisciUtente(richiesta);
+        RispostaInserimentoUtente risposta = inserimentoUtenteService.inserisciUtente(richiesta);
 
         if (risposta != null && risposta.isSuccess()) {
             return ResponseEntity.ok(risposta);

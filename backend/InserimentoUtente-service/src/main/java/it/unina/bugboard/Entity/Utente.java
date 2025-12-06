@@ -10,15 +10,15 @@ public class Utente extends Persona {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idutente")
     private Long id;
-    @Column(nullable = false, unique = true, name = "Username")
+    @Column(nullable = false, unique = true, name = "username")
     private String username;
-    @Column(nullable = false, unique = true, name = "Password")
+    @Column(nullable = false, unique = true, name = "password")
     private String password;
-    @Column(nullable = false, unique = true, name = "Mail")
+    @Column(nullable = false, unique = true, name = "mail")
     private String mail;
-    @Column(nullable = false, name = "IsAdmin")
+    @Column(nullable = false, name = "isadmin")
     private boolean isAdmin;
-    @Column(nullable = true, name = "DataInizioRuolo")
+    @Column(nullable = true, name = "datainizioruolo")
     private LocalDate dataInizioRuolo;
 
     public Utente() {

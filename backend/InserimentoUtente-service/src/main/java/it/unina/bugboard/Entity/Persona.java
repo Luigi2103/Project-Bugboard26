@@ -6,15 +6,15 @@ import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public abstract class Persona {
-    @Column(nullable = false, name = "Nome")
+    @Column(nullable = false, name = "nome")
     private String nome;
-    @Column(nullable = false, name = "Cognome")
+    @Column(nullable = false, name = "cognome")
     private String cognome;
-    @Column(nullable = false, unique = true, name = "CF")
+    @Column(nullable = false, unique = true, name = "cf")
     private String codiceFiscale;
-    @Column(nullable = false, name = "Sesso")
+    @Column(nullable = false, name = "sesso")
     private char sesso;
-    @Column(nullable = false, name = "DataDiNascita")
+    @Column(nullable = false, name = "datadinascita")
     private LocalDate dataNascita;
 
     protected Persona(String nome, String cognome, String codiceFiscale, char sesso, LocalDate dataNascita) {

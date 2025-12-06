@@ -1,8 +1,8 @@
-package it.unina.bugboard.Service;
+package it.unina.bugboard.service;
 
 import it.unina.bugboard.dto.RichiestaInserimentoUtente;
 import it.unina.bugboard.dto.RispostaInserimentoUtente;
 
 public interface InserimentoUtenteService {
-    RispostaInserimentoUtente InserisciUtente(RichiestaInserimentoUtente richiestaInserimento);
+    RispostaInserimentoUtente inserisciUtente(RichiestaInserimentoUtente richiestaInserimento);
 }

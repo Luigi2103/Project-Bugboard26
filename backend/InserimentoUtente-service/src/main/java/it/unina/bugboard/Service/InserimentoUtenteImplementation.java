@@ -1,4 +1,4 @@
-package it.unina.bugboard.Service;
+package it.unina.bugboard.service;
 
 import it.unina.bugboard.Entity.Utente;
 import it.unina.bugboard.dto.RichiestaInserimentoUtente;
@@ -21,7 +21,7 @@ public class InserimentoUtenteImplementation implements InserimentoUtenteService
     }
 
     @Override
-    public RispostaInserimentoUtente InserisciUtente(RichiestaInserimentoUtente richiesta) {
+    public RispostaInserimentoUtente inserisciUtente(RichiestaInserimentoUtente richiesta) {
 
         // Controllo duplicati
         if (inserimentoUtente.existsByUsername(richiesta.getUsername())) {
