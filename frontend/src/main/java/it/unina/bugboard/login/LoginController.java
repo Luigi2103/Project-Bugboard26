@@ -17,7 +17,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import java.util.logging.Logger;
 import java.net.URL;
 import java.util.ResourceBundle;
-import  it.unina.bugboard.common.SessionManager;
+import it.unina.bugboard.common.SessionManager;
 
 public class LoginController implements Initializable {
 
@@ -68,8 +68,7 @@ public class LoginController implements Initializable {
     private final LoginApiService loginApiService;
     private final SessionManager sessionManager;
     private static final String MSG_TXTFIELD_ERROR = "text-field-error";
-    Logger logger = Logger.getLogger(LoginController.class.getName());
-
+    private static final Logger log = Logger.getLogger(LoginController.class.getName());
 
     public LoginController(LoginApiService loginApiService, SessionManager sessionManager) {
         this.loginApiService = loginApiService;
@@ -104,7 +103,7 @@ public class LoginController implements Initializable {
             logoImmagine.setPreserveRatio(true);
             logoImmagine.setFitWidth(200);
         } catch (Exception e) {
-            logger.info("Errore caricamento logo: " + e.getMessage());
+            log.info("Errore caricamento logo: " + e.getMessage());
         }
     }
 
@@ -289,12 +288,13 @@ public class LoginController implements Initializable {
     private void gestisciRisultatoLogin(RispostaLogin risposta) {
         Platform.runLater(() -> {
             if (risposta.isSuccess()) {
-                // Save token to SessionManager
                 this.sessionManager.setToken(risposta.getToken());
                 this.sessionManager.setUsername(campoUsername.getText());
+                boolean isAdmin = "ADMIN".equalsIgnoreCase(risposta.getModalita());
+                this.sessionManager.setAdmin(isAdmin);
 
-                SceneRouter.cambiaScena("/it/unina/bugboard/fxml/insert_user.fxml", 900, 930,
-                        "BugBoard - Registra Utente");
+                SceneRouter.cambiaScena("/it/unina/bugboard/fxml/home.fxml", 1200, 800,
+                        "BugBoard - Home");
             } else {
                 setErrorStyle(campoUsername);
                 setErrorStyle(campoPassword);

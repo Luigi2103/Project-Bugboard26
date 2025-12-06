@@ -320,8 +320,8 @@ public class InsertUserController {
 
     @FXML
     private void tornaIndietro() {
-        it.unina.bugboard.navigation.SceneRouter.cambiaScena("/it/unina/bugboard/fxml/login.fxml", 900, 800,
-                "BugBoard - Login");
+        it.unina.bugboard.navigation.SceneRouter.cambiaScena("/it/unina/bugboard/fxml/home.fxml", 900, 800,
+                "BugBoard - HomePage");
     }
 
     private void pulisciCampi() {

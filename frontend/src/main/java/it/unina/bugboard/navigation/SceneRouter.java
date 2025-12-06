@@ -11,6 +11,8 @@ import it.unina.bugboard.login.LoginController;
 import it.unina.bugboard.login.LoginApiService;
 import it.unina.bugboard.inserimentoutente.InsertUserController;
 import it.unina.bugboard.inserimentoutente.InsertUserApiService;
+import it.unina.bugboard.homepage.HomeApiService;
+import it.unina.bugboard.homepage.HomePageController;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -21,11 +23,13 @@ public final class SceneRouter {
     private static final it.unina.bugboard.common.SessionManager sessionManager = new it.unina.bugboard.common.SessionManager();
     private static final LoginApiService loginApiService = new LoginApiService();
     private static final InsertUserApiService insertUserApiService = new InsertUserApiService(sessionManager);
+    private static final HomeApiService homeApiService = new it.unina.bugboard.homepage.HomeApiService(sessionManager);
     private static final Map<Class<?>, Callback<Class<?>, Object>> controllerFactories = new HashMap<>();
 
     static {
         controllerFactories.put(LoginController.class, param -> new LoginController(loginApiService, sessionManager));
         controllerFactories.put(InsertUserController.class, param -> new InsertUserController(insertUserApiService));
+        controllerFactories.put(HomePageController.class, param -> new HomePageController(homeApiService, sessionManager));
     }
 
     private SceneRouter() {
@@ -44,10 +48,15 @@ public final class SceneRouter {
     }
 
     private static void mostraMessaggioErrore(String fxml, Exception e) {
+        e.printStackTrace(); // Print stack trace to console
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Errore caricamento scena");
         alert.setHeaderText(null);
-        alert.setContentText("Impossibile caricare " + fxml + " " + e.getMessage());
+        String msg = "Impossibile caricare " + fxml + "\n" + e.getMessage();
+        if (e.getCause() != null) {
+            msg += "\nCausa: " + e.getCause().getMessage();
+        }
+        alert.setContentText(msg);
         alert.showAndWait();
     }
 

@@ -3,8 +3,10 @@ package it.unina.bugboard.common;
 public class SessionManager {
     private String token;
     private String username;
+    private boolean admin;
 
-    public SessionManager() {}
+    public SessionManager() {
+    }
 
     public String getToken() {
         return token;
@@ -22,6 +24,14 @@ public class SessionManager {
         this.username = username;
     }
 
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
     public boolean isLoggedIn() {
         return token != null;
     }
@@ -29,5 +39,6 @@ public class SessionManager {
     public void logout() {
         this.token = null;
         this.username = null;
+        this.admin = false;
     }
 }
