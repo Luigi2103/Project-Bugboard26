@@ -2,9 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
 <?import java.net.URL?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
@@ -18,8 +16,8 @@
     <!-- Top Navigation -->
     <top>
         <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 20;">
-            <Button fx:id="pulsanteIndietro" 
-                    text="← Indietro" 
+            <Button fx:id="pulsanteIndietro"
+                    text="← Indietro"
                     onAction="#tornaIndietro"
                     styleClass="back-button"/>
         </HBox>
@@ -114,8 +112,16 @@
                             <Label fx:id="erroreDataNascita" text="Campo obbligatorio" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
                         </VBox>
 
-                        <!-- Quarta riga: Username (full width) -->
-                        <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2">
+                        <!-- Quarta riga: Email e Username -->
+                        <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                            <Label text="Email" styleClass="field-label"/>
+                            <TextField fx:id="campoEmail"
+                                       promptText="Inserisci email"
+                                       maxWidth="Infinity"/>
+                            <Label fx:id="erroreEmail" text="Campo obbligatorio" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
+                        </VBox>
+
+                        <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="3">
                             <Label text="Username" styleClass="field-label"/>
                             <TextField fx:id="campoUsername"
                                        promptText="Inserisci username"
@@ -140,7 +146,7 @@
                             <Label fx:id="errorePassword" text="Le password non coincidono" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
                         </VBox>
                     </GridPane>
-                    
+
                     <!-- Label Errore -->
                     <Label fx:id="etichettaErrore" text="" textFill="red" visible="false" wrapText="true"/>
 
@@ -156,7 +162,7 @@
                                 <Insets top="10" right="20" bottom="10" left="20"/>
                             </padding>
                         </Button>
-                        
+
                         <Button fx:id="pulsanteRegistra"
                                 text="Registra"
                                 onAction="#registraUtente"

@@ -1,6 +1,5 @@
 package it.unina.bugboard.dto;
 
-
 import java.time.LocalDate;
 
 public class RichiestaInserimentoUtente {
@@ -15,31 +14,75 @@ public class RichiestaInserimentoUtente {
     private String mail;
     private boolean isAdmin;
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+    public String getNome() {
+        return nome;
+    }
 
-    public String getCognome() { return cognome; }
-    public void setCognome(String cognome) { this.cognome = cognome; }
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-    public String getCodiceFiscale() { return codiceFiscale; }
-    public void setCodiceFiscale(String codiceFiscale) { this.codiceFiscale = codiceFiscale; }
+    public String getCognome() {
+        return cognome;
+    }
 
-    public char getSesso() { return sesso; }
-    public void setSesso(char sesso) { this.sesso = sesso; }
+    public void setCognome(String cognome) {
+        this.cognome = cognome;
+    }
 
-    public LocalDate getDataNascita() { return dataNascita; }
-    public void setDataNascita(LocalDate dataNascita) { this.dataNascita = dataNascita; }
+    public String getCodiceFiscale() {
+        return codiceFiscale;
+    }
 
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
+    public void setCodiceFiscale(String codiceFiscale) {
+        this.codiceFiscale = codiceFiscale;
+    }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public char getSesso() {
+        return sesso;
+    }
 
-    public String getMail() { return mail; }
-    public void setMail(String mail) { this.mail = mail; }
+    public void setSesso(char sesso) {
+        this.sesso = sesso;
+    }
 
-    public boolean isAdmin() { return isAdmin; }
-    public void setAdmin(boolean admin) { isAdmin = admin; }
+    public LocalDate getDataNascita() {
+        return dataNascita;
+    }
+
+    public void setDataNascita(LocalDate dataNascita) {
+        this.dataNascita = dataNascita;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+    public boolean getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(boolean admin) {
+        isAdmin = admin;
+    }
 }
-

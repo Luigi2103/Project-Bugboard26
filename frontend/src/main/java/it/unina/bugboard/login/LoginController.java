@@ -113,17 +113,12 @@ public class LoginController implements Initializable {
         gruppoModalita.selectedToggleProperty().addListener((obs, vecchio, nuovo) -> {
             modalitaCorrente = (nuovo == toggleAdmin) ? ModalitaUtente.ADMIN : ModalitaUtente.UTENTE;
             aggiornaUI();
-            // Non pulire i campi quando si cambia modalità
         });
-
-        // Enter su username passa a password
         campoUsername.setOnAction(e -> campoPassword.requestFocus());
     }
 
     private void inizializzaTogglePassword() {
-        // Sincronizza testo tra i campi
         campoPasswordVisibile.textProperty().bindBidirectional(campoPassword.textProperty());
-        // Gestione visibilità iniziale
         aggiornaVisibilitaPassword(false);
     }
 
@@ -144,7 +139,6 @@ public class LoginController implements Initializable {
         campoPassword.setVisible(!visibile);
         campoPasswordVisibile.setVisible(visibile);
 
-        // Allinea anche il focus
         if (visibile) {
             campoPasswordVisibile.requestFocus();
             campoPasswordVisibile.positionCaret(campoPasswordVisibile.getText().length());

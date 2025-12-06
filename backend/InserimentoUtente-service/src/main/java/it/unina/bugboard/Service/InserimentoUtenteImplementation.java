@@ -14,7 +14,8 @@ public class InserimentoUtenteImplementation implements InserimentoUtenteService
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public InserimentoUtenteImplementation(RepositoryInserimentoUtente utenteRepository, PasswordEncoder passwordEncoder) {
+    public InserimentoUtenteImplementation(RepositoryInserimentoUtente utenteRepository,
+                                           PasswordEncoder passwordEncoder) {
         this.inserimentoUtente = utenteRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -31,7 +32,6 @@ public class InserimentoUtenteImplementation implements InserimentoUtenteService
         }
 
         try {
-            // Creazione Utente
             Utente nuovoUtente = new it.unina.bugboard.Entity.Utente(
                     richiesta.getNome(),
                     richiesta.getCognome(),
@@ -39,9 +39,9 @@ public class InserimentoUtenteImplementation implements InserimentoUtenteService
                     richiesta.getSesso(),
                     richiesta.getDataNascita(),
                     richiesta.getUsername(),
-                    passwordEncoder.encode(richiesta.getPassword()), // Hash password
+                    passwordEncoder.encode(richiesta.getPassword()),
                     richiesta.getMail(),
-                    richiesta.isAdmin());
+                    richiesta.getIsAdmin());
 
             inserimentoUtente.save(nuovoUtente);
             return new RispostaInserimentoUtente(true, "Utente inserito con successo");

@@ -6,18 +6,18 @@ import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public abstract class Persona {
-    @Column(nullable=false, name="Nome")
+    @Column(nullable = false, name = "Nome")
     private String nome;
-    @Column(nullable=false, name="Cognome")
+    @Column(nullable = false, name = "Cognome")
     private String cognome;
-    @Column(nullable = false,unique = true,name="CF")
+    @Column(nullable = false, unique = true, name = "CF")
     private String codiceFiscale;
-    @Column(nullable = false , name ="Sesso")
+    @Column(nullable = false, name = "Sesso")
     private char sesso;
-    @Column(nullable = false,name="DataDiNascita")
+    @Column(nullable = false, name = "DataDiNascita")
     private LocalDate dataNascita;
 
-    protected Persona(String nome, String cognome, String codiceFiscale, char sesso , LocalDate dataNascita) {
+    protected Persona(String nome, String cognome, String codiceFiscale, char sesso, LocalDate dataNascita) {
         this.nome = nome;
         this.cognome = cognome;
         this.codiceFiscale = codiceFiscale;
@@ -25,11 +25,13 @@ public abstract class Persona {
         this.dataNascita = dataNascita;
     }
 
-    protected Persona() {}
+    protected Persona() {
+    }
 
     public String getNome() {
         return nome;
     }
+
     public void setNome(String nome) {
         this.nome = nome;
     }
@@ -37,6 +39,7 @@ public abstract class Persona {
     public String getCognome() {
         return cognome;
     }
+
     public void setCognome(String cognome) {
         this.cognome = cognome;
     }
@@ -44,6 +47,7 @@ public abstract class Persona {
     public String getCodiceFiscale() {
         return codiceFiscale;
     }
+
     public void setCodiceFiscale(String codiceFiscale) {
         this.codiceFiscale = codiceFiscale;
     }
@@ -51,6 +55,7 @@ public abstract class Persona {
     public char getSesso() {
         return sesso;
     }
+
     public void setSesso(char sesso) {
         this.sesso = sesso;
     }
@@ -58,6 +63,7 @@ public abstract class Persona {
     public LocalDate getDataNascita() {
         return dataNascita;
     }
+
     public void setDataNascita(LocalDate dataNascita) {
         this.dataNascita = dataNascita;
     }
