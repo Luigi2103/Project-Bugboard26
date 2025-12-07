@@ -1,4 +1,4 @@
-package it.unina.bugboard.DTO;
+package it.unina.bugboard.dto;
 
 public class RispostaUpdate {
     private String message;

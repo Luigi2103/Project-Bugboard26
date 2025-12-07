@@ -1,4 +1,4 @@
-package it.unina.bugboard.Entity;
+package it.unina.bugboard.entity;
 
 import java.time.LocalDate;
 import jakarta.persistence.Column;

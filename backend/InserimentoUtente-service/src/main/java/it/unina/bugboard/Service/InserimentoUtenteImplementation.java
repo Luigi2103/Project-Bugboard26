@@ -1,6 +1,6 @@
 package it.unina.bugboard.service;
 
-import it.unina.bugboard.Entity.Utente;
+import it.unina.bugboard.entity.Utente;
 import it.unina.bugboard.dto.RichiestaInserimentoUtente;
 import it.unina.bugboard.dto.RispostaInserimentoUtente;
 import it.unina.bugboard.repository.RepositoryInserimentoUtente;
@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class InserimentoUtenteImplementation implements InserimentoUtenteService {
 
-    private final it.unina.bugboard.repository.RepositoryInserimentoUtente inserimentoUtente;
-    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+    private final RepositoryInserimentoUtente inserimentoUtente;
+    private final PasswordEncoder passwordEncoder;
 
     @org.springframework.beans.factory.annotation.Autowired
     public InserimentoUtenteImplementation(RepositoryInserimentoUtente utenteRepository,
-                                           PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder) {
         this.inserimentoUtente = utenteRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -32,16 +32,17 @@ public class InserimentoUtenteImplementation implements InserimentoUtenteService
         }
 
         try {
-            Utente nuovoUtente = new it.unina.bugboard.Entity.Utente(
-                    richiesta.getNome(),
-                    richiesta.getCognome(),
-                    richiesta.getCodiceFiscale(),
-                    richiesta.getSesso(),
-                    richiesta.getDataNascita(),
-                    richiesta.getUsername(),
-                    passwordEncoder.encode(richiesta.getPassword()),
-                    richiesta.getMail(),
-                    richiesta.getIsAdmin());
+            Utente nuovoUtente = new Utente.Builder()
+                    .nome(richiesta.getNome())
+                    .cognome(richiesta.getCognome())
+                    .codiceFiscale(richiesta.getCodiceFiscale())
+                    .sesso(richiesta.getSesso())
+                    .dataNascita(richiesta.getDataNascita())
+                    .username(richiesta.getUsername())
+                    .password(passwordEncoder.encode(richiesta.getPassword()))
+                    .mail(richiesta.getMail())
+                    .isAdmin(richiesta.getIsAdmin())
+                    .build();
 
             inserimentoUtente.save(nuovoUtente);
             return new RispostaInserimentoUtente(true, "Utente inserito con successo");
@@ -50,4 +51,5 @@ public class InserimentoUtenteImplementation implements InserimentoUtenteService
             return new RispostaInserimentoUtente(false, "Errore durante l'inserimento: " + e.getMessage());
         }
     }
+
 }

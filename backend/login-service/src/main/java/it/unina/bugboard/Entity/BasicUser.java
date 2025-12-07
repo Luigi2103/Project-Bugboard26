@@ -1,4 +1,4 @@
-package it.unina.bugboard.Entity;
+package it.unina.bugboard.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
@@ -11,13 +11,12 @@ public abstract class BasicUser {
     @Column(nullable = false, name = "password")
     private String passwordHash;
 
-    public BasicUser(String username, String passwordHash) {
+    protected BasicUser(String username, String passwordHash) {
         this.username = username;
         this.passwordHash = passwordHash;
     }
 
-    public BasicUser() {
-    }
+    protected BasicUser() {}
 
     public String getUsername() {
         return username;
@@ -34,7 +33,5 @@ public abstract class BasicUser {
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
-
-
 
 }

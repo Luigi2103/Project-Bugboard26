@@ -1,24 +1,24 @@
 package it.unina.bugboard.service;
 
-import it.unina.bugboard.DTO.RichiestaLogin;
-import it.unina.bugboard.DTO.RichiestaUpdate;
-import it.unina.bugboard.DTO.RispostaLogin;
-import it.unina.bugboard.DTO.RispostaUpdate;
-import it.unina.bugboard.repository.repositoryUtente;
+import it.unina.bugboard.dto.RichiestaLogin;
+import it.unina.bugboard.dto.RichiestaUpdate;
+import it.unina.bugboard.dto.RispostaLogin;
+import it.unina.bugboard.dto.RispostaUpdate;
+import it.unina.bugboard.repository.RepositoryUtente;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import it.unina.bugboard.Entity.User;
+import it.unina.bugboard.entity.User;
 import java.util.Optional;
 
 @Service
-public class loginServiceImplementation implements LoginService{
-    private final repositoryUtente userRepository;
+public class LoginServiceImplementation implements LoginService {
+    private final RepositoryUtente userRepository;
     private final PasswordEncoder passwordEncoder;
     private final it.unina.bugboard.JwtUtils jwtUtils;
 
-    public loginServiceImplementation(repositoryUtente userRepository, PasswordEncoder passwordEncoder,
-            it.unina.bugboard.JwtUtils jwtUtils) {
+    public LoginServiceImplementation(RepositoryUtente userRepository, PasswordEncoder passwordEncoder,
+                                      it.unina.bugboard.JwtUtils jwtUtils) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;

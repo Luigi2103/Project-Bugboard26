@@ -1,9 +1,9 @@
-package it.unina.bugboard.Controller;
+package it.unina.bugboard.controller;
 
-import it.unina.bugboard.DTO.RichiestaLogin;
-import it.unina.bugboard.DTO.RichiestaUpdate;
-import it.unina.bugboard.DTO.RispostaLogin;
-import it.unina.bugboard.DTO.RispostaUpdate;
+import it.unina.bugboard.dto.RichiestaLogin;
+import it.unina.bugboard.dto.RichiestaUpdate;
+import it.unina.bugboard.dto.RispostaLogin;
+import it.unina.bugboard.dto.RispostaUpdate;
 import it.unina.bugboard.service.LoginService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +40,5 @@ public class Controller {
 
         return ResponseEntity.status(401).body(risposta);
     }
-
 
 }
