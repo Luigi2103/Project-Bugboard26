@@ -1,3 +1,4 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 DROP TABLE IF EXISTS Issue_TAG CASCADE;
 DROP TABLE IF EXISTS Commento CASCADE;
 DROP TABLE IF EXISTS Cronologia CASCADE;
@@ -49,7 +50,7 @@ CREATE TABLE Utente (
     IsAdmin BOOLEAN NOT NULL DEFAULT FALSE,
     DataInizioRuolo DATE,
 
-    CONSTRAINT chk_admin_data CHECK ( (IsAdmin = TRUE AND DataInizioRuolo IS NOT NULL) OR (IsAdmin = FALSE)),
+    CONSTRAINT chk_admin_data CHECK ( (IsAdmin = TRUE AND DataInizioRuolo IS NOT NULL) OR (IsAdmin = FALSE AND DataInizioRuolo IS NULL)),
     CONSTRAINT check_lunghezza_CF CHECK (LENGTH(CF) = 16)
 );
 
@@ -175,3 +176,205 @@ CREATE TABLE Issue_TAG (
         REFERENCES TAG(IdTag) ON DELETE CASCADE,
     CONSTRAINT unica_issue_tag UNIQUE (IdIssue, IdTag)
 );
+
+
+--trigger necessari
+
+CREATE OR REPLACE FUNCTION check_assegnatario_nel_team()
+RETURNS TRIGGER AS $$
+DECLARE
+    team_progetto INTEGER;
+    is_membro BOOLEAN;
+BEGIN
+    IF NEW.IdAssegnatario IS NULL THEN
+        RETURN NEW;
+    END IF;
+
+
+    SELECT IdTeam INTO team_progetto
+    FROM Progetto
+    WHERE IdProgetto = NEW.IdProgetto;
+
+
+    SELECT EXISTS (
+        SELECT 1
+        FROM Appartenenza
+        WHERE IdUtente = NEW.IdAssegnatario
+        AND IdTeam = team_progetto
+    ) INTO is_membro;
+
+
+    IF NOT is_membro THEN
+            RAISE EXCEPTION 'L''utente assegnatario (ID %) non fa parte del team che gestisce questo progetto.', NEW.IdAssegnatario;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_check_assegnatario ON Issue;
+
+CREATE TRIGGER trg_check_assegnatario
+BEFORE INSERT OR UPDATE ON Issue
+FOR EACH ROW
+EXECUTE FUNCTION check_assegnatario_nel_team();
+
+
+
+
+CREATE OR REPLACE FUNCTION prevent_change_closed_issue()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF OLD.Stato = 'CLOSED' AND NEW.Stato = 'CLOSED' THEN
+        IF NEW.Titolo != OLD.Titolo OR
+           NEW.Descrizione != OLD.Descrizione OR
+           NEW.Priorita != OLD.Priorita THEN
+
+            RAISE EXCEPTION 'Non è possibile modificare i dettagli di una Issue nello stato CLOSED.';
+        END IF;
+    END IF;
+
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_freeze_closed_issue ON Issue;
+
+CREATE TRIGGER trg_freeze_closed_issue
+    BEFORE UPDATE ON Issue
+    FOR EACH ROW
+    EXECUTE FUNCTION prevent_change_closed_issue();
+
+
+
+
+CREATE OR REPLACE FUNCTION check_commento_su_issue_aperta()
+RETURNS TRIGGER AS $$
+DECLARE
+stato_issue enum_stato;
+BEGIN
+
+SELECT Stato INTO stato_issue
+FROM Issue
+WHERE IdIssue = NEW.IdIssue;
+
+
+IF stato_issue = 'CLOSED' THEN
+        RAISE EXCEPTION 'Non puoi commentare una Issue chiusa (ID %).', NEW.IdIssue;
+END IF;
+
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_block_comments_closed ON Commento;
+
+CREATE TRIGGER trg_block_comments_closed
+    BEFORE INSERT ON Commento
+    FOR EACH ROW
+    EXECUTE FUNCTION check_commento_su_issue_aperta();
+
+
+CREATE OR REPLACE FUNCTION check_permessi_commento()
+RETURNS TRIGGER AS $$
+DECLARE
+team_progetto INTEGER;
+    is_admin BOOLEAN;
+    is_membro_team BOOLEAN;
+BEGIN
+    -- 1. Controllo se l'utente è ADMIN (Jolly)
+SELECT IsAdmin INTO is_admin
+FROM Utente
+WHERE IdUtente = NEW.IdUtente;
+
+IF is_admin IS TRUE THEN
+        RETURN NEW;
+END IF;
+
+SELECT P.IdTeam INTO team_progetto
+FROM Issue I
+         JOIN Progetto P ON I.IdProgetto = P.IdProgetto
+WHERE I.IdIssue = NEW.IdIssue;
+
+
+SELECT EXISTS (
+    SELECT 1
+    FROM Appartenenza
+    WHERE IdUtente = NEW.IdUtente
+      AND IdTeam = team_progetto
+) INTO is_membro_team;
+
+
+IF NOT is_membro_team THEN
+        RAISE EXCEPTION 'Accesso negato: Solo i membri del team (o Admin) possono commentare questo progetto.';
+END IF;
+
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_check_permessi_commento ON Commento;
+
+CREATE TRIGGER trg_check_permessi_commento
+    BEFORE INSERT ON Commento
+    FOR EACH ROW
+    EXECUTE FUNCTION check_permessi_commento();
+
+
+
+
+-- 1. Funzione di Calcolo del Carico
+CREATE OR REPLACE FUNCTION assegna_carico_bilanciato()
+RETURNS TRIGGER AS $$
+DECLARE
+target_team INTEGER;
+scelto_utente INTEGER;
+BEGIN
+
+    IF NEW.IdAssegnatario IS NOT NULL THEN
+        RETURN NEW;
+END IF;
+
+
+SELECT IdTeam INTO target_team
+FROM Progetto
+WHERE IdProgetto = NEW.IdProgetto;
+
+
+SELECT A.IdUtente INTO scelto_utente
+FROM Appartenenza A LEFT JOIN Issue I ON A.IdUtente = I.IdAssegnatario AND I.Stato IN ('TO-DO', 'IN PROGRESS')
+WHERE A.IdTeam = target_team
+GROUP BY A.IdUtente
+ORDER BY
+    COALESCE(SUM(
+                     CASE
+                         WHEN I.Priorita = 'MASSIMA' THEN 10
+                         WHEN I.Priorita = 'ALTA' THEN 5
+                         WHEN I.Priorita = 'MEDIA' THEN 3
+                         WHEN I.Priorita = 'BASSA' THEN 1
+                         ELSE 0
+                         END
+             ), 0) ASC,
+    RANDOM()
+    LIMIT 1;
+
+
+IF scelto_utente IS NULL THEN
+        RAISE EXCEPTION 'Impossibile assegnare automaticamente: Il Team del progetto è vuoto.';
+END IF;
+
+
+NEW.IdAssegnatario := scelto_utente;
+
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+DROP TRIGGER IF EXISTS trg_load_balancer ON Issue;
+
+CREATE TRIGGER trg_load_balancer
+    BEFORE INSERT ON Issue
+    FOR EACH ROW
+    EXECUTE FUNCTION assegna_carico_bilanciato();
