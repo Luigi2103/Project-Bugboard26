@@ -23,6 +23,7 @@
         <module>api-gateway</module>
         <module>InserimentoUtente-service</module>
         <module>jwt-common</module>
+        <module>Issue-service</module>
         <!-- altri moduli -->
     </modules>
 
