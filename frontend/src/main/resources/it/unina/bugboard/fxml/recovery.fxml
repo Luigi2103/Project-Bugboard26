@@ -46,7 +46,7 @@
                 <VBox alignment="CENTER" spacing="12" fx:id="boxForm"
                       fillWidth="true"
                       styleClass="form-box"
-                      maxWidth="420">
+                      maxWidth="550">
                     <padding>
                         <Insets top="25" bottom="25" left="30" right="30"/>
                     </padding>

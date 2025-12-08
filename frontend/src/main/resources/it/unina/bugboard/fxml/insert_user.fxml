@@ -36,7 +36,7 @@
                 <VBox alignment="CENTER" spacing="12" fx:id="boxForm"
                       fillWidth="true"
                       styleClass="form-box"
-                      maxWidth="450">
+                      maxWidth="650">
                     <padding>
                         <Insets top="20" bottom="20" left="40" right="40"/>
                     </padding>
@@ -132,17 +132,29 @@
                         <!-- Quinta riga: Password e Conferma Password -->
                         <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="4">
                             <Label text="Password" styleClass="field-label"/>
-                            <PasswordField fx:id="campoPassword"
-                                           promptText="Inserisci password"
-                                           maxWidth="Infinity"/>
+                            <StackPane alignment="CENTER_RIGHT">
+                                <TextField fx:id="campoPasswordVisibile" promptText="Inserisci password" visible="false" maxWidth="Infinity"/>
+                                <PasswordField fx:id="campoPassword" promptText="Inserisci password" maxWidth="Infinity"/>
+                                <Button fx:id="togglePassword" text="👁" onAction="#togglePasswordVisibility" styleClass="icon-button">
+                                    <StackPane.margin>
+                                        <Insets right="5"/>
+                                    </StackPane.margin>
+                                </Button>
+                            </StackPane>
                             <Label fx:id="erroreCampoPassword" text="Campo obbligatorio" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
                         </VBox>
 
                         <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="4">
                             <Label text="Conferma Password" styleClass="field-label"/>
-                            <PasswordField fx:id="campoConfermaPassword"
-                                           promptText="Ripeti password"
-                                           maxWidth="Infinity"/>
+                            <StackPane alignment="CENTER_RIGHT">
+                                <TextField fx:id="campoConfermaPasswordVisibile" promptText="Ripeti password" visible="false" maxWidth="Infinity"/>
+                                <PasswordField fx:id="campoConfermaPassword" promptText="Ripeti password" maxWidth="Infinity"/>
+                                <Button fx:id="toggleConfermaPassword" text="👁" onAction="#toggleConfermaPasswordVisibility" styleClass="icon-button">
+                                    <StackPane.margin>
+                                        <Insets right="5"/>
+                                    </StackPane.margin>
+                                </Button>
+                            </StackPane>
                             <Label fx:id="errorePassword" text="Le password non coincidono" styleClass="error-label" visible="false" managed="false" maxWidth="Infinity" wrapText="true"/>
                         </VBox>
                     </GridPane>

@@ -77,7 +77,58 @@ public class RecoveryController implements Initializable {
         inizializzaTogglePassword();
         inizializzaBindingCancella();
         animaIngresso();
+        gestisciResponsive();
         Platform.runLater(() -> contenitoreRecovery.requestFocus());
+    }
+
+    private void gestisciResponsive() {
+        if (contenitoreRecovery.getScene() != null) {
+            impostaListenerLarghezza(contenitoreRecovery.getScene());
+        } else {
+            contenitoreRecovery.sceneProperty().addListener((obs, oldScene, newScene) -> {
+                if (newScene != null) {
+                    impostaListenerLarghezza(newScene);
+                }
+            });
+        }
+    }
+
+    private void impostaListenerLarghezza(javafx.scene.Scene scene) {
+        javafx.beans.value.ChangeListener<Number> sizeListener = (obs, oldValue, newValue) -> {
+            aggiornaScala(scene);
+        };
+
+        scene.widthProperty().addListener(sizeListener);
+        scene.heightProperty().addListener(sizeListener);
+
+        aggiornaScala(scene);
+    }
+
+    private void aggiornaScala(javafx.scene.Scene scene) {
+        double width = scene.getWidth();
+        double height = scene.getHeight();
+
+        // Logica di resize per il padding (adattata da LoginController)
+        if (width < 600) {
+            contenitoreRecovery.setPadding(new javafx.geometry.Insets(30, 20, 30, 20));
+        } else {
+            contenitoreRecovery.setPadding(new javafx.geometry.Insets(30, 40, 30, 40));
+        }
+
+        // Logica di scaling
+        double baseWidth = 1200.0;
+        double baseHeight = 800.0;
+
+        double scaleX = width / baseWidth;
+        double scaleY = height / baseHeight;
+
+        double scale = Math.min(scaleX, scaleY);
+
+        // Clamp tra 1.0 e 1.3
+        scale = Math.max(1.0, Math.min(scale, 1.3));
+
+        contenitoreRecovery.setScaleX(scale);
+        contenitoreRecovery.setScaleY(scale);
     }
 
     private void caricaLogo() {
@@ -205,7 +256,7 @@ public class RecoveryController implements Initializable {
             valid = false;
         }
 
-        if(!campoNuovaPassword.getText().equals(campoPassword.getText())) {
+        if (!campoNuovaPassword.getText().equals(campoPassword.getText())) {
             mostraErrore(erroreNuovaPassword, "Le password non coincidono");
             valid = false;
         }
@@ -237,8 +288,7 @@ public class RecoveryController implements Initializable {
         } else {
             animaShake();
         }
-}
-
+    }
 
     private void mostraErrore(Label label, String msg) {
         label.setText(msg);

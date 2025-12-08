@@ -15,9 +15,12 @@ import java.util.ResourceBundle;
 
 public class HomePageController implements Initializable {
 
-    @FXML private Label etichettaBenvenuto;
-    @FXML private Button btnAggiungiUtente;
-    @FXML private FlowPane boxIssues;
+    @FXML
+    private Label etichettaBenvenuto;
+    @FXML
+    private Button btnAggiungiUtente;
+    @FXML
+    private FlowPane boxIssues;
 
     private final HomeApiService homeApiService;
     private final SessionManager sessionManager;
@@ -78,19 +81,23 @@ public class HomePageController implements Initializable {
     @FXML
     private void vaiAInserimentoUtente() {
         SceneRouter.cambiaScena("/it/unina/bugboard/fxml/insert_user.fxml",
-                900, 930, "BugBoard - Aggiungi Utente");
+                1000, 900, "BugBoard - Aggiungi Utente");
     }
 
     @FXML
-    private void segnalaIssue() { System.out.println("Segnala Issue clicked"); }
+    private void segnalaIssue() {
+        System.out.println("Segnala Issue clicked");
+    }
 
     @FXML
-    private void vediTutte() { System.out.println("Vedi tutte clicked"); }
+    private void vediTutte() {
+        System.out.println("Vedi tutte clicked");
+    }
 
     @FXML
     private void logout() {
         sessionManager.logout();
         SceneRouter.cambiaScena("/it/unina/bugboard/fxml/login.fxml",
-                900, 800, "BugBoard - Login");
+                1000, 850, "BugBoard - Login");
     }
 }

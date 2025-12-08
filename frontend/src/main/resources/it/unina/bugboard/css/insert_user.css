@@ -173,10 +173,49 @@
     -fx-effect: dropshadow(three-pass-box, rgba(52, 152, 219, 0.3), 8, 0, 0, 2);
 }
 
+/* Icon Button */
+.icon-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-text-fill: #7f8c8d;
+    -fx-font-size: 14px;
+    -fx-padding: 5 10;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+}
+
+.icon-button:hover {
+    -fx-text-fill: #3498DB;
+    -fx-background-color: rgba(52, 152, 219, 0.1);
+    -fx-background-radius: 5;
+}
+
 .back-button:hover {
     -fx-background-color: #3498DB;
     -fx-text-fill: white;
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
     -fx-effect: dropshadow(three-pass-box, rgba(52, 152, 219, 0.5), 12, 0, 0, 3);
+}
+
+/* DatePicker Styling */
+.date-picker-popup .month-year-pane .label {
+    -fx-text-fill: black;
+}
+
+.date-picker-popup .week-number-cell {
+    -fx-text-fill: black;
+}
+
+.date-picker-popup .day-cell {
+    -fx-text-fill: black;
+}
+
+.date-picker-popup .day-name-cell {
+    -fx-text-fill: black;
+}
+
+.date-picker-popup .spinner .button .left-arrow,
+.date-picker-popup .spinner .button .right-arrow {
+    -fx-background-color: black;
 }

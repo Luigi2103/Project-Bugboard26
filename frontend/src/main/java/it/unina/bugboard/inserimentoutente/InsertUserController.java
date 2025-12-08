@@ -7,6 +7,9 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.Bindings;
 import javafx.application.Platform;
 import java.time.LocalDate;
+import java.time.Period;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 
 public class InsertUserController {
 
@@ -29,7 +32,15 @@ public class InsertUserController {
     @FXML
     private PasswordField campoPassword;
     @FXML
+    private TextField campoPasswordVisibile;
+    @FXML
+    private Button togglePassword;
+    @FXML
     private PasswordField campoConfermaPassword;
+    @FXML
+    private TextField campoConfermaPasswordVisibile;
+    @FXML
+    private Button toggleConfermaPassword;
     @FXML
     private Button pulsanteRegistra;
     @FXML
@@ -67,6 +78,8 @@ public class InsertUserController {
     private static final String MSG_CAMPO_OBBLIGATORIO = "Campo obbligatorio";
     private static final String MSG_TXTFIELD_OBBLIGATORIO = "text-field-error";
     private final InsertUserApiService insertUserApiService;
+    private boolean passwordVisibile = false;
+    private boolean confermaPasswordVisibile = false;
 
     public InsertUserController(InsertUserApiService insertUserApiService) {
         this.insertUserApiService = insertUserApiService;
@@ -78,6 +91,122 @@ public class InsertUserController {
         pulsanteCancella.disableProperty().bind(createTuttiCampiVuotiBinding());
         inizializzaListenerRuolo();
         campoDataNascita.setEditable(false);
+        inizializzaTogglePassword();
+        gestisciResponsive();
+    }
+
+    private void gestisciResponsive() {
+        if (contenitoreInserimento.getScene() != null) {
+            impostaListenerLarghezza(contenitoreInserimento.getScene());
+        } else {
+            contenitoreInserimento.sceneProperty().addListener((obs, oldScene, newScene) -> {
+                if (newScene != null) {
+                    impostaListenerLarghezza(newScene);
+                }
+            });
+        }
+    }
+
+    private void impostaListenerLarghezza(javafx.scene.Scene scene) {
+        javafx.beans.value.ChangeListener<Number> sizeListener = (obs, oldValue, newValue) -> {
+            aggiornaScala(scene);
+        };
+
+        scene.widthProperty().addListener(sizeListener);
+        scene.heightProperty().addListener(sizeListener);
+
+        // Initial update
+        aggiornaScala(scene);
+    }
+
+    private void aggiornaScala(javafx.scene.Scene scene) {
+        double width = scene.getWidth();
+        double height = scene.getHeight();
+
+        // Padding responsive (optional here depending on design, matching existing if
+        // needed)
+        if (width < 600) {
+            contenitoreInserimento.setPadding(new javafx.geometry.Insets(20, 20, 20, 20));
+        } else {
+            contenitoreInserimento.setPadding(new javafx.geometry.Insets(30, 40, 30, 40));
+        }
+
+        // Logic for dynamic scaling
+        double baseWidth = 1000.0;
+        double baseHeight = 900.0;
+
+        double scaleX = width / baseWidth;
+        double scaleY = height / baseHeight;
+
+        double scale = Math.min(scaleX, scaleY);
+
+        // Clamp scale: min 1.0, max 1.3
+        scale = Math.max(1.0, Math.min(scale, 1.3));
+
+        contenitoreInserimento.setScaleX(scale);
+        contenitoreInserimento.setScaleY(scale);
+    }
+
+    private void inizializzaTogglePassword() {
+        // Main Password
+        campoPasswordVisibile.textProperty().bindBidirectional(campoPassword.textProperty());
+        aggiornaVisibilitaPassword(false);
+
+        // Confirm Password
+        campoConfermaPasswordVisibile.textProperty().bindBidirectional(campoConfermaPassword.textProperty());
+        aggiornaVisibilitaConfermaPassword(false);
+    }
+
+    @FXML
+    private void togglePasswordVisibility() {
+        passwordVisibile = !passwordVisibile;
+        aggiornaVisibilitaPassword(passwordVisibile);
+    }
+
+    private void aggiornaVisibilitaPassword(boolean visibile) {
+        FontAwesomeIconView icon = new FontAwesomeIconView(
+                visibile ? FontAwesomeIcon.EYE_SLASH : FontAwesomeIcon.EYE);
+        icon.setSize("18");
+
+        togglePassword.setGraphic(icon);
+        togglePassword.setText(null);
+
+        campoPassword.setVisible(!visibile);
+        campoPasswordVisibile.setVisible(visibile);
+
+        if (visibile) {
+            campoPasswordVisibile.requestFocus();
+            campoPasswordVisibile.positionCaret(campoPasswordVisibile.getText().length());
+        } else {
+            campoPassword.requestFocus();
+            campoPassword.positionCaret(campoPassword.getText().length());
+        }
+    }
+
+    @FXML
+    private void toggleConfermaPasswordVisibility() {
+        confermaPasswordVisibile = !confermaPasswordVisibile;
+        aggiornaVisibilitaConfermaPassword(confermaPasswordVisibile);
+    }
+
+    private void aggiornaVisibilitaConfermaPassword(boolean visibile) {
+        FontAwesomeIconView icon = new FontAwesomeIconView(
+                visibile ? FontAwesomeIcon.EYE_SLASH : FontAwesomeIcon.EYE);
+        icon.setSize("18");
+
+        toggleConfermaPassword.setGraphic(icon);
+        toggleConfermaPassword.setText(null);
+
+        campoConfermaPassword.setVisible(!visibile);
+        campoConfermaPasswordVisibile.setVisible(visibile);
+
+        if (visibile) {
+            campoConfermaPasswordVisibile.requestFocus();
+            campoConfermaPasswordVisibile.positionCaret(campoConfermaPasswordVisibile.getText().length());
+        } else {
+            campoConfermaPassword.requestFocus();
+            campoConfermaPassword.positionCaret(campoConfermaPassword.getText().length());
+        }
     }
 
     private void inizializzaListenerRuolo() {
@@ -119,6 +248,8 @@ public class InsertUserController {
 
         if (!verificaCampiObbligatori())
             return;
+        if (!verificaMaggiorenne())
+            return;
         if (!verificaPassword())
             return;
         if (!verificaCodiceFiscale())
@@ -142,8 +273,20 @@ public class InsertUserController {
                 password, email, isAdmin)).start();
     }
 
+    private boolean verificaMaggiorenne() {
+        LocalDate data = campoDataNascita.getValue();
+        if (data != null) {
+            if (Period.between(data, LocalDate.now()).getYears() < 18) {
+                setErrorStyle(campoDataNascita);
+                mostraErroreInline(erroreDataNascita, "Devi essere maggiorenne");
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void inviaRischiestaInserimentoUtente(String nome, String cognome, String codiceFiscale, char sesso,
-                                                  LocalDate dataNascita, String username, String password, String email, boolean isAdmin) {
+            LocalDate dataNascita, String username, String password, String email, boolean isAdmin) {
         try {
             RispostaInserimentoUser risposta = insertUserApiService.inserisciUtente(nome, cognome, codiceFiscale, sesso,
                     dataNascita, username, password, email, isAdmin);

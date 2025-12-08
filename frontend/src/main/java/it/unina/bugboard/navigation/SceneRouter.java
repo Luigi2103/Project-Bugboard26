@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.application.Platform;
 import it.unina.bugboard.app.BugBoard;
 import it.unina.bugboard.login.LoginController;
 import it.unina.bugboard.login.LoginApiService;
@@ -29,7 +30,8 @@ public final class SceneRouter {
     static {
         controllerFactories.put(LoginController.class, param -> new LoginController(loginApiService, sessionManager));
         controllerFactories.put(InsertUserController.class, param -> new InsertUserController(insertUserApiService));
-        controllerFactories.put(HomePageController.class, param -> new HomePageController(homeApiService, sessionManager));
+        controllerFactories.put(HomePageController.class,
+                param -> new HomePageController(homeApiService, sessionManager));
     }
 
     private SceneRouter() {
@@ -78,9 +80,25 @@ public final class SceneRouter {
                 }
             });
 
-            Scene scene = new Scene(loader.load(), width, height);
-            primaryStage.setTitle(title);
-            primaryStage.setScene(scene);
+            javafx.scene.Parent root = loader.load();
+
+            if (primaryStage.getScene() == null) {
+                // First launch
+                Scene scene = new Scene(root, width, height);
+                primaryStage.setTitle(title);
+                primaryStage.setScene(scene);
+            } else {
+                // Navigation: swap root to preserve window state (maximized/fullscreen)
+                primaryStage.getScene().setRoot(root);
+                primaryStage.setTitle(title);
+
+                // Resize only if not maximized
+                if (!primaryStage.isMaximized()) {
+                    primaryStage.setWidth(width);
+                    primaryStage.setHeight(height);
+                    primaryStage.centerOnScreen();
+                }
+            }
 
         } catch (IOException e) {
             throw new SceneLoadException("Impossibile caricare la scena: " + fxml, e);
