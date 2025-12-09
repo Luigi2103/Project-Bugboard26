@@ -1,0 +1,125 @@
+.insert-issue-root {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #F5F0D9 0%, #3498DB 100%);
+}
+
+.transparent-scroll {
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.transparent-scroll>.viewport {
+    -fx-background-color: transparent;
+}
+
+.title-label {
+    -fx-text-fill: #2C3E50;
+    -fx-font-weight: bold;
+    -fx-font-size: 32px;
+}
+
+.form-box {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 20, 0, 0, 5);
+}
+
+.field-label {
+    -fx-text-fill: #2c3e50;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.text-field,
+.text-area,
+.combo-box {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 10;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 10;
+    -fx-padding: 10;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused,
+.text-area:focused,
+.combo-box:focused {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #3498DB;
+    -fx-border-width: 2;
+}
+
+.text-area {
+    -fx-padding: 5;
+    /* Text area handles padding differently */
+}
+
+.text-area .content {
+    -fx-background-color: transparent;
+}
+
+.submit-button {
+    -fx-background-color: linear-gradient(to right, #F5F0D9 0%, #3498DB 100%);
+    -fx-text-fill: #2C3E50;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-background-radius: 10;
+    -fx-padding: 12 40;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(52, 152, 219, 0.4), 10, 0, 0, 3);
+}
+
+.cancel-button {
+    -fx-background-color: #bdc3c7;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-background-radius: 10;
+    -fx-padding: 12 40;
+    -fx-cursor: hand;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #95a5a6;
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+.submit-button:hover {
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+.image-upload-area {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 10;
+    -fx-border-color: #3498DB;
+    -fx-border-style: dashed;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-cursor: hand;
+    -fx-alignment: center;
+}
+
+.image-upload-area:hover {
+    -fx-background-color: #e8f4fc;
+}
+
+.upload-label {
+    -fx-text-fill: #7f8c8d;
+    -fx-font-size: 14px;
+}
+
+.error-label {
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+}
+
+.text-field-error,
+.text-area-error,
+.combo-box-error {
+    -fx-border-color: #e74c3c;
+    -fx-border-width: 2;
+}

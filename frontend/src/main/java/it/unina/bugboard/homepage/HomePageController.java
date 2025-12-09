@@ -99,7 +99,8 @@ public class HomePageController implements Initializable {
 
     @FXML
     private void segnalaIssue() {
-        System.out.println("Segnala Issue clicked");
+        SceneRouter.cambiaScena("/it/unina/bugboard/fxml/insert_issue.fxml",
+                1000, 800, "BugBoard - Nuova Issue");
     }
 
     @FXML

@@ -1,5 +1,6 @@
 module it.unina.bugboard {
     exports it.unina.bugboard.app to javafx.graphics;
+
     opens it.unina.bugboard.app to javafx.fxml;
 
     requires javafx.controls;
@@ -26,6 +27,7 @@ module it.unina.bugboard {
 
     opens it.unina.bugboard.recovery to com.fasterxml.jackson.databind, javafx.fxml;
     opens it.unina.bugboard.homepage to javafx.fxml;
+    opens it.unina.bugboard.inserimentoIssue to javafx.fxml;
 
     exports it.unina.bugboard.recovery.exception;
 
