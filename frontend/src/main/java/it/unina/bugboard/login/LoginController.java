@@ -220,41 +220,32 @@ public class LoginController implements Initializable {
     }
 
     private void impostaListenerLarghezza(javafx.scene.Scene scene) {
-        javafx.beans.value.ChangeListener<Number> sizeListener = (obs, oldValue, newValue) -> {
-            aggiornaScala(scene);
-        };
+        javafx.beans.value.ChangeListener<Number> sizeListener = (obs, oldValue, newValue) ->
+                aggiornaScala(scene);
 
         scene.widthProperty().addListener(sizeListener);
         scene.heightProperty().addListener(sizeListener);
 
-        // Initial update
         aggiornaScala(scene);
     }
+
 
     private void aggiornaScala(javafx.scene.Scene scene) {
         double width = scene.getWidth();
         double height = scene.getHeight();
 
-        // Padding responsive
         if (width < 600) {
             contenitoreLogin.setPadding(new javafx.geometry.Insets(30, 20, 30, 20));
         } else {
             contenitoreLogin.setPadding(new javafx.geometry.Insets(30, 50, 30, 50));
         }
 
-        // Logic for dynamic scaling ("leggermente più grande")
         double baseWidth = 1000.0;
         double baseHeight = 800.0;
-
         double scaleX = width / baseWidth;
         double scaleY = height / baseHeight;
+        double scale = Math.clamp(1.0, Math.min(scaleX, scaleY), 1.3);
 
-        // Take the smaller scale to avoid cutting off
-        double scale = Math.min(scaleX, scaleY);
-
-        // Clamp scale: min 1.0 (normal size), max 1.3 (30% larger on big screens)
-        // This prevents "troppo largo" issues while fulfilling "ingrandire leggermente"
-        scale = Math.max(1.0, Math.min(scale, 1.3));
 
         contenitoreLogin.setScaleX(scale);
         contenitoreLogin.setScaleY(scale);
@@ -318,7 +309,7 @@ public class LoginController implements Initializable {
                 boolean isAdmin = "ADMIN".equalsIgnoreCase(risposta.getModalita());
                 this.sessionManager.setAdmin(isAdmin);
 
-                SceneRouter.cambiaScena("/it/unina/bugboard/fxml/home.fxml", 1200, 800,
+                SceneRouter.cambiaScena("/it/unina/bugboard/fxml/home.fxml", 1200, 850,
                         "BugBoard - Home");
             } else {
                 setErrorStyle(campoUsername);
