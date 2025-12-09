@@ -4,91 +4,114 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
 
 <BorderPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="it.unina.bugboard.homepage.HomePageController"
-            stylesheets="@../css/home.css">
+            stylesheets="@../css/home.css"
+            prefWidth="1200" prefHeight="800">
 
-    <!-- HEADER -->
-    <top>
-        <HBox styleClass="home-header" alignment="CENTER_LEFT" spacing="20">
-            <padding>
-                <Insets top="25" bottom="25" left="30" right="30"/>
-            </padding>
-
-            <VBox spacing="5">
-                <HBox.hgrow>
-                    <Priority fx:constant="ALWAYS"/>
-                </HBox.hgrow>
-
-                <Label fx:id="etichettaBenvenuto"
-                       text="Ciao Utente"
-                       styleClass="home-header__title"
-                       wrapText="true" />
-                <Label text="Ecco le tue attività recenti"
-                       styleClass="home-header__subtitle"
-                       wrapText="true" />
-            </VBox>
-
-            <Button text="Logout"
-                    onAction="#logout"
-                    styleClass="btn-logout" />
-        </HBox>
-    </top>
-
-    <!-- CENTRO -->
-    <center>
-        <VBox spacing="25" alignment="TOP_CENTER" styleClass="home-center">
-            <padding>
-                <Insets top="20" left="30" right="30" bottom="20"/>
-            </padding>
-
-            <!-- ACTION BAR -->
-            <HBox spacing="20" alignment="CENTER" styleClass="actions-bar">
-                <Button text="Segnala Issue"
-                        onAction="#segnalaIssue"
-                        styleClass="btn-secondary"/>
-
-                <Button fx:id="btnAggiungiUtente"
-                        text="Aggiungi Utente"
-                        onAction="#vaiAInserimentoUtente"
-                        styleClass="btn-primary"/>
-
-                <Button text="Visualizza tutte"
-                        onAction="#vediTutte"
-                        styleClass="link-view-all"/>
+    <!-- SIDEBAR -->
+    <left>
+        <VBox styleClass="sidebar" prefWidth="250" spacing="0">
+            <!-- Branding -->
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="sidebar-brand">
+                <padding>
+                    <Insets top="30" bottom="30" left="25"/>
+                </padding>
+                <Label text="BugBoard" styleClass="brand-text"/>
             </HBox>
 
-            <!-- TITLE -->
-            <Label text="Issue Assegnate"
-                   style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+            <!-- Navigation -->
+            <VBox spacing="5" VBox.vgrow="ALWAYS" styleClass="sidebar-nav">
+                <padding>
+                    <Insets top="20" right="15" left="15"/>
+                </padding>
 
-            <!-- SCROLL -->
-            <ScrollPane fitToWidth="true"
-                        vbarPolicy="AS_NEEDED"
-                        hbarPolicy="NEVER"
-                        styleClass="transparent-scroll">
+                <Button text="Dashboard" styleClass="nav-btn, active-nav"/>
+                <Button text="Le Mie Issue" styleClass="nav-btn"/>
+                <Button text="Tutte le Issue" styleClass="nav-btn" onAction="#vediTutte"/>
+                <Button fx:id="btnAggiungiUtente" text="Utenti" styleClass="nav-btn" onAction="#vaiAInserimentoUtente"/>
+                <Pane VBox.vgrow="ALWAYS"/> <!-- Spacer -->
 
-                <FlowPane fx:id="boxIssues"
-                          hgap="20"
-                          vgap="20"
-                          alignment="TOP_LEFT"
-                          prefWrapLength="700"
-                          styleClass="issues-flow">
+                <Button text="Impostazioni" styleClass="nav-btn"/>
+                <Button text="Logout" styleClass="nav-btn, logout-btn" onAction="#logout"/>
+                <padding><Insets bottom="20"/></padding>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- MAIN CONTENT -->
+    <center>
+        <VBox styleClass="main-content" spacing="0">
+
+            <!-- TOP HEADER -->
+            <HBox alignment="CENTER_LEFT" spacing="20" styleClass="top-header" prefHeight="80">
+                <padding>
+                    <Insets left="30" right="30"/>
+                </padding>
+
+                <Label fx:id="etichettaBenvenuto" text="Ciao Utente" styleClass="header-title"/>
+
+                <Pane HBox.hgrow="ALWAYS"/>
+
+                <TextField promptText="Cerca issue..." styleClass="search-bar" prefWidth="300"/>
+                <Button text="Nuova Issue" styleClass="btn-primary" onAction="#segnalaIssue"/>
+                <Circle radius="18" fill="DODGERBLUE" stroke="TRANSPARENT"/> <!-- Profile Placeholder -->
+            </HBox>
+
+            <!-- SCROLLABLE CONTENT -->
+            <ScrollPane fitToWidth="true" styleClass="content-scroll" VBox.vgrow="ALWAYS">
+                <VBox spacing="30">
                     <padding>
-                        <Insets top="10" bottom="20" left="10" right="10"/>
+                        <Insets top="30" bottom="30" left="30" right="30"/>
                     </padding>
-                </FlowPane>
 
+                    <!-- STATS CARDS -->
+                    <HBox spacing="20">
+                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                            <Label text="Totale Issue" styleClass="stat-label"/>
+                            <Label text="24" styleClass="stat-value"/>
+                        </VBox>
+                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                            <Label text="Aperte" styleClass="stat-label"/>
+                            <Label text="12" styleClass="stat-value, warning-text"/>
+                        </VBox>
+                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                            <Label text="Completate" styleClass="stat-label"/>
+                            <Label text="8" styleClass="stat-value, success-text"/>
+                        </VBox>
+                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                            <Label text="In Ritardo" styleClass="stat-label"/>
+                            <Label text="4" styleClass="stat-value, danger-text"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- RECENT ISSUES TITLE -->
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Attività Recenti" styleClass="section-title"/>
+                        <Pane HBox.hgrow="ALWAYS"/>
+                        <Button text="Vedi tutte" styleClass="link-btn" onAction="#vediTutte"/>
+                    </HBox>
+
+                    <!-- ISSUES GRID -->
+                    <!-- ISSUES GRID -->
+                    <!-- VBox for issues populated dynamically -->
+
+                    <VBox fx:id="boxIssues" spacing="15" styleClass="issues-list-container">
+                        <!-- Populated dynamically -->
+                    </VBox>
+
+                </VBox>
             </ScrollPane>
-
         </VBox>
     </center>
-
 </BorderPane>
