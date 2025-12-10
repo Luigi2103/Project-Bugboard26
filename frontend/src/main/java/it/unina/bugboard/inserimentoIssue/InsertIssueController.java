@@ -21,22 +21,34 @@ public class InsertIssueController {
     private static final String ISSUE_QUESTION = "QUESTION";
     private static final String ISSUE_DOC = "DOCUMENTATION";
     private static final String ISSUE_FEATURE = "FEATURE";
+    private static final String   MSG_INPUT_ERROR= "input-error";
+    @FXML
+    private TextField campoTitolo;
+    @FXML
+    private TextArea areaDescrizione;
+    @FXML
+    private ComboBox<String> comboTipo;
 
-    @FXML private TextField campoTitolo;
-    @FXML private TextArea areaDescrizione;
-    @FXML private ComboBox<String> comboTipo;
+    @FXML
+    private VBox containerCampiDinamici;
+    @FXML
+    private VBox areaUploadImmagine;
+    @FXML
+    private ImageView anteprimaImmagine;
 
-    @FXML private VBox containerCampiDinamici;
-    @FXML private VBox areaUploadImmagine;
-    @FXML private ImageView anteprimaImmagine;
+    @FXML
+    private Label labelNomeFile;
+    @FXML
+    private Label erroreTitolo;
+    @FXML
+    private Label erroreDescrizione;
+    @FXML
+    private Label erroreTipo;
 
-    @FXML private Label labelNomeFile;
-    @FXML private Label erroreTitolo;
-    @FXML private Label erroreDescrizione;
-    @FXML private Label erroreTipo;
-
-    @FXML private FlowPane tagsContainer;
-    @FXML private TextField campoTags;
+    @FXML
+    private FlowPane tagsContainer;
+    @FXML
+    private TextField campoTags;
 
     private File fileSelezionato;
 
@@ -138,7 +150,18 @@ public class InsertIssueController {
         textField.setPromptText(placeholder);
         textField.setMaxWidth(Double.MAX_VALUE);
 
-        VBox box = new VBox(5, label, textField);
+        Label errorLabel = new Label();
+        errorLabel.getStyleClass().add("error-label");
+        errorLabel.setManaged(false);
+        errorLabel.setVisible(false);
+
+        textField.textProperty().addListener((obs, old, neu) -> {
+            textField.getStyleClass().remove(MSG_INPUT_ERROR);
+            errorLabel.setManaged(false);
+            errorLabel.setVisible(false);
+        });
+
+        VBox box = new VBox(5, label, textField, errorLabel);
         containerCampiDinamici.getChildren().add(box);
     }
 
@@ -148,8 +171,7 @@ public class InsertIssueController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleziona Immagine");
         fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg", "*.gif")
-        );
+                new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg", "*.gif"));
 
         Stage stage = (Stage) areaUploadImmagine.getScene().getWindow();
         fileSelezionato = fileChooser.showOpenDialog(stage);
@@ -214,6 +236,24 @@ public class InsertIssueController {
             valido = false;
         }
 
+        // --- CODICE MODIFICATO ---
+        for (javafx.scene.Node node : containerCampiDinamici.getChildren()) {
+            // Qui abbiamo unito "node instanceof VBox box" con i controlli successivi
+            // usando &&. La variabile 'box' è utilizzabile subito dopo essere stata dichiarata.
+            if (node instanceof VBox box
+                    && box.getChildren().size() >= 3
+                    && box.getChildren().get(1) instanceof TextField tf
+                    && box.getChildren().get(2) instanceof Label errLbl) {
+
+                // Ora siamo dentro un unico blocco IF
+                if (isEmpty(tf.getText())) {
+                    mostraErrore(tf, errLbl, "Questo campo è obbligatorio");
+                    valido = false;
+                }
+            }
+        }
+        // -------------------------
+
         if (!valido) {
             return;
         }
@@ -231,7 +271,7 @@ public class InsertIssueController {
     }
 
     private void mostraErrore(Control control, Label label, String messaggio) {
-        control.getStyleClass().add("input-error");
+        control.getStyleClass().add(MSG_INPUT_ERROR);
         label.setText(messaggio);
         label.setManaged(true);
         label.setVisible(true);
@@ -244,7 +284,7 @@ public class InsertIssueController {
     }
 
     private void rimuoviErrori(Control control, Label label) {
-        control.getStyleClass().remove("input-error");
+        control.getStyleClass().remove(MSG_INPUT_ERROR);
         label.setManaged(false);
         label.setVisible(false);
     }

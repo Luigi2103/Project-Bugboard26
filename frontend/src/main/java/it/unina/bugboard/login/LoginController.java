@@ -220,15 +220,13 @@ public class LoginController implements Initializable {
     }
 
     private void impostaListenerLarghezza(javafx.scene.Scene scene) {
-        javafx.beans.value.ChangeListener<Number> sizeListener = (obs, oldValue, newValue) ->
-                aggiornaScala(scene);
+        javafx.beans.value.ChangeListener<Number> sizeListener = (obs, oldValue, newValue) -> aggiornaScala(scene);
 
         scene.widthProperty().addListener(sizeListener);
         scene.heightProperty().addListener(sizeListener);
 
         aggiornaScala(scene);
     }
-
 
     private void aggiornaScala(javafx.scene.Scene scene) {
         double width = scene.getWidth();
@@ -245,7 +243,6 @@ public class LoginController implements Initializable {
         double scaleX = width / baseWidth;
         double scaleY = height / baseHeight;
         double scale = Math.clamp(1.0, Math.min(scaleX, scaleY), 1.3);
-
 
         contenitoreLogin.setScaleX(scale);
         contenitoreLogin.setScaleY(scale);
@@ -308,6 +305,11 @@ public class LoginController implements Initializable {
                 this.sessionManager.setUsername(campoUsername.getText());
                 boolean isAdmin = "ADMIN".equalsIgnoreCase(risposta.getModalita());
                 this.sessionManager.setAdmin(isAdmin);
+                this.sessionManager.setUserId(risposta.getIdUtente());
+
+                log.info("Login effettuato con successo. ID Utente: " + risposta.getIdUtente() +
+                        ", Username: " + this.sessionManager.getUsername() +
+                        ", Modaità: " + (isAdmin ? "ADMIN" : "USER"));
 
                 SceneRouter.cambiaScena("/it/unina/bugboard/fxml/home.fxml", 1200, 850,
                         "BugBoard - Home");

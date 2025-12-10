@@ -4,6 +4,7 @@ public class SessionManager {
     private String token;
     private String username;
     private boolean admin;
+    private Long userId;
 
     public SessionManager() {
     }
@@ -32,6 +33,14 @@ public class SessionManager {
         this.admin = admin;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     public boolean isLoggedIn() {
         return token != null;
     }
@@ -40,5 +49,6 @@ public class SessionManager {
         this.token = null;
         this.username = null;
         this.admin = false;
+        this.userId = null;
     }
 }

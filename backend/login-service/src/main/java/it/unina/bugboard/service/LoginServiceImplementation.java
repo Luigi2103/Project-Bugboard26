@@ -29,22 +29,22 @@ public class LoginServiceImplementation implements LoginService {
 
         Optional<User> userOpt = userRepository.findByUsernameOrEmail(req.getUsername(), req.getUsername());
         if (userOpt.isEmpty()) {
-            return new RispostaLogin(false, "utente non trovato", req.getModalita(), null);
+            return new RispostaLogin(false, "utente non trovato", req.getModalita(), null, null);
         }
 
         User user = userOpt.get();
 
         boolean adminRichiesto = "admin".equalsIgnoreCase(req.getModalita());
         if (user.isAdmin() != adminRichiesto) {
-            return new RispostaLogin(false, "modalità non autorizzata", req.getModalita(), null);
+            return new RispostaLogin(false, "modalità non autorizzata", req.getModalita(), null, null);
         }
 
         if (!passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
-            return new RispostaLogin(false, "password errata", req.getModalita(), null);
+            return new RispostaLogin(false, "password errata", req.getModalita(), null, null);
         }
 
-        String token = jwtUtils.generateToken(user.getUsername(), user.isAdmin() ? "ADMIN" : "USER");
-        return new RispostaLogin(true, "login eseguito", req.getModalita(), token);
+        String token = jwtUtils.generateToken(user.getUsername(), user.isAdmin() ? "ADMIN" : "USER", user.getId());
+        return new RispostaLogin(true, "login eseguito", req.getModalita(), token, user.getId());
     }
 
     @Override
