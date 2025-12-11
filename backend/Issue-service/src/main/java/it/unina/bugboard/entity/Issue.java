@@ -69,12 +69,6 @@ public class Issue {
     @Column(name = "RichiestaFunzionalita", columnDefinition = "TEXT")
     private String richiestaFunzionalita;
 
-    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Commento> commenti;
-
-    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Cronologia> cronologia;
-
     @ManyToMany
     @JoinTable(name = "Issue_TAG", joinColumns = @JoinColumn(name = "IdIssue"), inverseJoinColumns = @JoinColumn(name = "IdTag"))
     private Set<Tag> tags;

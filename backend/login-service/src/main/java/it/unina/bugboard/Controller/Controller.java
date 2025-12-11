@@ -1,4 +1,4 @@
-package it.unina.bugboard.controller;
+package it.unina.bugboard.Controller;
 
 import it.unina.bugboard.dto.RichiestaLogin;
 import it.unina.bugboard.dto.RichiestaUpdate;
