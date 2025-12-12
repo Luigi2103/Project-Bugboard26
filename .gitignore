@@ -53,3 +53,4 @@ backend/login-service/src/main/resources/application.properties
 /backend/login-service/login-service/src/main/resources/application.properties
 /backend/InserimentoUtente-service/resources/application.properties
 /backend/Issue-service/resources/application.properties
+/backend/Issue-service/src/main/resources/application.properties
