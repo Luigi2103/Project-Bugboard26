@@ -15,7 +15,7 @@ public class Utente extends Persona {
     @Column(nullable = false, unique = true, name = "username")
     private String username;
 
-    @Column(nullable = false, unique = true, name = "password")
+    @Column(nullable = false,name = "password")
     private String password;
 
     @Column(nullable = false, unique = true, name = "mail")

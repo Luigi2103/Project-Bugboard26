@@ -3,6 +3,7 @@ package it.unina.bugboard.controller;
 import it.unina.bugboard.service.InserimentoUtenteService;
 import it.unina.bugboard.dto.RichiestaInserimentoUtente;
 import it.unina.bugboard.dto.RispostaInserimentoUtente;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +21,14 @@ public class InserimentoUtenteController {
 
     @PostMapping
     public ResponseEntity<RispostaInserimentoUtente> inserisciUtente(
-            @RequestBody RichiestaInserimentoUtente richiesta) {
+            @Valid @RequestBody RichiestaInserimentoUtente richiesta) {
+
         RispostaInserimentoUtente risposta = inserimentoUtenteService.inserisciUtente(richiesta);
 
-        if (risposta != null && risposta.isSuccess()) {
-            return ResponseEntity.ok(risposta);
+        if (risposta.isSuccess()) {
+            return ResponseEntity.status(201).body(risposta);  // 201 Created
         } else {
-            return ResponseEntity.badRequest().body(risposta);
+            return ResponseEntity.status(400).body(risposta);  // 400 Bad Request
         }
     }
 }
