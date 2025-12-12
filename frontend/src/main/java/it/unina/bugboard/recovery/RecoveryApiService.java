@@ -27,7 +27,7 @@ public class RecoveryApiService {
             String json = objectMapper.writeValueAsString(updateData);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8081/api/auth/update"))
+                    .uri(URI.create("http://localhost:8080/api/auth/update"))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .build();

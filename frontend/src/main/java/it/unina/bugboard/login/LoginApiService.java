@@ -29,7 +29,7 @@ public class LoginApiService {
             String jsonBody = objectMapper.writeValueAsString(loginData);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8081/api/auth/login"))
+                    .uri(URI.create("http://localhost:8080/api/auth/login"))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                     .build();

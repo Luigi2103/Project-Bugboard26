@@ -22,11 +22,12 @@ public class InsertUserApiService {
     }
 
     public RispostaInserimentoUser inserisciUtente(String nome, String cognome, String codiceFiscale,
-                                                   char sesso, LocalDate dataNascita, String username, String password, String email, boolean isAdmin) {
+                                                   char sesso, LocalDate dataNascita, String username,
+                                                   String password, String email, boolean isAdmin) {
 
         try {
-            Map<String, Object> insertData = getMap(nome, cognome, codiceFiscale, sesso, dataNascita, username,
-                    password, email, isAdmin);
+            Map<String, Object> insertData = getMap(nome, cognome, codiceFiscale, sesso, dataNascita,
+                    username, password, email, isAdmin);
 
             String jsonBody = objectMapper.writeValueAsString(insertData);
             String token = this.sessionManager.getToken();
