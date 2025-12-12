@@ -1,12 +1,33 @@
 package it.unina.bugboard.controller;
 
-
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import it.unina.bugboard.dto.RichiestaRecuperoIssue;
+import it.unina.bugboard.dto.RispostaRecuperoIssue;
+import it.unina.bugboard.service.RecuperoIssueService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/Insertissue")
+@RequestMapping("/api/issue")
 public class Controller {
-    //TODO
+
+    private final RecuperoIssueService recuperoIssueService;
+
+    @Autowired
+    public Controller(RecuperoIssueService recuperoIssueService) {
+        this.recuperoIssueService = recuperoIssueService;
+    }
+
+    @PostMapping("/recupera")
+    public ResponseEntity<RispostaRecuperoIssue> recuperaIssue(
+            @RequestBody RichiestaRecuperoIssue richiesta) {
+
+        RispostaRecuperoIssue risposta = recuperoIssueService.recuperaIssue(richiesta);
+
+        if (risposta.isSuccess()) {
+            return ResponseEntity.ok(risposta);
+        } else {
+            return ResponseEntity.status(400).body(risposta);
+        }
+    }
 }
