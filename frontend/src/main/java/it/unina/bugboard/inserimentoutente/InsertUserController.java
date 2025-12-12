@@ -286,40 +286,80 @@ public class InsertUserController {
     }
 
     private void inviaRischiestaInserimentoUtente(String nome, String cognome, String codiceFiscale, char sesso,
-            LocalDate dataNascita, String username, String password, String email, boolean isAdmin) {
+                                                  LocalDate dataNascita, String username, String password, String email, boolean isAdmin) {
         try {
-            RispostaInserimentoUser risposta = insertUserApiService.inserisciUtente(nome, cognome, codiceFiscale, sesso,
-                    dataNascita, username, password, email, isAdmin);
+            RispostaInserimentoUser risposta = insertUserApiService.inserisciUtente(
+                    nome, cognome, codiceFiscale, sesso, dataNascita, username, password, email, isAdmin
+            );
 
             Platform.runLater(() -> {
                 pulsanteRegistra.setDisable(false);
+
                 if (risposta != null && risposta.isSuccess()) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Inserimento Riuscito");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Utente inserito con successo!");
-                    alert.showAndWait();
-                    pulisciCampi();
+                    mostraSchermataCorrettoInserimento();
                 } else {
-                    String msg = (risposta != null && risposta.getMessage() != null) ? risposta.getMessage()
-                            : "Errore generico dal server";
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Errore Inserimento");
-                    alert.setHeaderText(null);
-                    alert.setContentText(msg);
-                    alert.showAndWait();
+                    mostraErroreInserimento(risposta);
                 }
             });
+
         } catch (Exception e) {
             Platform.runLater(() -> {
                 pulsanteRegistra.setDisable(false);
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Errore di Comunicazione");
-                alert.setHeaderText("Non è stato possibile contattare il server.");
-                alert.setContentText(e.getMessage());
-                alert.showAndWait();
+                mostraErroreComunicazione(e);
             });
         }
+    }
+
+
+
+    private void mostraSchermataCorrettoInserimento() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Inserimento Riuscito");
+        alert.setHeaderText(null);
+        alert.setContentText("Utente inserito con successo!");
+        alert.showAndWait();
+        pulisciCampi();
+    }
+
+    private void mostraErroreInserimento(RispostaInserimentoUser risposta) {
+        String messaggioErrore = costruisciMessaggioErrore(risposta);
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Errore Inserimento");
+        alert.setHeaderText("Non è stato possibile completare la registrazione");
+        alert.setContentText(messaggioErrore);
+        alert.showAndWait();
+    }
+
+    private void mostraErroreComunicazione(Exception e) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Errore di Comunicazione");
+        alert.setHeaderText("Non è stato possibile contattare il server");
+        alert.setContentText(e.getMessage());
+        alert.showAndWait();
+    }
+
+    private String costruisciMessaggioErrore(RispostaInserimentoUser risposta) {
+        if (risposta == null) {
+            return "Errore generico dal server";
+        }
+
+        StringBuilder messaggioErrore = new StringBuilder();
+        messaggioErrore.append(risposta.getMessage());
+
+        // Se ci sono errori di validazione per campo
+        if (risposta.getFieldErrors() != null && !risposta.getFieldErrors().isEmpty()) {
+            messaggioErrore.append("\n\nDettagli:\n");
+            risposta.getFieldErrors().forEach((campo, errore) -> {
+                messaggioErrore.append("• ")
+                        .append(campo)
+                        .append(": ")
+                        .append(errore)
+                        .append("\n");
+            });
+        }
+
+        return messaggioErrore.toString();
     }
 
     private boolean verificaCampiObbligatori() {
