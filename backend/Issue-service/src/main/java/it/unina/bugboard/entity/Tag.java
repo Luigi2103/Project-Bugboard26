@@ -18,9 +18,9 @@ public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "IdTag")
+    @Column(name = "idtag")
     private Integer idTag;
 
-    @Column(name = "Nome", nullable = false, length = 50, unique = true)
+    @Column(name = "nome", nullable = false, length = 50, unique = true)
     private String nome;
 }

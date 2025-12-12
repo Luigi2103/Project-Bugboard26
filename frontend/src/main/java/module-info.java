@@ -31,4 +31,6 @@ module it.unina.bugboard {
 
     exports it.unina.bugboard.recovery.exception;
 
+    opens it.unina.bugboard.dto to com.fasterxml.jackson.databind;
+
 }

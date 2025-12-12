@@ -1,6 +1,8 @@
 package it.unina.bugboard.homepage;
 
 import it.unina.bugboard.common.SessionManager;
+import it.unina.bugboard.dto.IssueDTO;
+import it.unina.bugboard.dto.RispostaRecuperoIssue;
 import it.unina.bugboard.navigation.SceneRouter;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -47,18 +49,33 @@ public class HomePageController implements Initializable {
             btnAggiungiUtente.setManaged(admin);
         }
 
-        caricaIssuesMock();
+        caricaIssues();
     }
 
-    private void caricaIssuesMock() {
+    private void caricaIssues() {
         boxIssues.getChildren().clear();
-        for (int i = 0; i < 5; i++) {
-            HBox issueRow = creaIssueRowMock(i);
-            boxIssues.getChildren().add(issueRow);
+
+        Long userId = sessionManager.getUserId();
+        if (userId == null) {
+            // Fallback or explicit handling if user is not logged in properly
+            return;
+        }
+
+        // Hardcoded project ID 1 as per user request
+        RispostaRecuperoIssue response = homeApiService.recuperaIssues(1, userId.intValue());
+
+        if (response != null && response.isSuccess() && response.getIssues() != null) {
+            for (IssueDTO issue : response.getIssues()) {
+                HBox issueRow = creaIssueRow(issue);
+                boxIssues.getChildren().add(issueRow);
+            }
+        } else {
+            Label noIssues = new Label("Nessuna issue assegnata o errore nel caricamento.");
+            boxIssues.getChildren().add(noIssues);
         }
     }
 
-    private HBox creaIssueRowMock(int index) {
+    private HBox creaIssueRow(IssueDTO issue) {
         HBox row = new HBox();
         row.getStyleClass().add("issue-card");
         row.setSpacing(20);
@@ -69,16 +86,18 @@ public class HomePageController implements Initializable {
         img.setFitWidth(50);
         img.setPreserveRatio(true);
         img.getStyleClass().add("issue-card__image");
-        // Placeholder image logic or color square could be added here if needed
+        // Placeholder image logic
+        // If issue.hasFoto() is true, we might want to fetch it, but keeping it simple
+        // for now
 
         VBox content = new VBox();
         content.setSpacing(5);
         HBox.setHgrow(content, Priority.ALWAYS);
 
-        Label title = new Label("Issue #" + (index + 1) + " - Bug nel login");
+        Label title = new Label(issue.getTitolo());
         title.getStyleClass().add("issue-card__title");
 
-        Label desc = new Label("Si verifica un errore quando l'utente prova a fare login con caratteri speciali...");
+        Label desc = new Label(issue.getDescrizione());
         desc.getStyleClass().add("issue-card__desc");
         desc.setWrapText(true);
 
@@ -86,6 +105,7 @@ public class HomePageController implements Initializable {
 
         Button btnAction = new Button("Dettagli");
         btnAction.getStyleClass().add("issue-card__btn");
+        // Add action for details if needed logic here
 
         row.getChildren().addAll(img, content, btnAction);
         return row;

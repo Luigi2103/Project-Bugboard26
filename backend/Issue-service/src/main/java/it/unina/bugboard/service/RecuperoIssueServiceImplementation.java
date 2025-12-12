@@ -8,11 +8,13 @@ import it.unina.bugboard.entity.Tag;
 import it.unina.bugboard.repository.RepositoryIssueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class RecuperoIssueServiceImplementation implements RecuperoIssueService {
 
     private final RepositoryIssueService issueRepository;
@@ -27,9 +29,9 @@ public class RecuperoIssueServiceImplementation implements RecuperoIssueService 
         try {
             List<Issue> issues;
 
-
             if (richiesta.getIdProgetto() != null && richiesta.getIdAssegnatario() != null) {
-                issues = issueRepository.findByIdProgettoAndIdAssegnatario(richiesta.getIdProgetto() , richiesta.getIdAssegnatario());
+                issues = issueRepository.findByIdProgettoAndIdAssegnatario(richiesta.getIdProgetto(),
+                        richiesta.getIdAssegnatario());
             } else if (richiesta.getIdProgetto() != null) {
                 issues = issueRepository.findByIdProgetto(richiesta.getIdProgetto());
             } else if (richiesta.getIdAssegnatario() != null) {
@@ -38,12 +40,12 @@ public class RecuperoIssueServiceImplementation implements RecuperoIssueService 
                 return new RispostaRecuperoIssue(false, "Specificare almeno un parametro di ricerca", null);
             }
 
-
             List<IssueDTO> issueDTOs = issues.stream().map(this::convertToDTO).collect(Collectors.toList());
 
             return new RispostaRecuperoIssue(true, "Issue recuperate con successo", issueDTOs);
 
         } catch (Exception e) {
+            e.printStackTrace();
             return new RispostaRecuperoIssue(false, "Errore durante il recupero: " + e.getMessage(), null);
         }
     }
@@ -53,7 +55,7 @@ public class RecuperoIssueServiceImplementation implements RecuperoIssueService 
         dto.setIdIssue(issue.getIdIssue());
         dto.setTitolo(issue.getTitolo());
         dto.setDescrizione(issue.getDescrizione());
-        dto.setStato(issue.getStato().name());
+        dto.setStato(issue.getStato());
         dto.setPriorita(issue.getPriorita() != null ? issue.getPriorita().name() : null);
         dto.setTipologia(issue.getTipologia().name());
         dto.setDataCreazione(issue.getDataCreazione());

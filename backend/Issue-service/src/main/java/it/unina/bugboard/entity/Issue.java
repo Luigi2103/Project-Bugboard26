@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -17,59 +16,57 @@ public class Issue {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "IdIssue")
+    @Column(name = "idissue")
     private Integer idIssue;
 
-    @Column(name = "Titolo", nullable = false, length = 200)
+    @Column(name = "titolo", nullable = false, length = 200)
     private String titolo;
 
-    @Column(name = "Descrizione", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "descrizione", nullable = false, columnDefinition = "TEXT")
     private String descrizione;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "Stato", nullable = false) // Postgres custom enum needs careful handling, but usually STRING works
-                                              // if types match
-    private Stato stato;
+    @Column(name = "stato", nullable = false)
+    private String stato;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "Priorita")
+    @Column(name = "priorita")
     private Priorita priorita;
 
-    @Column(name = "Foto")
+    @Column(name = "foto")
     private byte[] foto;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "Tipologia", nullable = false)
+    @Column(name = "tipologia", nullable = false)
     private Tipologia tipologia;
 
-    @Column(name = "DataCreazione", nullable = false, insertable = false, updatable = false)
+    @Column(name = "datacreazione", nullable = false, insertable = false, updatable = false)
     private LocalDateTime dataCreazione;
 
-    @Column(name = "IdProgetto", nullable = false)
+    @Column(name = "idprogetto", nullable = false)
     private Integer idProgetto;
 
-    @Column(name = "IdSegnalatore", nullable = false)
+    @Column(name = "idsegnalatore", nullable = false)
     private Integer idSegnalatore;
 
-    @Column(name = "IdAssegnatario")
+    @Column(name = "idassegnatario")
     private Integer idAssegnatario;
 
-    @Column(name = "PassiPerRiprodurre", columnDefinition = "TEXT")
+    @Column(name = "passiperriprodurre", columnDefinition = "TEXT")
     private String passiPerRiprodurre;
 
-    @Column(name = "Richiesta", columnDefinition = "TEXT")
+    @Column(name = "richiesta", columnDefinition = "TEXT")
     private String richiesta;
 
-    @Column(name = "TitoloDocumento", columnDefinition = "TEXT")
+    @Column(name = "titolodocumento", columnDefinition = "TEXT")
     private String titoloDocumento;
 
-    @Column(name = "DescrizioneProblema", columnDefinition = "TEXT")
+    @Column(name = "descrizioneproblema", columnDefinition = "TEXT")
     private String descrizioneProblema;
 
-    @Column(name = "RichiestaFunzionalita", columnDefinition = "TEXT")
+    @Column(name = "richiestafunzionalita", columnDefinition = "TEXT")
     private String richiestaFunzionalita;
 
     @ManyToMany
-    @JoinTable(name = "Issue_TAG", joinColumns = @JoinColumn(name = "IdIssue"), inverseJoinColumns = @JoinColumn(name = "IdTag"))
+    @JoinTable(name = "issue_tag", joinColumns = @JoinColumn(name = "idissue"), inverseJoinColumns = @JoinColumn(name = "idtag"))
     private Set<Tag> tags;
 }
