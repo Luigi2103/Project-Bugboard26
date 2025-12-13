@@ -302,10 +302,7 @@ public class LoginController implements Initializable {
         Platform.runLater(() -> {
             if (risposta.isSuccess()) {
                 this.sessionManager.setToken(risposta.getToken());
-                this.sessionManager.setUsername(campoUsername.getText());
-                boolean isAdmin = "ADMIN".equalsIgnoreCase(risposta.getModalita());
-                this.sessionManager.setAdmin(isAdmin);
-                this.sessionManager.setUserId(risposta.getIdUtente());
+                boolean isAdmin = this.sessionManager.isAdmin();
 
                 log.info("Login effettuato con successo. ID Utente: " + risposta.getIdUtente() +
                         ", Username: " + this.sessionManager.getUsername() +

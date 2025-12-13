@@ -35,7 +35,7 @@ public class RecuperoIssueServiceImplementation implements RecuperoIssueService 
             } else if (richiesta.getIdProgetto() != null) {
                 issues = issueRepository.findByIdProgetto(richiesta.getIdProgetto());
             } else if (richiesta.getIdAssegnatario() != null) {
-                issues = issueRepository.findByIdAssegnatario(richiesta.getIdAssegnatario());
+                issues = issueRepository.findByIdAssegnatarioAndStatoNot(richiesta.getIdAssegnatario(), "CLOSED");
             } else {
                 return new RispostaRecuperoIssue(false, "Specificare almeno un parametro di ricerca", null);
             }

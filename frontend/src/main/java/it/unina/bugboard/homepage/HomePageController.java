@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Priority;
 
 import java.net.URL;
@@ -86,9 +87,6 @@ public class HomePageController implements Initializable {
         img.setFitWidth(50);
         img.setPreserveRatio(true);
         img.getStyleClass().add("issue-card__image");
-        // Placeholder image logic
-        // If issue.hasFoto() is true, we might want to fetch it, but keeping it simple
-        // for now
 
         VBox content = new VBox();
         content.setSpacing(5);
@@ -103,9 +101,24 @@ public class HomePageController implements Initializable {
 
         content.getChildren().addAll(title, desc);
 
+        if (issue.getTags() != null && !issue.getTags().isEmpty()) {
+            FlowPane tagsContainer = new FlowPane();
+            tagsContainer.getStyleClass().add("tags-container");
+
+            for (String tag : issue.getTags()) {
+                Label tagLabel = new Label(tag);
+                tagLabel.getStyleClass().add("tag-label");
+                // FIX: Forziamo lo stile inline per assicurarci che si vedano
+                tagLabel.setStyle(
+                        "-fx-background-color: #EBF5FB; -fx-text-fill: #2980B9; -fx-padding: 3 8; -fx-background-radius: 12; -fx-border-color: #A9CCE3; -fx-border-radius: 12;");
+                tagsContainer.getChildren().add(tagLabel);
+            }
+            content.getChildren().add(tagsContainer);
+        }
+
         Button btnAction = new Button("Dettagli");
         btnAction.getStyleClass().add("issue-card__btn");
-        // Add action for details if needed logic here
+
 
         row.getChildren().addAll(img, content, btnAction);
         return row;
