@@ -43,11 +43,16 @@ public class HomePageController implements Initializable {
 
         etichettaBenvenuto.setText("Ciao, " + username);
 
-        // Permessi admin
+
         boolean admin = sessionManager.isAdmin();
         if (btnAggiungiUtente != null) {
             btnAggiungiUtente.setVisible(admin);
             btnAggiungiUtente.setManaged(admin);
+        }
+
+        if (btnIssueProgetto != null) {
+            btnIssueProgetto.setVisible(admin);
+            btnIssueProgetto.setManaged(admin);
         }
 
         caricaIssues();
@@ -58,17 +63,26 @@ public class HomePageController implements Initializable {
 
         Long userId = sessionManager.getUserId();
         if (userId == null) {
-            // Fallback or explicit handling if user is not logged in properly
             return;
         }
 
-        // Hardcoded project ID 1 as per user request
+
         RispostaRecuperoIssue response = homeApiService.recuperaIssues(1, userId.intValue());
 
         if (response != null && response.isSuccess() && response.getIssues() != null) {
+            int count = 0;
             for (IssueDTO issue : response.getIssues()) {
+                if (count >= 4)
+                    break;
+
                 HBox issueRow = creaIssueRow(issue);
                 boxIssues.getChildren().add(issueRow);
+                count++;
+            }
+
+            if (count == 0) {
+                Label noIssues = new Label("Nessuna issue assegnata.");
+                boxIssues.getChildren().add(noIssues);
             }
         } else {
             Label noIssues = new Label("Nessuna issue assegnata o errore nel caricamento.");
@@ -119,15 +133,17 @@ public class HomePageController implements Initializable {
         Button btnAction = new Button("Dettagli");
         btnAction.getStyleClass().add("issue-card__btn");
 
-
         row.getChildren().addAll(img, content, btnAction);
         return row;
     }
 
     @FXML
+    private Button btnIssueProgetto;
+
+    @FXML
     private void vaiAInserimentoUtente() {
         SceneRouter.cambiaScena("/it/unina/bugboard/fxml/insert_user.fxml",
-                1000, 900, "BugBoard - Aggiungi Utente");
+                1000, 900, "BugBoard - Registra Nuovo Utente");
     }
 
     @FXML
@@ -137,8 +153,23 @@ public class HomePageController implements Initializable {
     }
 
     @FXML
+    private void vediMieIssue() {
+        // Logica per vedere le issue assegnate all'utente
+        System.out.println("Vedi le mie issue clicked");
+        // TODO: Navigare alla scena corretta passando il filtro "assignedToMe"
+    }
+
+    @FXML
+    private void vediIssueProgetto() {
+        // Logica per vedere tutte le issue del progetto (admin)
+        System.out.println("Vedi issue progetto clicked");
+        // TODO: Navigare alla scena corretta passando il filtro "projectIssues"
+    }
+
+    @FXML
     private void vediTutte() {
-        System.out.println("Vedi tutte clicked");
+        // Metodo legacy/backup, reindirizza alle mie issue per deafult
+        vediMieIssue();
     }
 
     @FXML

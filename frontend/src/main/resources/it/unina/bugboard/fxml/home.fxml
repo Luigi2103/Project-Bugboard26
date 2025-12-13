@@ -34,8 +34,9 @@
                 </padding>
 
                 <Button text="Dashboard" styleClass="nav-btn, active-nav"/>
-                <Button text="Tutte le Issue" styleClass="nav-btn" onAction="#vediTutte"/>
-                <Button fx:id="btnAggiungiUtente" text="Aggiungi Utente" styleClass="nav-btn" onAction="#vaiAInserimentoUtente"/>
+                <Button fx:id="btnIssueProgetto" text="Issue del Progetto" styleClass="nav-btn" onAction="#vediIssueProgetto"/>
+                <Button text="Inserisci nuova issue" styleClass="nav-btn" onAction="#segnalaIssue"/>
+                <Button fx:id="btnAggiungiUtente" text="Registra Nuovo Utente" styleClass="nav-btn" onAction="#vaiAInserimentoUtente"/>
                 <Pane VBox.vgrow="ALWAYS"/> <!-- Spacer -->
 
                 <Button text="Logout" styleClass="nav-btn, logout-btn" onAction="#logout"/>
@@ -58,7 +59,7 @@
 
                 <Pane HBox.hgrow="ALWAYS"/>
 
-                <Button text="Nuova Issue" styleClass="btn-primary" onAction="#segnalaIssue"/>
+                <!-- Removed header button as requested -->
             </HBox>
 
             <!-- SCROLLABLE CONTENT -->
@@ -90,9 +91,9 @@
 
                     <!-- RECENT ISSUES TITLE -->
                     <HBox alignment="CENTER_LEFT">
-                        <Label text="Attività Recenti" styleClass="section-title"/>
+                        <Label text="Issue assegnate recentemente" styleClass="section-title"/>
                         <Pane HBox.hgrow="ALWAYS"/>
-                        <Button text="Vedi tutte" styleClass="link-btn" onAction="#vediTutte"/>
+                        <Button text="Visualizza tutte le issue assegnate" styleClass="link-btn" onAction="#vediMieIssue"/>
                     </HBox>
 
 

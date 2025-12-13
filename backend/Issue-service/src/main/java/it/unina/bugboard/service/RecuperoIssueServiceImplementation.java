@@ -29,13 +29,17 @@ public class RecuperoIssueServiceImplementation implements RecuperoIssueService 
         try {
             List<Issue> issues;
 
+
             if (richiesta.getIdProgetto() != null && richiesta.getIdAssegnatario() != null) {
-                issues = issueRepository.findByIdProgettoAndIdAssegnatario(richiesta.getIdProgetto(),
+
+                issues = issueRepository.findByIdProgettoAndIdAssegnatarioAndStatoNot(
+                        richiesta.getIdProgetto(),
                         richiesta.getIdAssegnatario());
             } else if (richiesta.getIdProgetto() != null) {
-                issues = issueRepository.findByIdProgetto(richiesta.getIdProgetto());
+
+                issues = issueRepository.findByIdProgettoAndStatoNot(richiesta.getIdProgetto());
             } else if (richiesta.getIdAssegnatario() != null) {
-                issues = issueRepository.findByIdAssegnatarioAndStatoNot(richiesta.getIdAssegnatario(), "CLOSED");
+                issues = issueRepository.findByIdAssegnatarioAndStatoNot(richiesta.getIdAssegnatario());
             } else {
                 return new RispostaRecuperoIssue(false, "Specificare almeno un parametro di ricerca", null);
             }
@@ -68,6 +72,7 @@ public class RecuperoIssueServiceImplementation implements RecuperoIssueService 
         dto.setDescrizioneProblema(issue.getDescrizioneProblema());
         dto.setRichiestaFunzionalita(issue.getRichiestaFunzionalita());
         dto.setHasFoto(issue.getFoto() != null && issue.getFoto().length > 0);
+
 
         if (issue.getTags() != null) {
             List<String> tagNames = issue.getTags().stream()
