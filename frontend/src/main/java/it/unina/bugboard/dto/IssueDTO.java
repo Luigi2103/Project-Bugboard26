@@ -9,8 +9,7 @@ public class IssueDTO {
     private String stato;
     private String priorita;
     private String tipologia;
-    private String dataCreazione; // Use String for simplicity in JSON parsing, or LocalDateTime if using strict
-                                  // mapper
+    private String dataCreazione;
     private Integer idProgetto;
     private Integer idSegnalatore;
     private Integer idAssegnatario;

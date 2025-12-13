@@ -43,7 +43,6 @@ public class HomePageController implements Initializable {
 
         etichettaBenvenuto.setText("Ciao, " + username);
 
-
         boolean admin = sessionManager.isAdmin();
         if (btnAggiungiUtente != null) {
             btnAggiungiUtente.setVisible(admin);
@@ -65,7 +64,6 @@ public class HomePageController implements Initializable {
         if (userId == null) {
             return;
         }
-
 
         RispostaRecuperoIssue response = homeApiService.recuperaIssues(1, userId.intValue());
 
@@ -132,6 +130,13 @@ public class HomePageController implements Initializable {
 
         Button btnAction = new Button("Dettagli");
         btnAction.getStyleClass().add("issue-card__btn");
+        btnAction.setOnAction(e -> {
+            SceneRouter.cambiaScenaConIssue(
+                    "/it/unina/bugboard/fxml/issue_details.fxml",
+                    1200, 800,
+                    "BugBoard - Dettaglio Issue #" + issue.getIdIssue(),
+                    issue.getIdIssue());
+        });
 
         row.getChildren().addAll(img, content, btnAction);
         return row;
@@ -155,15 +160,11 @@ public class HomePageController implements Initializable {
     @FXML
     private void vediMieIssue() {
         // Logica per vedere le issue assegnate all'utente
-        System.out.println("Vedi le mie issue clicked");
-        // TODO: Navigare alla scena corretta passando il filtro "assignedToMe"
     }
 
     @FXML
     private void vediIssueProgetto() {
         // Logica per vedere tutte le issue del progetto (admin)
-        System.out.println("Vedi issue progetto clicked");
-        // TODO: Navigare alla scena corretta passando il filtro "projectIssues"
     }
 
     @FXML

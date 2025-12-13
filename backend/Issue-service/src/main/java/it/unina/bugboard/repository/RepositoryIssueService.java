@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RepositoryIssueService extends JpaRepository<Issue, Integer> {
 
@@ -22,4 +23,7 @@ public interface RepositoryIssueService extends JpaRepository<Issue, Integer> {
     List<Issue> findByIdProgettoAndIdAssegnatarioAndStatoNot(
             @Param("idProgetto") int idProgetto,
             @Param("idAssegnatario") int idAssegnatario);
+
+    @Query("SELECT DISTINCT i FROM Issue i LEFT JOIN FETCH i.tags WHERE i.idIssue = :idIssue")
+    Optional<Issue> findByIdWithTags(@Param("idIssue") Integer idIssue);
 }
