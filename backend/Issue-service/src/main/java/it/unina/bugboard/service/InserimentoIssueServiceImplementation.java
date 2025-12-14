@@ -7,7 +7,7 @@ import it.unina.bugboard.dto.RispostaIssue;
 public class InserimentoIssueServiceImplementation implements InserimentoIssueService {
 
     @Override
-    public RispostaIssue Insert(RichiestaIssue risposta) {
+    public RispostaIssue insert(RichiestaIssue risposta) {
         return null;
     }
 }

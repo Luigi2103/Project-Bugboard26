@@ -12,7 +12,8 @@ public class IssueApiService {
 
     private final SessionManager sessionManager;
     private final HttpClient client = HttpClient.newHttpClient();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
 
     public IssueApiService(SessionManager sessionManager) {
         this.sessionManager = sessionManager;

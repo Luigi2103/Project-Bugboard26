@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import javafx.application.Platform;
 import it.unina.bugboard.app.BugBoard;
 import it.unina.bugboard.login.LoginController;
 import it.unina.bugboard.login.LoginApiService;

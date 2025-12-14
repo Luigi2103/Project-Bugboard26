@@ -8,6 +8,7 @@ module it.unina.bugboard {
     requires javafx.graphics;
     requires java.net.http;
     requires com.fasterxml.jackson.databind;
+    requires com.fasterxml.jackson.datatype.jsr310;
     requires de.jensd.fx.glyphs.fontawesome;
     requires java.logging;
     requires org.slf4j;

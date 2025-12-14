@@ -2,6 +2,9 @@ package it.unina.bugboard.issuedetails;
 
 import it.unina.bugboard.common.SessionManager;
 import it.unina.bugboard.dto.IssueDTO;
+import it.unina.bugboard.dto.CommentoDTO;
+import java.util.List;
+import java.util.logging.Logger;
 import it.unina.bugboard.navigation.SceneRouter;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,7 +18,6 @@ import javafx.scene.layout.VBox;
 import java.io.ByteArrayInputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 public class DettaglioIssueController implements Initializable {
 
@@ -39,6 +41,12 @@ public class DettaglioIssueController implements Initializable {
     private ImageView imageFoto;
     @FXML
     private Label labelNoAllegati;
+    @FXML
+    private VBox campiCommentiContainer;
+    @FXML
+    private Label placeholderCommenti;
+    @FXML
+    private javafx.scene.control.TextArea txtNuovoCommento;
     @FXML
     private Button btnIndietro;
 
@@ -73,6 +81,7 @@ public class DettaglioIssueController implements Initializable {
         if (risposta != null && risposta.isSuccess() && risposta.getIssue() != null) {
             IssueDTO issue = risposta.getIssue();
             popolaCampi(issue);
+            popolaCommenti(risposta.getCommenti());
 
             if (risposta.getFoto() != null && risposta.getFoto().length > 0) {
                 mostraImmagine(risposta.getFoto());
@@ -109,6 +118,23 @@ public class DettaglioIssueController implements Initializable {
         popolaTags(issue);
     }
 
+    private void popolaCommenti(List<CommentoDTO> commenti) {
+        campiCommentiContainer.getChildren().clear();
+
+        if (commenti == null || commenti.isEmpty()) {
+            if (placeholderCommenti != null) {
+                placeholderCommenti.setVisible(true);
+                placeholderCommenti.setManaged(true);
+                campiCommentiContainer.getChildren().add(placeholderCommenti);
+            }
+            return;
+        }
+
+        for (it.unina.bugboard.dto.CommentoDTO c : commenti) {
+            campiCommentiContainer.getChildren().add(creaBoxCommento(c));
+        }
+    }
+
     private void popolaCampiSpecificiPerTipologia(IssueDTO issue) {
         containerCampiSpecifici.getChildren().clear();
 
@@ -126,7 +152,7 @@ public class DettaglioIssueController implements Initializable {
             case "FEATURE":
                 aggiungiCampoSpecifico("Richiesta Funzionalità", issue.getRichiestaFunzionalita());
                 break;
-            default:
+            default :
                 break;
         }
     }
@@ -169,7 +195,7 @@ public class DettaglioIssueController implements Initializable {
                 labelNoAllegati.setManaged(false);
             }
         } catch (Exception e) {
-            logger.info("Errore durante la immagine della foto: " + e.getMessage());
+            logger.info("Errore carimento immagine : " + e.getMessage());
         }
     }
 
@@ -197,19 +223,19 @@ public class DettaglioIssueController implements Initializable {
             } else if (valore.contains("MEDIA")) {
                 style += "-fx-background-color: #FFF3CD; -fx-text-fill: #856404;"; // Giallo
             } else {
-                style += "-fx-background-color: #D4EDDA; -fx-text-fill: #155724;"; // Verde (Bassa)
+                style += "-fx-background-color: #D4EDDA; -fx-text-fill: #155724;";
             }
         } else if ("STATO".equals(tipo)) {
             if (valore.contains("APERTA")) {
-                style += "-fx-background-color: #D1ECF1; -fx-text-fill: #0C5460;"; // Azzurro
+                style += "-fx-background-color: #D1ECF1; -fx-text-fill: #0C5460;";
             } else if (valore.contains("CHIUSA")) {
-                style += "-fx-background-color: #E2E3E5; -fx-text-fill: #383D41;"; // Grigio
+                style += "-fx-background-color: #E2E3E5; -fx-text-fill: #383D41;";
             } else {
-                style += "-fx-background-color: #FFF3CD; -fx-text-fill: #856404;"; // Giallo (In Corso)
+                style += "-fx-background-color: #FFF3CD; -fx-text-fill: #856404;";
             }
         } else {
 
-            style += "-fx-background-color: #EBF5FB; -fx-text-fill: #2980B9;"; // Blu chiaro generico
+            style += "-fx-background-color: #EBF5FB; -fx-text-fill: #2980B9;";
         }
 
         label.setStyle(style);
@@ -223,5 +249,58 @@ public class DettaglioIssueController implements Initializable {
     @FXML
     private void tornaIndietro() {
         SceneRouter.cambiaScena("/it/unina/bugboard/fxml/home.fxml", 1200, 800, "BugBoard - Home");
+    }
+
+    @FXML
+    private void inviaCommento() {
+        if (txtNuovoCommento == null)
+            return;
+        String testo = txtNuovoCommento.getText();
+        if (testo == null || testo.trim().isEmpty()) {
+            return;
+        }
+
+        it.unina.bugboard.dto.CommentoDTO nuovo = new it.unina.bugboard.dto.CommentoDTO();
+        nuovo.setTesto(testo);
+        nuovo.setNomeUtente("Tu");
+        nuovo.setCognomeUtente("");
+        nuovo.setData(java.time.LocalDate.now());
+
+        if (campiCommentiContainer != null) {
+            if (placeholderCommenti != null && placeholderCommenti.isVisible()) {
+                placeholderCommenti.setVisible(false);
+                placeholderCommenti.setManaged(false);
+                campiCommentiContainer.getChildren().remove(placeholderCommenti);
+            }
+
+            VBox commentoBox = creaBoxCommento(nuovo);
+            campiCommentiContainer.getChildren().add(commentoBox);
+        }
+
+        txtNuovoCommento.clear();
+    }
+
+    private VBox creaBoxCommento(it.unina.bugboard.dto.CommentoDTO c) {
+        VBox commentoBox = new VBox(5);
+        commentoBox.setStyle(
+                "-fx-background-color: #F8F9F9; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #E5E8E8; -fx-border-radius: 5;");
+
+        String autore = (c.getNomeUtente() != null ? c.getNomeUtente() : "") + " "
+                + (c.getCognomeUtente() != null ? c.getCognomeUtente() : "");
+        if (autore.trim().isEmpty())
+            autore = "Tu";
+
+        Label lblAutore = new Label(autore);
+        lblAutore.setStyle("-fx-font-weight: bold; -fx-text-fill: #2C3E50;");
+
+        Label lblData = new Label(c.getData() != null ? c.getData().toString() : java.time.LocalDate.now().toString());
+        lblData.setStyle("-fx-text-fill: #7F8C8D; -fx-font-size: 11px;");
+
+        Label lblTesto = new Label(c.getTesto());
+        lblTesto.setWrapText(true);
+        lblTesto.setStyle("-fx-text-fill: #34495E;");
+
+        commentoBox.getChildren().addAll(lblAutore, lblData, lblTesto);
+        return commentoBox;
     }
 }

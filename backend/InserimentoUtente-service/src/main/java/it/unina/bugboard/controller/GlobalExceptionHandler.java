@@ -14,21 +14,21 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    //Gestisce gli errori di validazione dei campi (@Valid)
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(
             MethodArgumentNotValidException ex) {
 
-        // Raccogli tutti gli errori di validazione
+
         Map<String, String> fieldErrors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
+        ex.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             fieldErrors.put(fieldName, errorMessage);
         });
 
-        // Crea un messaggio generale
+
         String generalMessage = "Errori di validazione: " +
                 fieldErrors.entrySet().stream()
                         .map(e -> e.getKey() + ": " + e.getValue())

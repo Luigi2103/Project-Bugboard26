@@ -1,12 +1,18 @@
 package it.unina.bugboard.issuedetails;
 
+import it.unina.bugboard.dto.CommentoDTO;
 import it.unina.bugboard.dto.IssueDTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.List;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RispostaDettaglioIssue {
     private boolean success;
     private String message;
     private IssueDTO issue;
     private byte[] foto;
+    private List<CommentoDTO> commenti;
 
     public RispostaDettaglioIssue() {
     }
@@ -41,5 +47,13 @@ public class RispostaDettaglioIssue {
 
     public void setFoto(byte[] foto) {
         this.foto = foto;
+    }
+
+    public List<CommentoDTO> getCommenti() {
+        return commenti;
+    }
+
+    public void setCommenti(List<CommentoDTO> commenti) {
+        this.commenti = commenti;
     }
 }

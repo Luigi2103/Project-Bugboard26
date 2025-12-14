@@ -4,5 +4,5 @@ import it.unina.bugboard.dto.RichiestaIssue;
 import it.unina.bugboard.dto.RispostaIssue;
 
 public interface InserimentoIssueService {
-    RispostaIssue Insert(RichiestaIssue risposta);
+    RispostaIssue insert(RichiestaIssue risposta);
 }
