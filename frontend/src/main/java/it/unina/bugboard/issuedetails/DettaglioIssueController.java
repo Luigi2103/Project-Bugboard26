@@ -3,6 +3,8 @@ package it.unina.bugboard.issuedetails;
 import it.unina.bugboard.common.SessionManager;
 import it.unina.bugboard.dto.IssueDTO;
 import it.unina.bugboard.dto.CommentoDTO;
+import it.unina.bugboard.dto.RichiestaInserimentoCommentoIssue;
+import it.unina.bugboard.dto.RispostaInserimentoCommentoIssue;
 import java.util.List;
 import java.util.logging.Logger;
 import it.unina.bugboard.navigation.SceneRouter;
@@ -48,6 +50,8 @@ public class DettaglioIssueController implements Initializable {
     @FXML
     private javafx.scene.control.TextArea txtNuovoCommento;
     @FXML
+    private Button btnInvia;
+    @FXML
     private Button btnIndietro;
 
     private final IssueApiService apiService;
@@ -62,7 +66,10 @@ public class DettaglioIssueController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // L'issueId sarà passato tramite SceneRouter
+        if (btnInvia != null && txtNuovoCommento != null) {
+            btnInvia.disableProperty().bind(
+                    txtNuovoCommento.textProperty().isEmpty());
+        }
     }
 
     public void setIssueId(Integer issueId) {
@@ -118,6 +125,9 @@ public class DettaglioIssueController implements Initializable {
         popolaTags(issue);
     }
 
+    @FXML
+    private javafx.scene.control.ScrollPane scrollPaneCommenti;
+
     private void popolaCommenti(List<CommentoDTO> commenti) {
         campiCommentiContainer.getChildren().clear();
 
@@ -132,6 +142,11 @@ public class DettaglioIssueController implements Initializable {
 
         for (it.unina.bugboard.dto.CommentoDTO c : commenti) {
             campiCommentiContainer.getChildren().add(creaBoxCommento(c));
+        }
+
+        // Scroll to bottom
+        if (scrollPaneCommenti != null) {
+            javafx.application.Platform.runLater(() -> scrollPaneCommenti.setVvalue(1.0));
         }
     }
 
@@ -152,7 +167,7 @@ public class DettaglioIssueController implements Initializable {
             case "FEATURE":
                 aggiungiCampoSpecifico("Richiesta Funzionalità", issue.getRichiestaFunzionalita());
                 break;
-            default :
+            default:
                 break;
         }
     }
@@ -253,6 +268,7 @@ public class DettaglioIssueController implements Initializable {
 
     @FXML
     private void inviaCommento() {
+
         if (txtNuovoCommento == null)
             return;
         String testo = txtNuovoCommento.getText();
@@ -260,24 +276,43 @@ public class DettaglioIssueController implements Initializable {
             return;
         }
 
-        it.unina.bugboard.dto.CommentoDTO nuovo = new it.unina.bugboard.dto.CommentoDTO();
-        nuovo.setTesto(testo);
-        nuovo.setNomeUtente("Tu");
-        nuovo.setCognomeUtente("");
-        nuovo.setData(java.time.LocalDate.now());
+        RichiestaInserimentoCommentoIssue richiesta = new RichiestaInserimentoCommentoIssue(issueId, testo);
+        RispostaInserimentoCommentoIssue risposta = apiService.inserisciCommento(richiesta);
 
-        if (campiCommentiContainer != null) {
-            if (placeholderCommenti != null && placeholderCommenti.isVisible()) {
-                placeholderCommenti.setVisible(false);
-                placeholderCommenti.setManaged(false);
-                campiCommentiContainer.getChildren().remove(placeholderCommenti);
+        if (risposta != null && risposta.isSuccess()) {
+            if (campiCommentiContainer != null) {
+                if (placeholderCommenti != null && placeholderCommenti.isVisible()) {
+                    placeholderCommenti.setVisible(false);
+                    placeholderCommenti.setManaged(false);
+                    campiCommentiContainer.getChildren().remove(placeholderCommenti);
+                }
+
+                CommentoDTO nuovoCommentoDTO = risposta.getCommento();
+                if (nuovoCommentoDTO == null) {
+                    nuovoCommentoDTO = new CommentoDTO();
+                    nuovoCommentoDTO.setTesto(testo);
+                    nuovoCommentoDTO.setNomeUtente("Tu");
+                    nuovoCommentoDTO.setCognomeUtente("");
+                    nuovoCommentoDTO.setData(java.time.LocalDate.now());
+                } else {
+                    if (nuovoCommentoDTO.getNomeUtente() == null) {
+                        nuovoCommentoDTO.setNomeUtente("Tu");
+                        nuovoCommentoDTO.setCognomeUtente("");
+                    }
+                }
+
+                VBox commentoBox = creaBoxCommento(nuovoCommentoDTO);
+                campiCommentiContainer.getChildren().add(commentoBox);
+
+                // Scroll to bottom
+                if (scrollPaneCommenti != null) {
+                    javafx.application.Platform.runLater(() -> scrollPaneCommenti.setVvalue(1.0));
+                }
             }
-
-            VBox commentoBox = creaBoxCommento(nuovo);
-            campiCommentiContainer.getChildren().add(commentoBox);
+            txtNuovoCommento.clear();
+        } else {
+            mostraErrore(risposta != null ? risposta.getMessage() : "Errore nell'inserimento del commento");
         }
-
-        txtNuovoCommento.clear();
     }
 
     private VBox creaBoxCommento(it.unina.bugboard.dto.CommentoDTO c) {

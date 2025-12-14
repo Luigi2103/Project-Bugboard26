@@ -49,11 +49,23 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
                     }
                 }
 
-                exchange.getRequest().mutate().header("X-User-Name", username).build();
+                // Estrai userId dal token e aggiungilo agli headers
+                Long userId = jwtUtils.extractUserId(token);
+                String role = jwtUtils.extractRole(token);
+
+                // Modifica la richiesta aggiungendo gli headers con i dati dell'utente
+                exchange = exchange.mutate()
+                        .request(exchange.getRequest().mutate()
+                                .header("X-User-Name", username)
+                                .header("X-User-Id", String.valueOf(userId))
+                                .header("X-User-Role", role)
+                                .build())
+                        .build();
+
                 return chain.filter(exchange);
             }
         } catch (Exception e) {
-            log.info("Invalid token or role extraction failed: " + e.getMessage());
+            log.info("Invalid token or extraction failed: " + e.getMessage());
         }
 
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);

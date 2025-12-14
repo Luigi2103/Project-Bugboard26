@@ -1,9 +1,7 @@
 package it.unina.bugboard.controller;
 
-import it.unina.bugboard.dto.RichiestaDettaglioIssue;
-import it.unina.bugboard.dto.RichiestaRecuperoIssue;
-import it.unina.bugboard.dto.RispostaDettaglioIssue;
-import it.unina.bugboard.dto.RispostaRecuperoIssue;
+import it.unina.bugboard.dto.*;
+import it.unina.bugboard.service.CommentaIssueService;
 import it.unina.bugboard.service.DettaglioIssueService;
 import it.unina.bugboard.service.RecuperoIssueService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +14,13 @@ public class Controller {
 
     private final RecuperoIssueService recuperoIssueService;
     private final DettaglioIssueService dettaglioIssueService;
+    private final CommentaIssueService inserimentoCommentoService;
 
     @Autowired
-    public Controller(RecuperoIssueService recuperoIssueService, DettaglioIssueService dettaglioIssueService) {
+    public Controller(RecuperoIssueService recuperoIssueService, DettaglioIssueService dettaglioIssueService, CommentaIssueService inserimentoCommentoService) {
         this.recuperoIssueService = recuperoIssueService;
         this.dettaglioIssueService = dettaglioIssueService;
+        this.inserimentoCommentoService = inserimentoCommentoService;
     }
 
     @PostMapping("/recupera")
@@ -40,6 +40,19 @@ public class Controller {
             return ResponseEntity.ok(risposta);
         } else {
             return ResponseEntity.status(404).body(risposta);
+        }
+    }
+
+    @PostMapping("/commento")
+    public ResponseEntity<RispostaInserimentoCommentoIssue> inserisciCommento(
+            @RequestBody RichiestaInserimentoCommentoIssue richiesta,
+            @RequestHeader("X-User-Id") Long userId) {
+
+        RispostaInserimentoCommentoIssue risposta = inserimentoCommentoService.inserisciCommento(richiesta, userId);
+        if (risposta.isSuccess()) {
+            return ResponseEntity.status(201).body(risposta);
+        } else {
+            return ResponseEntity.status(400).body(risposta);
         }
     }
 }

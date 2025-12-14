@@ -91,7 +91,7 @@
                 <!-- TOP RIGHT: Comments -->
                 <VBox styleClass="side-panel" spacing="10">
                     <Label text="Commenti" styleClass="section-label"/>
-                    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="comments-scroll">
+                    <ScrollPane fx:id="scrollPaneCommenti" fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="comments-scroll">
                         <VBox fx:id="campiCommentiContainer" spacing="10" styleClass="comments-container">
                             <!-- Populated dynamically -->
                             <Label text="Nessun commento presente." fx:id="placeholderCommenti" styleClass="placeholder-text" visible="false" managed="false"/>
@@ -103,7 +103,7 @@
                         <Label text="Scrivi un commento" styleClass="section-label" style="-fx-font-size: 12px;"/>
                         <javafx.scene.control.TextArea fx:id="txtNuovoCommento" promptText="Inserisci il tuo commento qui..." wrapText="true" prefHeight="60"/>
                         <HBox alignment="CENTER_RIGHT">
-                            <Button text="Invia" onAction="#inviaCommento" styleClass="action-button" style="-fx-background-color: #2980B9; -fx-text-fill: white;"/>
+                            <Button fx:id="btnInvia" text="Invia" onAction="#inviaCommento" styleClass="action-button" style="-fx-background-color: #2980B9; -fx-text-fill: white;"/>
                         </HBox>
                     </VBox>
                 </VBox>
