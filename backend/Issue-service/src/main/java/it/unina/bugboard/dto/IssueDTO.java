@@ -2,6 +2,11 @@ package it.unina.bugboard.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.*;
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 
 public class IssueDTO {
     private Integer idIssue;
@@ -20,147 +25,6 @@ public class IssueDTO {
     private String descrizioneProblema;
     private String richiestaFunzionalita;
     private List<String> tags;
-    private boolean hasFoto; // Flag per sapere se c'è un'immagine
+    private boolean hasFoto;
 
-    // Costruttori
-    public IssueDTO() {
-        //costruttore vuoto
-    }
-
-    // Getters e Setters
-    public Integer getIdIssue() {
-        return idIssue;
-    }
-
-    public void setIdIssue(Integer idIssue) {
-        this.idIssue = idIssue;
-    }
-
-    public String getTitolo() {
-        return titolo;
-    }
-
-    public void setTitolo(String titolo) {
-        this.titolo = titolo;
-    }
-
-    public String getDescrizione() {
-        return descrizione;
-    }
-
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
-    }
-
-    public String getStato() {
-        return stato;
-    }
-
-    public void setStato(String stato) {
-        this.stato = stato;
-    }
-
-    public String getPriorita() {
-        return priorita;
-    }
-
-    public void setPriorita(String priorita) {
-        this.priorita = priorita;
-    }
-
-    public String getTipologia() {
-        return tipologia;
-    }
-
-    public void setTipologia(String tipologia) {
-        this.tipologia = tipologia;
-    }
-
-    public LocalDateTime getDataCreazione() {
-        return dataCreazione;
-    }
-
-    public void setDataCreazione(LocalDateTime dataCreazione) {
-        this.dataCreazione = dataCreazione;
-    }
-
-    public Integer getIdProgetto() {
-        return idProgetto;
-    }
-
-    public void setIdProgetto(Integer idProgetto) {
-        this.idProgetto = idProgetto;
-    }
-
-    public Integer getIdSegnalatore() {
-        return idSegnalatore;
-    }
-
-    public void setIdSegnalatore(Integer idSegnalatore) {
-        this.idSegnalatore = idSegnalatore;
-    }
-
-    public Integer getIdAssegnatario() {
-        return idAssegnatario;
-    }
-
-    public void setIdAssegnatario(Integer idAssegnatario) {
-        this.idAssegnatario = idAssegnatario;
-    }
-
-    public String getPassiPerRiprodurre() {
-        return passiPerRiprodurre;
-    }
-
-    public void setPassiPerRiprodurre(String passiPerRiprodurre) {
-        this.passiPerRiprodurre = passiPerRiprodurre;
-    }
-
-    public String getRichiesta() {
-        return richiesta;
-    }
-
-    public void setRichiesta(String richiesta) {
-        this.richiesta = richiesta;
-    }
-
-    public String getTitoloDocumento() {
-        return titoloDocumento;
-    }
-
-    public void setTitoloDocumento(String titoloDocumento) {
-        this.titoloDocumento = titoloDocumento;
-    }
-
-    public String getDescrizioneProblema() {
-        return descrizioneProblema;
-    }
-
-    public void setDescrizioneProblema(String descrizioneProblema) {
-        this.descrizioneProblema = descrizioneProblema;
-    }
-
-    public String getRichiestaFunzionalita() {
-        return richiestaFunzionalita;
-    }
-
-    public void setRichiestaFunzionalita(String richiestaFunzionalita) {
-        this.richiestaFunzionalita = richiestaFunzionalita;
-    }
-
-    public List<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
-
-    public boolean isHasFoto() {
-        return hasFoto;
-    }
-
-    public void setHasFoto(boolean hasFoto) {
-        this.hasFoto = hasFoto;
-    }
 }

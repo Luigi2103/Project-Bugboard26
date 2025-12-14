@@ -3,7 +3,7 @@ package it.unina.bugboard.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
@@ -40,7 +40,7 @@ public class Issue {
     private Tipologia tipologia;
 
     @Column(name = "datacreazione", nullable = false, insertable = false, updatable = false)
-    private LocalDateTime dataCreazione;
+    private LocalDate dataCreazione;
 
     @Column(name = "idprogetto", nullable = false)
     private Integer idProgetto;

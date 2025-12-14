@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,7 +28,6 @@ public class RecuperoIssueServiceImplementation implements RecuperoIssueService 
         try {
             List<Issue> issues;
 
-
             if (richiesta.getIdProgetto() != null && richiesta.getIdAssegnatario() != null) {
 
                 issues = issueRepository.findByIdProgettoAndIdAssegnatarioAndStatoNot(
@@ -44,7 +42,9 @@ public class RecuperoIssueServiceImplementation implements RecuperoIssueService 
                 return new RispostaRecuperoIssue(false, "Specificare almeno un parametro di ricerca", null);
             }
 
-            List<IssueDTO> issueDTOs = issues.stream().map(this::convertToDTO).collect(Collectors.toList());
+            List<IssueDTO> issueDTOs = issues.stream()
+                    .map(this::convertToDTO)
+                    .toList();
 
             return new RispostaRecuperoIssue(true, "Issue recuperate con successo", issueDTOs);
 
@@ -62,7 +62,7 @@ public class RecuperoIssueServiceImplementation implements RecuperoIssueService 
         dto.setStato(issue.getStato());
         dto.setPriorita(issue.getPriorita() != null ? issue.getPriorita().name() : null);
         dto.setTipologia(issue.getTipologia().name());
-        dto.setDataCreazione(issue.getDataCreazione());
+        dto.setDataCreazione(issue.getDataCreazione().atStartOfDay());
         dto.setIdProgetto(issue.getIdProgetto());
         dto.setIdSegnalatore(issue.getIdSegnalatore());
         dto.setIdAssegnatario(issue.getIdAssegnatario());
@@ -73,11 +73,10 @@ public class RecuperoIssueServiceImplementation implements RecuperoIssueService 
         dto.setRichiestaFunzionalita(issue.getRichiestaFunzionalita());
         dto.setHasFoto(issue.getFoto() != null && issue.getFoto().length > 0);
 
-
         if (issue.getTags() != null) {
             List<String> tagNames = issue.getTags().stream()
                     .map(Tag::getNome)
-                    .collect(Collectors.toList());
+                    .toList();
             dto.setTags(tagNames);
         }
 

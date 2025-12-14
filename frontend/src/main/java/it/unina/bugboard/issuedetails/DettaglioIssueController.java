@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox;
 import java.io.ByteArrayInputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 public class DettaglioIssueController implements Initializable {
 
@@ -44,6 +45,7 @@ public class DettaglioIssueController implements Initializable {
     private final IssueApiService apiService;
     private final SessionManager sessionManager;
     private Integer issueId;
+    private static final Logger logger = Logger.getLogger(DettaglioIssueController.class.getName());
 
     public DettaglioIssueController(IssueApiService apiService, SessionManager sessionManager) {
         this.apiService = apiService;
@@ -124,6 +126,8 @@ public class DettaglioIssueController implements Initializable {
             case "FEATURE":
                 aggiungiCampoSpecifico("Richiesta Funzionalità", issue.getRichiestaFunzionalita());
                 break;
+            default:
+                break;
         }
     }
 
@@ -131,14 +135,9 @@ public class DettaglioIssueController implements Initializable {
         if (valore != null && !valore.isEmpty()) {
             Label label = new Label(etichetta + ":");
             label.getStyleClass().add("field-label");
-            // Stile gestito da CSS (.field-label se presente o .section-label) - User
-            // chiesto bold come titolo
-            // Usiamo section-label per coerenza con gli altri titoli
             label.getStyleClass().add("section-label");
-
             Label value = new Label(valore);
             value.setWrapText(true);
-
             containerCampiSpecifici.getChildren().addAll(label, value);
         }
     }
@@ -170,7 +169,7 @@ public class DettaglioIssueController implements Initializable {
                 labelNoAllegati.setManaged(false);
             }
         } catch (Exception e) {
-            System.err.println("Errore caricamento immagine: " + e.getMessage());
+            logger.info("Errore durante la immagine della foto: " + e.getMessage());
         }
     }
 
@@ -209,7 +208,7 @@ public class DettaglioIssueController implements Initializable {
                 style += "-fx-background-color: #FFF3CD; -fx-text-fill: #856404;"; // Giallo (In Corso)
             }
         } else {
-            // Tipologia
+
             style += "-fx-background-color: #EBF5FB; -fx-text-fill: #2980B9;"; // Blu chiaro generico
         }
 

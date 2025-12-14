@@ -1,19 +1,11 @@
 package it.unina.bugboard.dto;
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 
 public class RichiestaDettaglioIssue {
     private Integer idIssue;
-
-    public RichiestaDettaglioIssue() {}
-
-    public RichiestaDettaglioIssue(Integer idIssue) {
-        this.idIssue = idIssue;
-    }
-
-    public Integer getIdIssue() {
-        return idIssue;
-    }
-
-    public void setIdIssue(Integer idIssue) {
-        this.idIssue = idIssue;
-    }
 }

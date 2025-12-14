@@ -1,10 +1,13 @@
 package it.unina.bugboard.service;
 
+import it.unina.bugboard.dto.CommentoDTO;
 import it.unina.bugboard.dto.IssueDTO;
 import it.unina.bugboard.dto.RichiestaDettaglioIssue;
 import it.unina.bugboard.dto.RispostaDettaglioIssue;
+import it.unina.bugboard.entity.Commento;
 import it.unina.bugboard.entity.Issue;
 import it.unina.bugboard.entity.Tag;
+import it.unina.bugboard.repository.RepositoryCommento;
 import it.unina.bugboard.repository.RepositoryIssueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,17 +15,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class DettaglioIssueServiceImplementation implements DettaglioIssueService {
 
     private final RepositoryIssueService issueRepository;
+    private final RepositoryCommento commentoRepository;
 
     @Autowired
-    public DettaglioIssueServiceImplementation(RepositoryIssueService issueRepository) {
+    public DettaglioIssueServiceImplementation(RepositoryIssueService issueRepository,
+                                               RepositoryCommento commentoRepository) {
         this.issueRepository = issueRepository;
+        this.commentoRepository = commentoRepository;
     }
 
     @Override
@@ -31,18 +36,22 @@ public class DettaglioIssueServiceImplementation implements DettaglioIssueServic
             Optional<Issue> issueOpt = issueRepository.findByIdWithTags(richiesta.getIdIssue());
 
             if (issueOpt.isEmpty()) {
-                return new RispostaDettaglioIssue(false, "Issue non trovata", null, null);
+                return new RispostaDettaglioIssue(false, "Issue non trovata", null, null, null);
             }
 
             Issue issue = issueOpt.get();
             IssueDTO dto = convertToDTO(issue);
             byte[] foto = issue.getFoto();
 
-            return new RispostaDettaglioIssue(true, "Issue recuperata con successo", dto, foto);
+            List<Commento> commenti = commentoRepository.findByIdIssueOrderByDataAsc(richiesta.getIdIssue());
+            List<CommentoDTO> commentiDTO = commenti.stream()
+                    .map(this::convertCommentoToDTO)
+                    .toList();
+
+            return new RispostaDettaglioIssue(true, "Issue recuperata con successo", dto, foto, commentiDTO);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            return new RispostaDettaglioIssue(false, "Errore durante il recupero: " + e.getMessage(), null, null);
+            return new RispostaDettaglioIssue(false, "Errore durante il recupero: " + e.getMessage(), null, null, null);
         }
     }
 
@@ -54,7 +63,7 @@ public class DettaglioIssueServiceImplementation implements DettaglioIssueServic
         dto.setStato(issue.getStato());
         dto.setPriorita(issue.getPriorita() != null ? issue.getPriorita().name() : null);
         dto.setTipologia(issue.getTipologia().name());
-        dto.setDataCreazione(issue.getDataCreazione());
+        dto.setDataCreazione(issue.getDataCreazione().atStartOfDay());
         dto.setIdProgetto(issue.getIdProgetto());
         dto.setIdSegnalatore(issue.getIdSegnalatore());
         dto.setIdAssegnatario(issue.getIdAssegnatario());
@@ -68,10 +77,24 @@ public class DettaglioIssueServiceImplementation implements DettaglioIssueServic
         if (issue.getTags() != null) {
             List<String> tagNames = issue.getTags().stream()
                     .map(Tag::getNome)
-                    .collect(Collectors.toList());
+                    .toList();
             dto.setTags(tagNames);
         }
 
+        return dto;
+    }
+
+    private CommentoDTO convertCommentoToDTO(Commento commento) {
+        CommentoDTO dto = new CommentoDTO();
+        dto.setIdCommento(commento.getIdCommento());
+        dto.setTesto(commento.getTesto());
+        dto.setData(commento.getData());
+        dto.setIdIssue(commento.getIdIssue());
+        if (commento.getUtente() != null) {
+            dto.setIdUtente(commento.getUtente().getIdUtente());
+            dto.setNomeUtente(commento.getUtente().getNome());
+            dto.setCognomeUtente(commento.getUtente().getCognome());
+        }
         return dto;
     }
 }
