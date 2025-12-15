@@ -1,6 +1,11 @@
 package it.unina.bugboard.dto;
 
 import java.time.LocalDate;
+import java.util.Set;
+
+import it.unina.bugboard.entity.Priorita;
+import it.unina.bugboard.entity.Tag;
+import it.unina.bugboard.entity.Tipologia;
 import lombok.*;
 
 @Getter
@@ -8,17 +13,20 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class RichiestaIssue {
+public class RichiestaInserimentoIssue {
     private String titolo;
     private String descrizione;
     private byte[] immagine;
-    private String tipologia;
+    private Tipologia tipologia;
     private String stato;
-    private String priorita;
+    private Priorita priorita;
     private String istruzioni;
     private String richiesta;
     private String titoloDocumento;
     private String descrizioneDocumento;
     private String richiestaFunzionalita;
     private LocalDate dataCreazione;
+    private int idProgetto;
+    private int idSegnalator;
+    private Set<Tag> tags;
 }

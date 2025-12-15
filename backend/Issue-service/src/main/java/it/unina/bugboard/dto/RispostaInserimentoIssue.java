@@ -4,7 +4,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 
-public class RispostaIssue {
+public class RispostaInserimentoIssue {
 
     private String message;
     private boolean success;

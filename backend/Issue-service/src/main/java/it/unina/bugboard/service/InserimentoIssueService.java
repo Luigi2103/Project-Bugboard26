@@ -1,8 +1,8 @@
 package it.unina.bugboard.service;
 
-import it.unina.bugboard.dto.RichiestaIssue;
-import it.unina.bugboard.dto.RispostaIssue;
+import it.unina.bugboard.dto.RichiestaInserimentoIssue;
+import it.unina.bugboard.dto.RispostaInserimentoIssue;
 
 public interface InserimentoIssueService {
-    RispostaIssue insert(RichiestaIssue risposta);
+    RispostaInserimentoIssue insert(RichiestaInserimentoIssue risposta);
 }

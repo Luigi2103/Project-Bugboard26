@@ -69,4 +69,25 @@ public class Issue {
     @ManyToMany
     @JoinTable(name = "issue_tag", joinColumns = @JoinColumn(name = "idissue"), inverseJoinColumns = @JoinColumn(name = "idtag"))
     private Set<Tag> tags;
+
+    public Issue(String titolo, String descrizione, String stato, Priorita priorita, byte[] foto,
+                 Tipologia tipologia, LocalDate dataCreazione, Integer idProgetto, String passiPerRiprodurre, String richiesta,
+                 String titoloDocumento, String descrizioneProblema, String richiestaFunzionalita,
+                 Integer idSegnalatore, Set<Tag> tags) {
+        this.titolo = titolo;
+        this.descrizione = descrizione;
+        this.stato = stato;
+        this.priorita = priorita;
+        this.foto = foto;
+        this.tipologia = tipologia;
+        this.dataCreazione = dataCreazione;
+        this.idProgetto = idProgetto;
+        this.passiPerRiprodurre = passiPerRiprodurre;
+        this.richiesta = richiesta;
+        this.titoloDocumento = titoloDocumento;
+        this.descrizioneProblema = descrizioneProblema;
+        this.richiestaFunzionalita = richiestaFunzionalita;
+        this.idSegnalatore = idSegnalatore;
+        this.tags = tags;
+    }
 }
