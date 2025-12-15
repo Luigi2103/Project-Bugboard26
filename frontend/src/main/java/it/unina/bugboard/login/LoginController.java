@@ -112,6 +112,10 @@ public class LoginController implements Initializable {
         campoPassword.prefWidthProperty().bind(boxForm.widthProperty());
         pulsanteLogin.prefWidthProperty().bind(boxForm.widthProperty());
         boxModalita.prefWidthProperty().bind(boxForm.widthProperty());
+
+        pulsanteLogin.disableProperty().bind(
+                campoUsername.textProperty().isEmpty()
+                        .or(campoPassword.textProperty().isEmpty()));
     }
 
     private void inizializzaListenerModalita() {
@@ -271,11 +275,6 @@ public class LoginController implements Initializable {
     private void gestisciLogin() {
         resetErrorStyles();
 
-        if (!controlloInputValidi()) {
-            animaErrore();
-            return;
-        }
-
         animaClickPulsante();
 
         String username = campoUsername.getText();
@@ -356,25 +355,4 @@ public class LoginController implements Initializable {
         label.setVisible(true);
     }
 
-    private boolean controlloInputValidi() {
-        return controlloUsernameNonVuoto() && controlloPasswordNonVuota();
-    }
-
-    private boolean controlloPasswordNonVuota() {
-        if (campoPassword.getText().isEmpty()) {
-            setErrorStyle(campoPassword);
-            mostraErroreInline(errorePassword, "Il campo password non può essere vuoto");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean controlloUsernameNonVuoto() {
-        if (campoUsername.getText().isEmpty()) {
-            setErrorStyle(campoUsername);
-            mostraErroreInline(erroreUsername, "Il campo username non può essere vuoto");
-            return false;
-        }
-        return true;
-    }
 }

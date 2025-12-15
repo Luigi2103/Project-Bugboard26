@@ -85,6 +85,7 @@
                             text="Accedi"
                             onAction="#gestisciLogin"
                             styleClass="login-button"
+                            defaultButton="true"
                             maxWidth="Infinity">
                         <font>
                             <Font name="System Bold" size="16"/>
