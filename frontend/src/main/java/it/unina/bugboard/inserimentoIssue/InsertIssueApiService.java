@@ -28,8 +28,8 @@ public class InsertIssueApiService
     LocalDate dataCreazione) {
 
         try {
-            Map<String, Object> insertData = getMap(nome, cognome, codiceFiscale, sesso, dataNascita,
-                    username, password, email, isAdmin);
+            Map<String, Object> insertData = getMap(titolo, descrizione, immagine, tipologia, tipologia,
+                   stato, priorita,istruzioni, richiesta,titoloDocumento,descrizioneDocumento,richiestaFunzionalita);
 
             String jsonBody = objectMapper.writeValueAsString(insertData);
             String token = this.sessionManager.getToken();
