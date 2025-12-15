@@ -2,6 +2,7 @@ package it.unina.bugboard.inserimentoIssue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.unina.bugboard.inserimentoIssue.InsertIssueApiService;
+import it.unina.bugboard.inserimentoIssue.exception.InsertIssueApiException;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -28,8 +29,8 @@ public class InsertIssueApiService
     LocalDate dataCreazione) {
 
         try {
-            Map<String, Object> insertData = getMap(titolo, descrizione, immagine, tipologia, tipologia,
-                   stato, priorita,istruzioni, richiesta,titoloDocumento,descrizioneDocumento,richiestaFunzionalita);
+            Map<String, Object> insertData = getMap(titolo, descrizione, immagine, tipologia,
+                   stato, priorita,istruzioni, richiesta,titoloDocumento,descrizioneDocumento,richiestaFunzionalita,dataCreazione);
 
             String jsonBody = objectMapper.writeValueAsString(insertData);
             String token = this.sessionManager.getToken();
@@ -42,10 +43,10 @@ public class InsertIssueApiService
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            return objectMapper.readValue(response.body(), RispostaInserimentoUser.class);
+            return objectMapper.readValue(response.body(), RispostaIssueService.class);
         } catch (Exception e) {
             Thread.currentThread().interrupt();
-            throw new InsertUserAPIException("Errore durante inserimento utente", e);
+            throw new InsertIssueApiException("Errore durante inserimento utente", e);
         }
     }
 
