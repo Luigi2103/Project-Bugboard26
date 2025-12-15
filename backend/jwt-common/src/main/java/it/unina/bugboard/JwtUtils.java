@@ -8,8 +8,8 @@ import it.unina.bugboard.exception.InvalidJwtException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +18,7 @@ import java.util.function.Function;
 @Component
 public class JwtUtils {
 
-    private final javax.crypto.SecretKey signingKey;
+    private final SecretKey signingKey;
     private static final long EXPIRATION_TIME = 86_400_000; // 24h
 
     public JwtUtils(@Value("${jwt.secret}") String secret) {
@@ -87,7 +87,7 @@ public class JwtUtils {
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (Exception e) {
-            throw new InvalidJwtException("Token JWT non valido", e);
+            throw new InvalidJwtException("Token JWT non valido: " + e.getMessage(), e);
         }
     }
 

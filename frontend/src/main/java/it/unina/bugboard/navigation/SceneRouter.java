@@ -19,6 +19,7 @@ import it.unina.bugboard.issuedetails.IssueApiService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 public final class SceneRouter {
     private static Stage primaryStage;
@@ -28,6 +29,10 @@ public final class SceneRouter {
     private static final HomeApiService homeApiService = new it.unina.bugboard.homepage.HomeApiService(sessionManager);
     private static final IssueApiService issueApiService = new IssueApiService(sessionManager);
     private static final Map<Class<?>, Callback<Class<?>, Object>> controllerFactories = new HashMap<>();
+
+    // Stack per la cronologia
+    private static final Stack<SceneData> history = new Stack<>();
+    private static SceneData currentSceneData;
 
     // Variabile per passare l'ID dell'issue tra scene
     private static Integer currentIssueId;
@@ -49,6 +54,18 @@ public final class SceneRouter {
     }
 
     public static void cambiaScena(String fxml, double width, double height, String title) {
+        eseguiCambioScena(fxml, width, height, title, null);
+    }
+
+    // NUOVO METODO
+    public static void cambiaScenaConIssue(String fxml, double width, double height, String title, Integer issueId) {
+        currentIssueId = issueId; // Set static for immediate use by controller factory/init if needed
+        eseguiCambioScena(fxml, width, height, title, issueId);
+    }
+
+    private static void eseguiCambioScena(String fxml, double width, double height, String title, Integer issueId) {
+        pushHistory();
+        currentSceneData = new SceneData(fxml, width, height, title, issueId);
         try {
             caricaScena(fxml, width, height, title);
         } catch (Exception e) {
@@ -56,10 +73,27 @@ public final class SceneRouter {
         }
     }
 
-    // NUOVO METODO
-    public static void cambiaScenaConIssue(String fxml, double width, double height, String title, Integer issueId) {
-        currentIssueId = issueId;
-        cambiaScena(fxml, width, height, title);
+    private static void pushHistory() {
+        if (currentSceneData != null) {
+            history.push(currentSceneData);
+        }
+    }
+
+    public static void tornaIndietro() {
+        if (history.isEmpty()) {
+            System.out.println("Nessuna cronologia disponibile.");
+            return;
+        }
+
+        SceneData previous = history.pop();
+        currentSceneData = previous;
+        currentIssueId = previous.issueId;
+
+        try {
+            caricaScena(previous.fxml, previous.width, previous.height, previous.title);
+        } catch (Exception e) {
+            mostraMessaggioErrore(previous.fxml, e);
+        }
     }
 
     private static void mostraMessaggioErrore(String fxml, Exception e) {
@@ -98,26 +132,90 @@ public final class SceneRouter {
             // NUOVO: Passa l'ID dell'issue al controller se necessario
             if (currentIssueId != null && loader.getController() instanceof DettaglioIssueController) {
                 ((DettaglioIssueController) loader.getController()).setIssueId(currentIssueId);
-                currentIssueId = null; // Reset dopo l'uso
+                // Keep valid for this context?
             }
+            // Safe reset? If we reset here, tornaIndietro works because it sets it back
+            // before calling caricaScena.
+            // If we navigate AWAY, currentIssueId stays set? No, next cambioScena
+            // clears/overwrites it if we manage it.
+            // Since we use static global, better clear it if not needed?
+            // But SceneRouter relies on SceneData now.
 
             if (primaryStage.getScene() == null) {
                 Scene scene = new Scene(root, width, height);
                 primaryStage.setTitle(title);
+                setupGlobalShortcuts(scene); // Add shortcuts to new scene
                 primaryStage.setScene(scene);
             } else {
                 primaryStage.getScene().setRoot(root);
                 primaryStage.setTitle(title);
-
-                if (!primaryStage.isMaximized()) {
-                    primaryStage.setWidth(width);
-                    primaryStage.setHeight(height);
-                    primaryStage.centerOnScreen();
-                }
+                setupGlobalShortcuts(primaryStage.getScene()); // Re-apply or ensure shortcuts on existing scene
             }
 
         } catch (IOException e) {
             throw new SceneLoadException("Impossibile caricare la scena: " + fxml, e);
+        }
+
+    }
+
+    private static void setupGlobalShortcuts(Scene scene) {
+        javafx.scene.input.KeyCombination insertIssue = new javafx.scene.input.KeyCodeCombination(
+                javafx.scene.input.KeyCode.I, javafx.scene.input.KeyCombination.CONTROL_DOWN);
+        javafx.scene.input.KeyCombination registerUser = new javafx.scene.input.KeyCodeCombination(
+                javafx.scene.input.KeyCode.U, javafx.scene.input.KeyCombination.CONTROL_DOWN);
+        javafx.scene.input.KeyCombination logout = new javafx.scene.input.KeyCodeCombination(
+                javafx.scene.input.KeyCode.L, javafx.scene.input.KeyCombination.CONTROL_DOWN);
+
+        // BACK SHORTCUT
+        javafx.scene.input.KeyCombination back = new javafx.scene.input.KeyCodeCombination(
+                javafx.scene.input.KeyCode.ESCAPE);
+
+        // RECOVERY SHORTCUT
+        javafx.scene.input.KeyCombination recovery = new javafx.scene.input.KeyCodeCombination(
+                javafx.scene.input.KeyCode.P, javafx.scene.input.KeyCombination.CONTROL_DOWN);
+
+        scene.setOnKeyPressed(event -> {
+            if (insertIssue.match(event)) {
+                if (sessionManager.isLoggedIn()) {
+                    cambiaScena("/it/unina/bugboard/fxml/insert_issue.fxml", 600, 650, "Inserisci Nuova Issue");
+                }
+            } else if (recovery.match(event)) {
+                if (!sessionManager.isLoggedIn()) {
+                    cambiaScena("/it/unina/bugboard/fxml/recovery.fxml", 600, 700, "BugBoard - Recupero Password");
+                }
+            } else if (registerUser.match(event)) {
+                if (sessionManager.isLoggedIn()) {
+                    // Check admin? User request didn't specify, but usually only admin
+                    // For now just check login to be safe as per user request "non rompere se sto
+                    // nel login"
+                    cambiaScena("/it/unina/bugboard/fxml/insert_user.fxml", 450, 600, "Registra Nuovo Utente");
+                }
+            } else if (logout.match(event)) {
+                if (sessionManager.isLoggedIn()) {
+                    sessionManager.logout();
+                    history.clear(); // Clear history logic
+                    currentSceneData = null;
+                    cambiaScena("/it/unina/bugboard/fxml/login.fxml", 400, 500, "BugBoard - Login");
+                }
+            } else if (back.match(event)) {
+                tornaIndietro();
+            }
+        });
+    }
+
+    private static class SceneData {
+        String fxml;
+        double width;
+        double height;
+        String title;
+        Integer issueId;
+
+        public SceneData(String fxml, double width, double height, String title, Integer issueId) {
+            this.fxml = fxml;
+            this.width = width;
+            this.height = height;
+            this.title = title;
+            this.issueId = issueId;
         }
     }
 }
