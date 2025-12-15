@@ -69,25 +69,7 @@
                         <Insets top="30" bottom="30" left="30" right="30"/>
                     </padding>
 
-                    <!-- STATS CARDS -->
-                    <HBox spacing="20">
-                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
-                            <Label text="Totale Issue" styleClass="stat-label"/>
-                            <Label text="24" styleClass="stat-value"/>
-                        </VBox>
-                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
-                            <Label text="Aperte" styleClass="stat-label"/>
-                            <Label text="12" styleClass="stat-value, warning-text"/>
-                        </VBox>
-                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
-                            <Label text="Completate" styleClass="stat-label"/>
-                            <Label text="8" styleClass="stat-value, success-text"/>
-                        </VBox>
-                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
-                            <Label text="In Ritardo" styleClass="stat-label"/>
-                            <Label text="4" styleClass="stat-value, danger-text"/>
-                        </VBox>
-                    </HBox>
+
 
                     <!-- RECENT ISSUES TITLE -->
                     <HBox alignment="CENTER_LEFT">
