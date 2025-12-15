@@ -8,7 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
+
 import javafx.util.Duration;
 import javafx.application.Platform;
 import it.unina.bugboard.navigation.SceneRouter;
@@ -33,16 +33,7 @@ public class LoginController implements Initializable {
     private Button togglePassword;
     @FXML
     private Button pulsanteLogin;
-    @FXML
-    private ToggleGroup gruppoModalita;
-    @FXML
-    private ToggleButton toggleUtente;
-    @FXML
-    private ToggleButton toggleAdmin;
-    @FXML
-    private HBox boxModalita;
-    @FXML
-    private Label etichettaModalita;
+
     @FXML
     private Label etichettaUsername;
     @FXML
@@ -58,11 +49,6 @@ public class LoginController implements Initializable {
     @FXML
     private Button linkRecuperoPassword;
 
-    private enum ModalitaUtente {
-        UTENTE, ADMIN
-    }
-
-    private ModalitaUtente modalitaCorrente = ModalitaUtente.UTENTE;
     private TranslateTransition shakeTransition;
     private boolean passwordVisibile = false;
     private final LoginApiService loginApiService;
@@ -83,7 +69,7 @@ public class LoginController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         caricaLogo();
         inizializzaBindings();
-        inizializzaListenerModalita();
+        inizializzaCampiInput();
         inizializzaTogglePassword();
         animaFormLogin();
         aggiornaUI();
@@ -111,18 +97,13 @@ public class LoginController implements Initializable {
         campoUsername.prefWidthProperty().bind(boxForm.widthProperty());
         campoPassword.prefWidthProperty().bind(boxForm.widthProperty());
         pulsanteLogin.prefWidthProperty().bind(boxForm.widthProperty());
-        boxModalita.prefWidthProperty().bind(boxForm.widthProperty());
 
         pulsanteLogin.disableProperty().bind(
                 campoUsername.textProperty().isEmpty()
                         .or(campoPassword.textProperty().isEmpty()));
     }
 
-    private void inizializzaListenerModalita() {
-        gruppoModalita.selectedToggleProperty().addListener((obs, vecchio, nuovo) -> {
-            modalitaCorrente = (nuovo == toggleAdmin) ? ModalitaUtente.ADMIN : ModalitaUtente.UTENTE;
-            aggiornaUI();
-        });
+    private void inizializzaCampiInput() {
         campoUsername.setOnAction(e -> campoPassword.requestFocus());
     }
 
@@ -257,14 +238,7 @@ public class LoginController implements Initializable {
     // --------------------------------------------------------
 
     private void aggiornaUI() {
-        boolean isAdmin = modalitaCorrente == ModalitaUtente.ADMIN;
-
-        etichettaModalita.setText(isAdmin ? "Modalità Amministratore" : "Modalità Utente");
-
-        if (isAdmin)
-            toggleAdmin.setSelected(true);
-        else
-            toggleUtente.setSelected(true);
+        // Funzionalità rimossa per login unificato
     }
 
     // --------------------------------------------------------
@@ -279,15 +253,12 @@ public class LoginController implements Initializable {
 
         String username = campoUsername.getText();
         String password = campoPassword.getText();
-        boolean isAdmin = gruppoModalita.getSelectedToggle() == toggleAdmin;
-
-        new Thread(() -> inviaRichiestaLogin(username, password, isAdmin)).start();
+        new Thread(() -> inviaRichiestaLogin(username, password)).start();
     }
 
-    private void inviaRichiestaLogin(String username, String password, boolean isAdmin) {
+    private void inviaRichiestaLogin(String username, String password) {
         try {
-            RispostaLogin risposta = loginApiService.login(username, password,
-                    isAdmin);
+            RispostaLogin risposta = loginApiService.login(username, password);
             gestisciRisultatoLogin(risposta);
         } catch (Exception e) {
             Platform.runLater(() -> {

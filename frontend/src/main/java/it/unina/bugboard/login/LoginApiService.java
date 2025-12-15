@@ -17,9 +17,11 @@ public class LoginApiService {
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public RispostaLogin login(String username, String password, boolean isAdmin) {
+    public RispostaLogin login(String username, String password) {
         try {
-            String modalita = isAdmin ? "admin" : "utente";
+            // Modalita is ignored by backend logic now, but preserved in DTO for
+            // compatibility
+            String modalita = "utente";
 
             Map<String, String> loginData = new HashMap<>();
             loginData.put("username", username);

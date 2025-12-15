@@ -39,14 +39,9 @@
                         <Insets top="25" bottom="25" left="30" right="30"/>
                     </padding>
 
-                    <fx:define>
-                        <ToggleGroup fx:id="gruppoModalita"/>
-                    </fx:define>
 
-                    <!-- Label Modalità -->
-                    <Label fx:id="etichettaModalita"
-                           text="Modalità Utente"
-                           styleClass="mode-label-static"/>
+
+
 
                     <!-- Campo Username -->
                     <VBox spacing="5">
@@ -92,19 +87,7 @@
                         </font>
                     </Button>
 
-                    <!-- Toggle modalità -->
-                    <HBox alignment="CENTER" spacing="0" fx:id="boxModalita"
-                          maxWidth="Infinity" styleClass="segmented-toggle">
-                        <ToggleButton fx:id="toggleUtente"
-                                      text="Utente"
-                                      toggleGroup="$gruppoModalita"
-                                      selected="true"
-                                      HBox.hgrow="ALWAYS"/>
-                        <ToggleButton fx:id="toggleAdmin"
-                                      text="Admin"
-                                      toggleGroup="$gruppoModalita"
-                                      HBox.hgrow="ALWAYS"/>
-                    </HBox>
+
 
                     <!-- Link Recupero Password -->
                     <Button fx:id="linkRecuperoPassword"

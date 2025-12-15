@@ -18,7 +18,7 @@ public class LoginServiceImplementation implements LoginService {
     private final it.unina.bugboard.JwtUtils jwtUtils;
 
     public LoginServiceImplementation(RepositoryUtente userRepository, PasswordEncoder passwordEncoder,
-                                      it.unina.bugboard.JwtUtils jwtUtils) {
+            it.unina.bugboard.JwtUtils jwtUtils) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
@@ -34,17 +34,13 @@ public class LoginServiceImplementation implements LoginService {
 
         User user = userOpt.get();
 
-        boolean adminRichiesto = "admin".equalsIgnoreCase(req.getModalita());
-        if (user.isAdmin() != adminRichiesto) {
-            return new RispostaLogin(false, "modalità non autorizzata", req.getModalita(), null, null);
-        }
-
         if (!passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
             return new RispostaLogin(false, "password errata", req.getModalita(), null, null);
         }
 
+        String modalitaReale = user.isAdmin() ? "admin" : "utente";
         String token = jwtUtils.generateToken(user.getUsername(), user.isAdmin() ? "ADMIN" : "USER", user.getId());
-        return new RispostaLogin(true, "login eseguito", req.getModalita(), token, user.getId());
+        return new RispostaLogin(true, "login eseguito", modalitaReale, token, user.getId());
     }
 
     @Override

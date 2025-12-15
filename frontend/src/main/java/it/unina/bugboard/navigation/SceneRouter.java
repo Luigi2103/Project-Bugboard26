@@ -184,10 +184,7 @@ public final class SceneRouter {
                     cambiaScena("/it/unina/bugboard/fxml/recovery.fxml", 600, 700, "BugBoard - Recupero Password");
                 }
             } else if (registerUser.match(event)) {
-                if (sessionManager.isLoggedIn()) {
-                    // Check admin? User request didn't specify, but usually only admin
-                    // For now just check login to be safe as per user request "non rompere se sto
-                    // nel login"
+                if (sessionManager.isLoggedIn() && sessionManager.isAdmin()) {
                     cambiaScena("/it/unina/bugboard/fxml/insert_user.fxml", 450, 600, "Registra Nuovo Utente");
                 }
             } else if (logout.match(event)) {
