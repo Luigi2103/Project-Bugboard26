@@ -1,7 +1,6 @@
 package it.unina.bugboard.inserimentoIssue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.unina.bugboard.inserimentoIssue.InsertIssueApiService;
 import it.unina.bugboard.inserimentoIssue.exception.InsertIssueApiException;
 
 import java.net.URI;

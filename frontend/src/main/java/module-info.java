@@ -12,7 +12,7 @@ module it.unina.bugboard {
     requires de.jensd.fx.glyphs.fontawesome;
     requires java.logging;
     requires org.slf4j;
-    requires it.unina.bugboard;
+
 
     exports it.unina.bugboard.login;
 
