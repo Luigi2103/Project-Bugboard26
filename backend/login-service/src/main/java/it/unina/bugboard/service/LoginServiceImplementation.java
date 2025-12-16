@@ -29,13 +29,13 @@ public class LoginServiceImplementation implements LoginService {
 
         Optional<User> userOpt = userRepository.findByUsernameOrEmail(req.getUsername(), req.getUsername());
         if (userOpt.isEmpty()) {
-            return new RispostaLogin(false, "utente non trovato", req.getModalita(), null, null);
+            return new RispostaLogin(false, "utente non trovato", "unknown", null, null);
         }
 
         User user = userOpt.get();
 
         if (!passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
-            return new RispostaLogin(false, "password errata", req.getModalita(), null, null);
+            return new RispostaLogin(false, "password errata", "unknown", null, null);
         }
 
         String modalitaReale = user.isAdmin() ? "admin" : "utente";

@@ -3,7 +3,6 @@ package it.unina.bugboard.dto;
 public class RichiestaLogin {
     private String username;
     private String password;
-    private String modalita;
 
     public String getUsername() {
         return username;
@@ -19,13 +18,5 @@ public class RichiestaLogin {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getModalita() {
-        return modalita;
-    }
-
-    public void setModalita(String modalita) {
-        this.modalita = modalita;
     }
 }

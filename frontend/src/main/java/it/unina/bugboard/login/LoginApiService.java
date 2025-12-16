@@ -19,14 +19,10 @@ public class LoginApiService {
 
     public RispostaLogin login(String username, String password) {
         try {
-            // Modalita is ignored by backend logic now, but preserved in DTO for
-            // compatibility
-            String modalita = "utente";
 
             Map<String, String> loginData = new HashMap<>();
             loginData.put("username", username);
             loginData.put("password", password);
-            loginData.put("modalita", modalita);
 
             String jsonBody = objectMapper.writeValueAsString(loginData);
 
