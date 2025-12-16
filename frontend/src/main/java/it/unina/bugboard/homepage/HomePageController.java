@@ -138,7 +138,18 @@ public class HomePageController implements Initializable {
                     issue.getIdIssue());
         });
 
-        row.getChildren().addAll(img, content, btnAction);
+        Button btnEdit = new Button("Modifica Issue");
+        btnEdit.getStyleClass().add("issue-card__btn");
+        btnEdit.setOnAction(e -> {
+            System.out.println("Modifica issue " + issue.getIdIssue());
+            // TODO: Implement edit logic
+        });
+
+        VBox buttonsContainer = new VBox(10); // Spacing 10
+        buttonsContainer.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+        buttonsContainer.getChildren().addAll(btnAction, btnEdit);
+
+        row.getChildren().addAll(img, content, buttonsContainer);
         return row;
     }
 

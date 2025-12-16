@@ -17,7 +17,8 @@
 }
 
 .nav-btn {
-    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-insets: 2;
     -fx-text-fill: #2C3E50;
     -fx-font-size: 14px;
     -fx-font-weight: 700;
@@ -25,32 +26,39 @@
     -fx-padding: 12 20;
     -fx-background-radius: 12;
     -fx-cursor: hand;
-    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-color: #3498DB;
     -fx-border-radius: 12;
-    -fx-border-width: 1;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(three-pass-box, rgba(52, 152, 219, 0.3), 8, 0, 0, 2);
 }
 
 .nav-btn:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.4);
-    -fx-text-fill: #1a252f;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+    -fx-background-color: #3498DB;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(52, 152, 219, 0.5), 12, 0, 0, 3);
     -fx-scale-x: 1.02;
     -fx-scale-y: 1.02;
 }
 
 .active-nav {
-    -fx-background-color: #FFFFFF;
-    -fx-text-fill: #3498DB;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 8, 0, 0, 3);
+    -fx-background-color: #3498DB;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(52, 152, 219, 0.5), 8, 0, 0, 3);
 }
 
 .logout-btn {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-insets: 2;
     -fx-text-fill: #C0392B;
+    -fx-border-color: #C0392B;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(three-pass-box, rgba(192, 57, 43, 0.3), 8, 0, 0, 2);
 }
 
 .logout-btn:hover {
-    -fx-background-color: rgba(239, 68, 68, 0.2);
-    -fx-text-fill: #E74C3C;
+    -fx-background-color: #C0392B;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(192, 57, 43, 0.5), 12, 0, 0, 3);
 }
 
 /* HEADER */
@@ -72,40 +80,44 @@
 
 
 /* BUTTONS */
+
 .btn-primary {
     -fx-background-color: linear-gradient(to right, #F5F0D9 0%, #3498DB 100%);
     -fx-text-fill: #2C3E50;
-    -fx-font-weight: 700;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
     -fx-background-radius: 10;
     -fx-padding: 10 20;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 3);
+    -fx-effect: dropshadow(three-pass-box, rgba(52, 152, 219, 0.4), 10, 0, 0, 3);
 }
 
 .btn-primary:hover {
     -fx-scale-x: 1.03;
     -fx-scale-y: 1.03;
-    -fx-background-color: #ffffff;
 }
 
 .link-btn {
-    -fx-background-color: rgba(255, 255, 255, 0.8);
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-insets: 2;
     -fx-text-fill: #2C3E50;
-    -fx-font-weight: 700;
+    -fx-font-weight: bold;
     -fx-font-size: 14px;
-    -fx-padding: 8 16;
-    -fx-background-radius: 20;
-    -fx-border-color: #3498DB;
-    -fx-border-radius: 20;
-    -fx-border-width: 1;
+    -fx-background-radius: 12;
+    -fx-padding: 10 20;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 5, 0, 0, 2);
+    -fx-border-color: #3498DB;
+    -fx-border-width: 2;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(three-pass-box, rgba(52, 152, 219, 0.3), 8, 0, 0, 2);
 }
 
 .link-btn:hover {
     -fx-background-color: #3498DB;
-    -fx-text-fill: #FFFFFF;
-    -fx-effect: dropshadow(three-pass-box, rgba(52, 152, 219, 0.3), 8, 0, 0, 3);
+    -fx-text-fill: white;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(three-pass-box, rgba(52, 152, 219, 0.5), 12, 0, 0, 3);
 }
 
 /* SCROLL */
@@ -195,15 +207,19 @@
 }
 
 .issue-card__btn {
-    -fx-background-color: #F1F5F9;
-    -fx-text-fill: #475569;
-    -fx-padding: 6 12;
-    -fx-background-radius: 6;
-    -fx-font-weight: 600;
+    -fx-background-color: #ecf0f1;
+    -fx-text-fill: #7f8c8d;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-background-radius: 8;
+    -fx-padding: 8 16;
     -fx-cursor: hand;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
 }
 
 .issue-card__btn:hover {
-    -fx-background-color: #E2E8F0;
-    -fx-text-fill: #1E293B;
+    -fx-background-color: #bdc3c7;
+    -fx-text-fill: #2c3e50;
 }
