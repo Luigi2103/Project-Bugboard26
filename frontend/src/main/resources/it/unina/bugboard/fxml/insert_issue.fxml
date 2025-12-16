@@ -61,12 +61,11 @@
                         <Label fx:id="erroreTipo" styleClass="error-label" managed="false" visible="false"/>
                     </VBox>
 
-                    <!-- Tags -->
+                    <!-- Priorità -->
                     <VBox spacing="5" maxWidth="Infinity">
-                        <Label text="Tags" styleClass="field-label"/>
-                        <FlowPane fx:id="tagsContainer" hgap="10" vgap="10" maxWidth="Infinity" styleClass="tags-container">
-                            <TextField fx:id="campoTags" promptText="Scrivi tag e premi Invio o Spazio..." styleClass="tag-input" minWidth="200"/>
-                        </FlowPane>
+                        <Label text="Priorità" styleClass="field-label"/>
+                        <ComboBox fx:id="comboPriorita" promptText="Seleziona Priorità" maxWidth="Infinity"/>
+                        <Label fx:id="errorePriorita" styleClass="error-label" managed="false" visible="false"/>
                     </VBox>
 
                     <!-- Campi Dinamici -->

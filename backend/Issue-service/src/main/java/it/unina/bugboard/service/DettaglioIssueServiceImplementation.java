@@ -6,7 +6,7 @@ import it.unina.bugboard.dto.RichiestaDettaglioIssue;
 import it.unina.bugboard.dto.RispostaDettaglioIssue;
 import it.unina.bugboard.entity.Commento;
 import it.unina.bugboard.entity.Issue;
-import it.unina.bugboard.entity.Tag;
+
 import it.unina.bugboard.repository.RepositoryCommento;
 import it.unina.bugboard.repository.RepositoryIssueService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class DettaglioIssueServiceImplementation implements DettaglioIssueServic
 
     @Autowired
     public DettaglioIssueServiceImplementation(RepositoryIssueService issueRepository,
-                                               RepositoryCommento commentoRepository) {
+            RepositoryCommento commentoRepository) {
         this.issueRepository = issueRepository;
         this.commentoRepository = commentoRepository;
     }
@@ -33,7 +33,7 @@ public class DettaglioIssueServiceImplementation implements DettaglioIssueServic
     @Override
     public RispostaDettaglioIssue recuperaDettaglioIssue(RichiestaDettaglioIssue richiesta) {
         try {
-            Optional<Issue> issueOpt = issueRepository.findByIdWithTags(richiesta.getIdIssue());
+            Optional<Issue> issueOpt = issueRepository.findById(richiesta.getIdIssue());
 
             if (issueOpt.isEmpty()) {
                 return new RispostaDettaglioIssue(false, "Issue non trovata", null, null, null);
@@ -73,13 +73,6 @@ public class DettaglioIssueServiceImplementation implements DettaglioIssueServic
         dto.setDescrizioneProblema(issue.getDescrizioneProblema());
         dto.setRichiestaFunzionalita(issue.getRichiestaFunzionalita());
         dto.setHasFoto(issue.getFoto() != null && issue.getFoto().length > 0);
-
-        if (issue.getTags() != null) {
-            List<String> tagNames = issue.getTags().stream()
-                    .map(Tag::getNome)
-                    .toList();
-            dto.setTags(tagNames);
-        }
 
         return dto;
     }

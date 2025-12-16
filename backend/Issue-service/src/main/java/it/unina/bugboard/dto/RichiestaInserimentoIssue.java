@@ -1,10 +1,8 @@
 package it.unina.bugboard.dto;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 import it.unina.bugboard.entity.Priorita;
-import it.unina.bugboard.entity.Tag;
 import it.unina.bugboard.entity.Tipologia;
 import lombok.*;
 
@@ -27,6 +25,5 @@ public class RichiestaInserimentoIssue {
     private String richiestaFunzionalita;
     private LocalDate dataCreazione;
     private int idProgetto;
-    private int idSegnalator;
-    private Set<Tag> tags;
+    private int idSegnalatore;
 }

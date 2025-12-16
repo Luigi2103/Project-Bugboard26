@@ -6,9 +6,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -21,13 +18,16 @@ public class InsertIssueController {
     private static final String ISSUE_QUESTION = "QUESTION";
     private static final String ISSUE_DOC = "DOCUMENTATION";
     private static final String ISSUE_FEATURE = "FEATURE";
-    private static final String   MSG_INPUT_ERROR= "input-error";
+    private static final String MSG_INPUT_ERROR = "input-error";
+
     @FXML
     private TextField campoTitolo;
     @FXML
     private TextArea areaDescrizione;
     @FXML
     private ComboBox<String> comboTipo;
+    @FXML
+    private ComboBox<String> comboPriorita;
 
     @FXML
     private VBox containerCampiDinamici;
@@ -44,19 +44,33 @@ public class InsertIssueController {
     private Label erroreDescrizione;
     @FXML
     private Label erroreTipo;
-
     @FXML
-    private FlowPane tagsContainer;
-    @FXML
-    private TextField campoTags;
+    private Label errorePriorita;
 
     private File fileSelezionato;
+
+    private final InsertIssueApiService apiService;
+    private final it.unina.bugboard.common.SessionManager sessionManager;
+
+    public InsertIssueController(InsertIssueApiService apiService,
+            it.unina.bugboard.common.SessionManager sessionManager) {
+        this.apiService = apiService;
+        this.sessionManager = sessionManager;
+    }
 
     @FXML
     public void initialize() {
         inizializzaComboTipo();
+        inizializzaComboPriorita();
         inizializzaListeners();
         inizializzaUpload();
+    }
+
+    private void inizializzaComboPriorita() {
+        comboPriorita.getItems().addAll("BASSA", "MEDIA", "ALTA", "MASSIMA");
+        comboPriorita.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            resetErrorStyles();
+        });
     }
 
     /* -------------------------- INIT -------------------------- */
@@ -73,51 +87,10 @@ public class InsertIssueController {
     private void inizializzaListeners() {
         campoTitolo.textProperty().addListener((obs, old, neu) -> resetErrorStyles());
         areaDescrizione.textProperty().addListener((obs, old, neu) -> resetErrorStyles());
-
-        campoTags.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) {
-                confermaTag();
-                event.consume();
-            }
-        });
-
-        campoTags.focusedProperty().addListener((obs, old, focused) -> {
-            if (!focused.booleanValue()) {
-                confermaTag();
-            }
-        });
     }
 
     private void inizializzaUpload() {
         areaUploadImmagine.setOnMouseClicked(event -> selezionaImmagine());
-    }
-
-    /* -------------------------- TAGS -------------------------- */
-
-    private void confermaTag() {
-        String testo = campoTags.getText().trim();
-        if (!testo.isEmpty()) {
-            aggiungiTag(testo);
-            campoTags.clear();
-        }
-    }
-
-    private void aggiungiTag(String testo) {
-        HBox chip = new HBox(5);
-        chip.setAlignment(Pos.CENTER_LEFT);
-        chip.getStyleClass().add("tag-chip");
-
-        Label label = new Label(testo);
-        label.getStyleClass().add("tag-label-text");
-
-        Button closeBtn = new Button("×");
-        closeBtn.getStyleClass().add("tag-close-button");
-        closeBtn.setOnAction(e -> tagsContainer.getChildren().remove(chip));
-
-        chip.getChildren().addAll(label, closeBtn);
-
-        int insertIndex = Math.max(0, tagsContainer.getChildren().size() - 1);
-        tagsContainer.getChildren().add(insertIndex, chip);
     }
 
     /* -------------------------- CAMPi DINAMICI -------------------------- */
@@ -199,6 +172,7 @@ public class InsertIssueController {
         campoTitolo.clear();
         areaDescrizione.clear();
         comboTipo.getSelectionModel().clearSelection();
+        comboPriorita.getSelectionModel().clearSelection();
         containerCampiDinamici.getChildren().clear();
 
         anteprimaImmagine.setImage(null);
@@ -206,9 +180,6 @@ public class InsertIssueController {
         anteprimaImmagine.setManaged(false);
         labelNomeFile.setText("Clicca per caricare un'immagine");
         fileSelezionato = null;
-
-        campoTags.clear();
-        tagsContainer.getChildren().removeIf(HBox.class::isInstance);
 
         resetErrorStyles();
     }
@@ -236,34 +207,131 @@ public class InsertIssueController {
             valido = false;
         }
 
-        // --- CODICE MODIFICATO ---
+        if (comboPriorita.getValue() == null) {
+            mostraErrore(comboPriorita, errorePriorita, "Seleziona una priorità");
+            valido = false;
+        }
+
         for (javafx.scene.Node node : containerCampiDinamici.getChildren()) {
-            // Qui abbiamo unito "node instanceof VBox box" con i controlli successivi
-            // usando &&. La variabile 'box' è utilizzabile subito dopo essere stata dichiarata.
             if (node instanceof VBox box
                     && box.getChildren().size() >= 3
                     && box.getChildren().get(1) instanceof TextField tf
                     && box.getChildren().get(2) instanceof Label errLbl) {
 
-                // Ora siamo dentro un unico blocco IF
                 if (isEmpty(tf.getText())) {
                     mostraErrore(tf, errLbl, "Questo campo è obbligatorio");
                     valido = false;
                 }
             }
         }
-        // -------------------------
 
         if (!valido) {
             return;
         }
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Successo");
-        alert.setContentText("Issue inserita con successo!");
-        alert.showAndWait();
+        // Recupero campi dinamici
+        String istruzioni = null;
+        String richiestaSpecifica = null;
+        String titoloDoc = null;
+        String descDoc = null;
+        String richiestaFunz = null;
 
-        tornaIndietro();
+        String tipo = comboTipo.getValue();
+        String priorita = comboPriorita.getValue();
+
+        for (javafx.scene.Node node : containerCampiDinamici.getChildren()) {
+            if (node instanceof VBox box && box.getChildren().size() >= 2
+                    && box.getChildren().get(1) instanceof TextField tf) {
+                String labelText = ((Label) box.getChildren().get(0)).getText();
+                String val = tf.getText();
+
+                if (labelText.contains("Istruzioni"))
+                    istruzioni = val;
+                else if (labelText.contains("Domanda") || labelText.contains("Richiesta specifica"))
+                    richiestaSpecifica = val;
+                else if (labelText.contains("Titolo Documento"))
+                    titoloDoc = val;
+                else if (labelText.contains("Descrizione Problema"))
+                    descDoc = val;
+                else if (labelText.contains("Richiesta Funzionalità"))
+                    richiestaFunz = val;
+            }
+        }
+
+        byte[] immagineBytes = null;
+        if (fileSelezionato != null) {
+            try {
+                immagineBytes = java.nio.file.Files.readAllBytes(fileSelezionato.toPath());
+            } catch (java.io.IOException e) {
+                Alert err = new Alert(Alert.AlertType.ERROR);
+                err.setTitle("Errore");
+                err.setContentText("Errore lettura immagine");
+                err.showAndWait();
+                return;
+            }
+        }
+
+        final byte[] finalImmagineBytes = immagineBytes;
+        final String finalIstruzioni = istruzioni;
+        final String finalRichiestaSpecifica = richiestaSpecifica;
+        final String finalTitoloDoc = titoloDoc;
+        final String finalDescDoc = descDoc;
+        final String finalRichiestaFunz = richiestaFunz;
+
+        Long userId = sessionManager.getUserId();
+        if (userId == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Errore");
+            alert.setContentText("Utente non loggato. Impossibile inserire l'issue.");
+            alert.showAndWait();
+            return;
+        }
+        int idSegnalatore = userId.intValue();
+
+        // Background Thread
+        new Thread(() -> {
+            try {
+                RispostaIssueService risposta = apiService.inserisciIssue(
+                        campoTitolo.getText(),
+                        areaDescrizione.getText(),
+                        finalImmagineBytes,
+                        tipo,
+                        "TO-DO",
+                        priorita,
+                        finalIstruzioni,
+                        finalRichiestaSpecifica,
+                        finalTitoloDoc,
+                        finalDescDoc,
+                        finalRichiestaFunz,
+                        java.time.LocalDate.now(),
+                        1, // ID Progetto hardcoded per ora
+                        idSegnalatore);
+
+                javafx.application.Platform.runLater(() -> {
+                    if (risposta != null && risposta.isSuccess()) {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Successo");
+                        alert.setContentText("Issue inserita con successo!");
+                        alert.showAndWait();
+                        tornaIndietro();
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Errore");
+                        alert.setContentText(risposta != null ? risposta.getMessage() : "Errore sconosciuto");
+                        alert.showAndWait();
+                    }
+                });
+
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Errore");
+                    String causeMsg = (e.getCause() != null) ? e.getCause().toString() : e.getMessage();
+                    alert.setContentText("Errore di comunicazione: " + causeMsg);
+                    alert.showAndWait();
+                });
+            }
+        }).start();
     }
 
     private boolean isEmpty(String s) {
@@ -281,6 +349,7 @@ public class InsertIssueController {
         rimuoviErrori(campoTitolo, erroreTitolo);
         rimuoviErrori(areaDescrizione, erroreDescrizione);
         rimuoviErrori(comboTipo, erroreTipo);
+        rimuoviErrori(comboPriorita, errorePriorita);
     }
 
     private void rimuoviErrori(Control control, Label label) {

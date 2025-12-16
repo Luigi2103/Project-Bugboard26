@@ -1,8 +1,9 @@
 package it.unina.bugboard.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
 import lombok.*;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -24,7 +25,6 @@ public class IssueDTO {
     private String titoloDocumento;
     private String descrizioneProblema;
     private String richiestaFunzionalita;
-    private List<String> tags;
     private boolean hasFoto;
 
 }

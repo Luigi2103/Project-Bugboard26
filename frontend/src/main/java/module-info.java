@@ -11,8 +11,8 @@ module it.unina.bugboard {
     requires com.fasterxml.jackson.datatype.jsr310;
     requires de.jensd.fx.glyphs.fontawesome;
     requires java.logging;
+    requires static lombok;
     requires org.slf4j;
-
 
     exports it.unina.bugboard.login;
 
@@ -29,7 +29,7 @@ module it.unina.bugboard {
 
     opens it.unina.bugboard.recovery to com.fasterxml.jackson.databind, javafx.fxml;
     opens it.unina.bugboard.homepage to javafx.fxml;
-    opens it.unina.bugboard.inserimentoIssue to javafx.fxml;
+    opens it.unina.bugboard.inserimentoIssue to javafx.fxml, com.fasterxml.jackson.databind;
 
     exports it.unina.bugboard.recovery.exception;
 

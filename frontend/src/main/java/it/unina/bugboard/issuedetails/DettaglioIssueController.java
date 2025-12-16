@@ -116,13 +116,13 @@ public class DettaglioIssueController implements Initializable {
         }
         labelDataCreazione.setText("Aperta il: " + (data != null ? data : "N/D"));
 
-        labelStato.setText("Stato: " + (issue.getStato() != null ? issue.getStato() : ""));
+        labelStato.setText((issue.getStato() != null ? issue.getStato() : ""));
         applicaStileBadge(labelStato, issue.getStato(), "STATO");
 
-        labelPriorita.setText("Priorità: " + (issue.getPriorita() != null ? issue.getPriorita() : "N/D"));
+        labelPriorita.setText((issue.getPriorita() != null ? issue.getPriorita() : "N/D"));
         applicaStileBadge(labelPriorita, issue.getPriorita(), "PRIORITA");
 
-        labelTipologia.setText("Tipologia: " + (issue.getTipologia() != null ? issue.getTipologia() : ""));
+        labelTipologia.setText((issue.getTipologia() != null ? issue.getTipologia() : ""));
         applicaStileBadge(labelTipologia, issue.getTipologia(), "TIPOLOGIA");
 
         labelDescrizione.setText(issue.getDescrizione());

@@ -90,7 +90,7 @@
 
                 <!-- TOP RIGHT: Comments -->
                 <VBox styleClass="side-panel" spacing="10">
-                    <Label text="Commenti" styleClass="section-label"/>
+                    <Label text="Commenti" styleClass="section-label" style="-fx-font-weight: bold;"/>
                     <ScrollPane fx:id="scrollPaneCommenti" fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="comments-scroll">
                         <VBox fx:id="campiCommentiContainer" spacing="10" styleClass="comments-container">
                             <!-- Populated dynamically -->
@@ -110,7 +110,7 @@
 
                 <!-- BOTTOM RIGHT: History -->
                 <VBox styleClass="side-panel" spacing="10">
-                    <Label text="Cronologia Modifiche" styleClass="section-label"/>
+                    <Label text="Cronologia Modifiche" styleClass="section-label" style="-fx-font-weight: bold;"/>
                     <VBox VBox.vgrow="ALWAYS" styleClass="placeholder-box">
                         <Label text="Area Cronologia (Presto disponibile)" styleClass="placeholder-text"/>
                     </VBox>

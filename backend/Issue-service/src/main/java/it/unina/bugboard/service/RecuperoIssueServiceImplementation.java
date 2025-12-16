@@ -4,7 +4,7 @@ import it.unina.bugboard.dto.IssueDTO;
 import it.unina.bugboard.dto.RichiestaRecuperoIssue;
 import it.unina.bugboard.dto.RispostaRecuperoIssue;
 import it.unina.bugboard.entity.Issue;
-import it.unina.bugboard.entity.Tag;
+
 import it.unina.bugboard.repository.RepositoryIssueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,13 +72,6 @@ public class RecuperoIssueServiceImplementation implements RecuperoIssueService 
         dto.setDescrizioneProblema(issue.getDescrizioneProblema());
         dto.setRichiestaFunzionalita(issue.getRichiestaFunzionalita());
         dto.setHasFoto(issue.getFoto() != null && issue.getFoto().length > 0);
-
-        if (issue.getTags() != null) {
-            List<String> tagNames = issue.getTags().stream()
-                    .map(Tag::getNome)
-                    .toList();
-            dto.setTags(tagNames);
-        }
 
         return dto;
     }
