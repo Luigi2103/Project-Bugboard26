@@ -7,89 +7,94 @@
 <?import javafx.scene.text.Font?>
 <?import java.net.URL?>
 
-<StackPane xmlns="http://javafx.com/javafx"
-           xmlns:fx="http://javafx.com/fxml"
-           fx:controller="it.unina.bugboard.inserimentoIssue.InsertIssueController"
-           styleClass="insert-issue-root">
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="it.unina.bugboard.inserimentoIssue.InsertIssueController"
+            styleClass="insert-issue-root">
     <stylesheets>
         <URL value="@../css/insert_issue.css"/>
     </stylesheets>
 
-    <!-- Content -->
-    <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="transparent-scroll" focusTraversable="false">
-        <VBox alignment="CENTER" spacing="20" focusTraversable="false">
+    <!-- Header / Top (Back Button) -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20">
             <padding>
-                <Insets top="40" bottom="40" left="40" right="40"/>
+                <Insets top="20" left="30" bottom="10"/>
             </padding>
+            <Button text="← Indietro" onAction="#tornaIndietro" styleClass="back-button-floating"/>
+        </HBox>
+    </top>
 
-            <Label text="Inserisci Nuova Issue" styleClass="title-label"/>
-
-            <VBox alignment="CENTER" spacing="15" styleClass="form-box" maxWidth="600">
+    <!-- Content -->
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="transparent-scroll" focusTraversable="false">
+            <VBox alignment="CENTER" spacing="20" focusTraversable="false">
                 <padding>
-                    <Insets top="30" bottom="30" left="40" right="40"/>
+                    <Insets top="10" bottom="40" left="40" right="40"/>
                 </padding>
 
-                <!-- Titolo -->
-                <VBox spacing="5" maxWidth="Infinity">
-                    <Label text="Titolo" styleClass="field-label"/>
-                    <TextField fx:id="campoTitolo" promptText="Inserisci il titolo dell'issue" maxWidth="Infinity"/>
-                    <Label fx:id="erroreTitolo" styleClass="error-label" managed="false" visible="false"/>
-                </VBox>
+                <Label text="Inserisci Nuova Issue" styleClass="title-label"/>
 
-                <!-- Descrizione -->
-                <VBox spacing="5" maxWidth="Infinity">
-                    <Label text="Descrizione" styleClass="field-label"/>
-                    <TextArea fx:id="areaDescrizione" promptText="Descrivi dettagliatamente l'issue..." prefRowCount="4" wrapText="true" maxWidth="Infinity"/>
-                    <Label fx:id="erroreDescrizione" styleClass="error-label" managed="false" visible="false"/>
-                </VBox>
+                <VBox alignment="CENTER" spacing="15" styleClass="form-box" maxWidth="600">
+                    <padding>
+                        <Insets top="30" bottom="30" left="40" right="40"/>
+                    </padding>
 
-                <!-- Tipo Issue -->
-                <VBox spacing="5" maxWidth="Infinity">
-                    <Label text="Tipo Issue" styleClass="field-label"/>
-                    <ComboBox fx:id="comboTipo" promptText="Seleziona il tipo" maxWidth="Infinity"/>
-                    <Label fx:id="erroreTipo" styleClass="error-label" managed="false" visible="false"/>
-                </VBox>
+                    <!-- Titolo -->
+                    <VBox spacing="5" maxWidth="Infinity">
+                        <Label text="Titolo" styleClass="field-label"/>
+                        <TextField fx:id="campoTitolo" promptText="Inserisci il titolo dell'issue" maxWidth="Infinity"/>
+                        <Label fx:id="erroreTitolo" styleClass="error-label" managed="false" visible="false"/>
+                    </VBox>
 
-                <!-- Tags -->
-                <VBox spacing="5" maxWidth="Infinity">
-                    <Label text="Tags" styleClass="field-label"/>
-                    <FlowPane fx:id="tagsContainer" hgap="10" vgap="10" maxWidth="Infinity" styleClass="tags-container">
-                        <TextField fx:id="campoTags" promptText="Scrivi tag e premi Invio o Spazio..." styleClass="tag-input" minWidth="200"/>
-                    </FlowPane>
-                </VBox>
+                    <!-- Descrizione -->
+                    <VBox spacing="5" maxWidth="Infinity">
+                        <Label text="Descrizione" styleClass="field-label"/>
+                        <TextArea fx:id="areaDescrizione" promptText="Descrivi dettagliatamente l'issue..." prefRowCount="4" wrapText="true" maxWidth="Infinity"/>
+                        <Label fx:id="erroreDescrizione" styleClass="error-label" managed="false" visible="false"/>
+                    </VBox>
 
-                <!-- Campi Dinamici -->
-                <VBox fx:id="containerCampiDinamici" spacing="15" maxWidth="Infinity"/>
+                    <!-- Tipo Issue -->
+                    <VBox spacing="5" maxWidth="Infinity">
+                        <Label text="Tipo Issue" styleClass="field-label"/>
+                        <ComboBox fx:id="comboTipo" promptText="Seleziona il tipo" maxWidth="Infinity"/>
+                        <Label fx:id="erroreTipo" styleClass="error-label" managed="false" visible="false"/>
+                    </VBox>
 
-                <!-- Upload Immagine -->
-                <VBox spacing="5" maxWidth="Infinity">
-                    <Label text="Allegato (Opzionale)" styleClass="field-label"/>
-                    <VBox fx:id="areaUploadImmagine" styleClass="image-upload-area" alignment="CENTER" spacing="10" minHeight="100">
+                    <!-- Tags -->
+                    <VBox spacing="5" maxWidth="Infinity">
+                        <Label text="Tags" styleClass="field-label"/>
+                        <FlowPane fx:id="tagsContainer" hgap="10" vgap="10" maxWidth="Infinity" styleClass="tags-container">
+                            <TextField fx:id="campoTags" promptText="Scrivi tag e premi Invio o Spazio..." styleClass="tag-input" minWidth="200"/>
+                        </FlowPane>
+                    </VBox>
+
+                    <!-- Campi Dinamici -->
+                    <VBox fx:id="containerCampiDinamici" spacing="15" maxWidth="Infinity"/>
+
+                    <!-- Upload Immagine -->
+                    <VBox spacing="5" maxWidth="Infinity">
+                        <Label text="Allegato (Opzionale)" styleClass="field-label"/>
+                        <VBox fx:id="areaUploadImmagine" styleClass="image-upload-area" alignment="CENTER" spacing="10" minHeight="100">
+                            <padding>
+                                <Insets top="10" bottom="10" left="10" right="10"/>
+                            </padding>
+                            <Label fx:id="labelNomeFile" text="Clicca per caricare un'immagine" styleClass="upload-label"/>
+                            <ImageView fx:id="anteprimaImmagine" fitHeight="150" preserveRatio="true" visible="false" managed="false"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- Pulsanti Azione -->
+                    <HBox spacing="20" alignment="CENTER">
                         <padding>
                             <Insets top="10" bottom="10" left="10" right="10"/>
                         </padding>
-                        <Label fx:id="labelNomeFile" text="Clicca per caricare un'immagine" styleClass="upload-label"/>
-                        <ImageView fx:id="anteprimaImmagine" fitHeight="150" preserveRatio="true" visible="false" managed="false"/>
-                    </VBox>
+                        <Button text="Cancella Tutto" onAction="#pulisciCampi" styleClass="clear-button" prefWidth="180"/>
+                        <Button text="Inserisci Issue" onAction="#gestisciInserimento" styleClass="submit-button" prefWidth="180"/>
+                    </HBox>
+
                 </VBox>
-
-                <!-- Pulsanti Azione -->
-                <HBox spacing="20" alignment="CENTER">
-                    <padding>
-                        <Insets top="10" bottom="10" left="10" right="10"/>
-                    </padding>
-                    <Button text="Cancella Tutto" onAction="#pulisciCampi" styleClass="clear-button" prefWidth="180"/>
-                    <Button text="Inserisci Issue" onAction="#gestisciInserimento" styleClass="submit-button" prefWidth="180"/>
-                </HBox>
-
             </VBox>
-        </VBox>
-    </ScrollPane>
-
-    <!-- Back Button Top-Left -->
-    <Button text="← Indietro" onAction="#tornaIndietro" styleClass="back-button-floating" StackPane.alignment="TOP_LEFT">
-        <StackPane.margin>
-            <Insets top="20" left="30"/>
-        </StackPane.margin>
-    </Button>
-</StackPane>
+        </ScrollPane>
+    </center>
+</BorderPane>

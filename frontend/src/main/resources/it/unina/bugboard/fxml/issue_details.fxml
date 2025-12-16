@@ -79,7 +79,7 @@
                     <VBox spacing="5" fx:id="imageContainer">
                         <Label text="Allegato" styleClass="section-label" style="-fx-font-weight: bold;"/>
                         <Label fx:id="labelNoAllegati" text="Non sono presenti allegati" visible="false" managed="false"/>
-                        <ImageView fx:id="imageFoto" fitWidth="500" preserveRatio="true"/>
+                        <ImageView fx:id="imageFoto" preserveRatio="true"/>
                     </VBox>
 
                 </VBox>

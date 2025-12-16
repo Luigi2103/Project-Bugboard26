@@ -42,6 +42,8 @@ public class DettaglioIssueController implements Initializable {
     @FXML
     private ImageView imageFoto;
     @FXML
+    private VBox imageContainer;
+    @FXML
     private Label labelNoAllegati;
     @FXML
     private VBox campiCommentiContainer;
@@ -69,6 +71,10 @@ public class DettaglioIssueController implements Initializable {
         if (btnInvia != null && txtNuovoCommento != null) {
             btnInvia.disableProperty().bind(
                     txtNuovoCommento.textProperty().isEmpty());
+        }
+
+        if (imageFoto != null && imageContainer != null) {
+            imageFoto.fitWidthProperty().bind(imageContainer.widthProperty().subtract(20));
         }
     }
 
