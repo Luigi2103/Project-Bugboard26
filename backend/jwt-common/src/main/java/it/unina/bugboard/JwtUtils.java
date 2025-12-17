@@ -35,10 +35,12 @@ public class JwtUtils {
         this.signingKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(String username, String role, Long userId) {
+    public String generateToken(String username, String role, Long userId, String nome, String cognome) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
         claims.put("userId", userId);
+        claims.put("nome", nome);
+        claims.put("cognome", cognome);
 
         return Jwts.builder()
                 .claims(claims)

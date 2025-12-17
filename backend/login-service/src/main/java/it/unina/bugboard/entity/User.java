@@ -17,6 +17,12 @@ public class User extends BasicUser {
     @Column(nullable = false, name = "isadmin")
     private boolean isAdmin;
 
+    @Column(name = "nome")
+    private String nome;
+
+    @Column(name = "cognome")
+    private String cognome;
+
     public Long getId() {
         return id;
     }
@@ -48,5 +54,21 @@ public class User extends BasicUser {
 
     public void setAdmin(boolean admin) {
         isAdmin = admin;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getCognome() {
+        return cognome;
+    }
+
+    public void setCognome(String cognome) {
+        this.cognome = cognome;
     }
 }

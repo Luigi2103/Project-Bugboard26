@@ -37,11 +37,17 @@ public class HomePageController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        String username = sessionManager.getUsername() != null
-                ? sessionManager.getUsername()
-                : "Utente";
+        String nome = sessionManager.getNome();
+        String cognome = sessionManager.getCognome();
+        String greetingName;
 
-        etichettaBenvenuto.setText("Ciao, " + username);
+        if (nome != null && cognome != null) {
+            greetingName = nome + " " + cognome;
+        } else {
+            greetingName = sessionManager.getUsername() != null ? sessionManager.getUsername() : "Utente";
+        }
+
+        etichettaBenvenuto.setText("Ciao, " + greetingName);
 
         boolean admin = sessionManager.isAdmin();
         if (btnAggiungiUtente != null) {
@@ -120,7 +126,6 @@ public class HomePageController implements Initializable {
             for (String tag : issue.getTags()) {
                 Label tagLabel = new Label(tag);
                 tagLabel.getStyleClass().add("tag-label");
-                // FIX: Forziamo lo stile inline per assicurarci che si vedano
                 tagLabel.setStyle(
                         "-fx-background-color: #EBF5FB; -fx-text-fill: #2980B9; -fx-padding: 3 8; -fx-background-radius: 12; -fx-border-color: #A9CCE3; -fx-border-radius: 12;");
                 tagsContainer.getChildren().add(tagLabel);
@@ -145,7 +150,7 @@ public class HomePageController implements Initializable {
             // TODO: Implement edit logic
         });
 
-        VBox buttonsContainer = new VBox(10); // Spacing 10
+        VBox buttonsContainer = new VBox(10);
         buttonsContainer.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
         buttonsContainer.getChildren().addAll(btnAction, btnEdit);
 
@@ -170,17 +175,15 @@ public class HomePageController implements Initializable {
 
     @FXML
     private void vediMieIssue() {
-        // Logica per vedere le issue assegnate all'utente
+
     }
 
     @FXML
     private void vediIssueProgetto() {
-        // Logica per vedere tutte le issue del progetto (admin)
     }
 
     @FXML
     private void vediTutte() {
-        // Metodo legacy/backup, reindirizza alle mie issue per deafult
         vediMieIssue();
     }
 

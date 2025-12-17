@@ -39,7 +39,8 @@ public class LoginServiceImplementation implements LoginService {
         }
 
         String modalitaReale = user.isAdmin() ? "admin" : "utente";
-        String token = jwtUtils.generateToken(user.getUsername(), user.isAdmin() ? "ADMIN" : "USER", user.getId());
+        String token = jwtUtils.generateToken(user.getUsername(), user.isAdmin() ? "ADMIN" : "USER", user.getId(),
+                user.getNome(), user.getCognome());
         return new RispostaLogin(true, "login eseguito", modalitaReale, token, user.getId());
     }
 
@@ -59,5 +60,4 @@ public class LoginServiceImplementation implements LoginService {
 
         return new RispostaUpdate("Password Cambiata Con Successo", true);
     }
-
 }

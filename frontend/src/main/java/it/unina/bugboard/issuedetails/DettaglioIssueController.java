@@ -297,13 +297,17 @@ public class DettaglioIssueController implements Initializable {
                 if (nuovoCommentoDTO == null) {
                     nuovoCommentoDTO = new CommentoDTO();
                     nuovoCommentoDTO.setTesto(testo);
-                    nuovoCommentoDTO.setNomeUtente("Tu");
-                    nuovoCommentoDTO.setCognomeUtente("");
+                    nuovoCommentoDTO.setNomeUtente(
+                            sessionManager.getNome() != null ? sessionManager.getNome() : sessionManager.getUsername());
+                    nuovoCommentoDTO
+                            .setCognomeUtente(sessionManager.getCognome() != null ? sessionManager.getCognome() : "");
                     nuovoCommentoDTO.setData(java.time.LocalDate.now());
                 } else {
                     if (nuovoCommentoDTO.getNomeUtente() == null) {
-                        nuovoCommentoDTO.setNomeUtente("Tu");
-                        nuovoCommentoDTO.setCognomeUtente("");
+                        nuovoCommentoDTO.setNomeUtente(sessionManager.getNome() != null ? sessionManager.getNome()
+                                : sessionManager.getUsername());
+                        nuovoCommentoDTO.setCognomeUtente(
+                                sessionManager.getCognome() != null ? sessionManager.getCognome() : "");
                     }
                 }
 

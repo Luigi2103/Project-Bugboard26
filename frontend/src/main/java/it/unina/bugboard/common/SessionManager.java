@@ -16,6 +16,8 @@ public class SessionManager {
     private boolean admin;
     private Long userId;
     private Long expirationTime;
+    private String nome;
+    private String cognome;
 
     public SessionManager() {
     }
@@ -50,6 +52,8 @@ public class SessionManager {
             this.userId = node.has("userId") ? node.get("userId").asLong() : null;
             this.admin = node.has("role") && "ADMIN".equalsIgnoreCase(node.get("role").asText());
             this.expirationTime = node.has("exp") ? node.get("exp").asLong() : null;
+            this.nome = node.has("nome") ? node.get("nome").asText() : null;
+            this.cognome = node.has("cognome") ? node.get("cognome").asText() : null;
 
         } catch (Exception e) {
             log.error("Errore durante la decodifica del JWT", e);
@@ -62,6 +66,8 @@ public class SessionManager {
         this.userId = null;
         this.admin = false;
         this.expirationTime = null;
+        this.nome = null;
+        this.cognome = null;
     }
 
     public String getUsername() {
@@ -95,5 +101,13 @@ public class SessionManager {
 
     public String getAuthorizationHeader() {
         return token != null ? "Bearer " + token : null;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getCognome() {
+        return cognome;
     }
 }
