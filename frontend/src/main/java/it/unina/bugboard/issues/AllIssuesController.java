@@ -186,7 +186,7 @@ public class AllIssuesController implements Initializable {
         if (sessionManager.isAdmin()) {
             Button btnEdit = new Button("Modifica Issue");
             btnEdit.getStyleClass().add("issue-card__btn");
-            btnEdit.setStyle("-fx-background-color: #F39C12; -fx-text-fill: white;");
+
             btnEdit.setOnAction(e -> {
                 System.out.println("Modifica issue " + issue.getIdIssue());
             });
