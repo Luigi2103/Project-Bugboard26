@@ -19,34 +19,46 @@ public class RecuperoIssueServiceImplementation implements RecuperoIssueService 
     private final RepositoryIssueService issueRepository;
 
     @Autowired
-    public RecuperoIssueServiceImplementation(RepositoryIssueService issueRepository) {
+    public RecuperoIssueServiceImplementation(RepositoryIssueService issueRepository,
+            it.unina.bugboard.repository.RepositoryUtente utenteRepository) {
         this.issueRepository = issueRepository;
+        this.utenteRepository = utenteRepository;
     }
+
+    private final it.unina.bugboard.repository.RepositoryUtente utenteRepository;
 
     @Override
     public RispostaRecuperoIssue recuperaIssue(RichiestaRecuperoIssue richiesta) {
         try {
-            List<Issue> issues;
+            int page = richiesta.getPage() != null ? richiesta.getPage() : 0;
+            int size = richiesta.getSize() != null ? richiesta.getSize() : 10;
+            org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page,
+                    size);
+
+            org.springframework.data.domain.Page<Issue> pageResult;
 
             if (richiesta.getIdProgetto() != null && richiesta.getIdAssegnatario() != null) {
-
-                issues = issueRepository.findByIdProgettoAndIdAssegnatarioAndStatoNot(
+                pageResult = issueRepository.findByIdProgettoAndIdAssegnatarioAndStatoNot(
                         richiesta.getIdProgetto(),
-                        richiesta.getIdAssegnatario());
+                        richiesta.getIdAssegnatario(),
+                        pageable);
             } else if (richiesta.getIdProgetto() != null) {
-
-                issues = issueRepository.findByIdProgettoAndStatoNot(richiesta.getIdProgetto());
+                pageResult = issueRepository.findByIdProgettoAndStatoNot(richiesta.getIdProgetto(), pageable);
             } else if (richiesta.getIdAssegnatario() != null) {
-                issues = issueRepository.findByIdAssegnatarioAndStatoNot(richiesta.getIdAssegnatario());
+                pageResult = issueRepository.findByIdAssegnatarioAndStatoNot(richiesta.getIdAssegnatario(), pageable);
             } else {
                 return new RispostaRecuperoIssue(false, "Specificare almeno un parametro di ricerca", null);
             }
 
-            List<IssueDTO> issueDTOs = issues.stream()
+            List<IssueDTO> issueDTOs = pageResult.getContent().stream()
                     .map(this::convertToDTO)
                     .toList();
 
-            return new RispostaRecuperoIssue(true, "Issue recuperate con successo", issueDTOs);
+            RispostaRecuperoIssue response = new RispostaRecuperoIssue(true, "Issue recuperate con successo",
+                    issueDTOs);
+            response.setTotalPages(pageResult.getTotalPages());
+            response.setTotalElements(pageResult.getTotalElements());
+            return response;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,6 +84,13 @@ public class RecuperoIssueServiceImplementation implements RecuperoIssueService 
         dto.setDescrizioneProblema(issue.getDescrizioneProblema());
         dto.setRichiestaFunzionalita(issue.getRichiestaFunzionalita());
         dto.setHasFoto(issue.getFoto() != null && issue.getFoto().length > 0);
+
+        if (issue.getIdAssegnatario() != null) {
+            utenteRepository.findById(issue.getIdAssegnatario().longValue()).ifPresent(u -> {
+                dto.setNomeAssegnatario(u.getNome());
+                dto.setCognomeAssegnatario(u.getCognome());
+            });
+        }
 
         return dto;
     }

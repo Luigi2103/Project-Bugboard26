@@ -60,4 +60,5 @@ public class LoginServiceImplementation implements LoginService {
 
         return new RispostaUpdate("Password Cambiata Con Successo", true);
     }
+
 }

@@ -15,6 +15,7 @@ import it.unina.bugboard.homepage.HomeApiService;
 import it.unina.bugboard.homepage.HomePageController;
 import it.unina.bugboard.issuedetails.DettaglioIssueController;
 import it.unina.bugboard.issuedetails.IssueApiService;
+import it.unina.bugboard.issues.AllIssuesController;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -49,6 +50,8 @@ public final class SceneRouter {
         controllerFactories.put(it.unina.bugboard.inserimentoIssue.InsertIssueController.class,
                 param -> new it.unina.bugboard.inserimentoIssue.InsertIssueController(insertIssueApiService,
                         sessionManager));
+        controllerFactories.put(AllIssuesController.class,
+                param -> new AllIssuesController(homeApiService, sessionManager));
     }
 
     private SceneRouter() {
@@ -134,17 +137,10 @@ public final class SceneRouter {
 
             javafx.scene.Parent root = loader.load();
 
-            // NUOVO: Passa l'ID dell'issue al controller se necessario
             if (currentIssueId != null && loader.getController() instanceof DettaglioIssueController) {
                 ((DettaglioIssueController) loader.getController()).setIssueId(currentIssueId);
-                // Keep valid for this context?
+
             }
-            // Safe reset? If we reset here, tornaIndietro works because it sets it back
-            // before calling caricaScena.
-            // If we navigate AWAY, currentIssueId stays set? No, next cambioScena
-            // clears/overwrites it if we manage it.
-            // Since we use static global, better clear it if not needed?
-            // But SceneRouter relies on SceneData now.
 
             if (primaryStage.getScene() == null) {
                 Scene scene = new Scene(root, width, height);

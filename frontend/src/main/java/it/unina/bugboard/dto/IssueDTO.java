@@ -19,6 +19,11 @@ public class IssueDTO {
     private String descrizioneProblema;
     private String richiestaFunzionalita;
     private boolean hasFoto;
+
+    // New fields
+    private String nomeAssegnatario;
+    private String cognomeAssegnatario;
+
     private List<String> tags;
 
     public Integer getIdIssue() {
@@ -155,5 +160,21 @@ public class IssueDTO {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    public String getNomeAssegnatario() {
+        return nomeAssegnatario;
+    }
+
+    public void setNomeAssegnatario(String nomeAssegnatario) {
+        this.nomeAssegnatario = nomeAssegnatario;
+    }
+
+    public String getCognomeAssegnatario() {
+        return cognomeAssegnatario;
+    }
+
+    public void setCognomeAssegnatario(String cognomeAssegnatario) {
+        this.cognomeAssegnatario = cognomeAssegnatario;
     }
 }

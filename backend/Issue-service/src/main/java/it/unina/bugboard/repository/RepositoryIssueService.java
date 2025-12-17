@@ -22,4 +22,19 @@ public interface RepositoryIssueService extends JpaRepository<Issue, Integer> {
     List<Issue> findByIdProgettoAndIdAssegnatarioAndStatoNot(
             @Param("idProgetto") int idProgetto,
             @Param("idAssegnatario") int idAssegnatario);
+
+    // Pagination Support
+    @Query("SELECT DISTINCT i FROM Issue i WHERE i.idProgetto = :idProgetto AND i.stato != 'CLOSED'")
+    org.springframework.data.domain.Page<Issue> findByIdProgettoAndStatoNot(@Param("idProgetto") int idProgetto,
+            org.springframework.data.domain.Pageable pageable);
+
+    @Query("SELECT DISTINCT i FROM Issue i WHERE i.idAssegnatario = :idAssegnatario AND i.stato != 'CLOSED'")
+    org.springframework.data.domain.Page<Issue> findByIdAssegnatarioAndStatoNot(
+            @Param("idAssegnatario") int idAssegnatario, org.springframework.data.domain.Pageable pageable);
+
+    @Query("SELECT DISTINCT i FROM Issue i WHERE i.idProgetto = :idProgetto AND i.idAssegnatario = :idAssegnatario AND i.stato != 'CLOSED'")
+    org.springframework.data.domain.Page<Issue> findByIdProgettoAndIdAssegnatarioAndStatoNot(
+            @Param("idProgetto") int idProgetto,
+            @Param("idAssegnatario") int idAssegnatario,
+            org.springframework.data.domain.Pageable pageable);
 }

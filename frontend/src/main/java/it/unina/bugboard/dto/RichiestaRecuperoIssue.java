@@ -1,11 +1,17 @@
 package it.unina.bugboard.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
 public class RichiestaRecuperoIssue {
     private Integer idProgetto;
     private Integer idAssegnatario;
-
-    public RichiestaRecuperoIssue() {
-    }
+    private Integer page;
+    private Integer size;
 
     public RichiestaRecuperoIssue(Integer idProgetto, Integer idAssegnatario) {
         this.idProgetto = idProgetto;

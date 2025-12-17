@@ -24,7 +24,12 @@ public class IssueDTO {
     private String richiesta;
     private String titoloDocumento;
     private String descrizioneProblema;
+
     private String richiestaFunzionalita;
     private boolean hasFoto;
+
+    // New fields for Assignee Name
+    private String nomeAssegnatario;
+    private String cognomeAssegnatario;
 
 }

@@ -55,9 +55,9 @@ public class HomePageController implements Initializable {
             btnAggiungiUtente.setManaged(admin);
         }
 
-        if (btnIssueProgetto != null) {
-            btnIssueProgetto.setVisible(admin);
-            btnIssueProgetto.setManaged(admin);
+        if (btnAggiungiUtente != null) {
+            btnAggiungiUtente.setVisible(admin);
+            btnAggiungiUtente.setManaged(admin);
         }
 
         caricaIssues();
@@ -71,7 +71,7 @@ public class HomePageController implements Initializable {
             return;
         }
 
-        RispostaRecuperoIssue response = homeApiService.recuperaIssues(1, userId.intValue());
+        RispostaRecuperoIssue response = homeApiService.recuperaIssues(1, userId.intValue(), 0);
 
         if (response != null && response.isSuccess() && response.getIssues() != null) {
             int count = 0;
@@ -180,6 +180,8 @@ public class HomePageController implements Initializable {
 
     @FXML
     private void vediIssueProgetto() {
+        SceneRouter.cambiaScena("/it/unina/bugboard/fxml/all_issues.fxml", 1200, 800,
+                "BugBoard - Tutte le Issue del Progetto");
     }
 
     @FXML

@@ -20,9 +20,11 @@ public class HomeApiService {
         this.sessionManager = sessionManager;
     }
 
-    public RispostaRecuperoIssue recuperaIssues(Integer idProgetto, Integer idAssegnatario) {
+    public RispostaRecuperoIssue recuperaIssues(Integer idProgetto, Integer idAssegnatario, Integer page) {
         try {
-            RichiestaRecuperoIssue richiesta = new RichiestaRecuperoIssue(idProgetto, idAssegnatario);
+            RichiestaRecuperoIssue richiesta = new RichiestaRecuperoIssue(idProgetto, idAssegnatario, page, 6); // Default
+                                                                                                                // 6 per
+                                                                                                                // page
             String jsonBody = objectMapper.writeValueAsString(richiesta);
 
             HttpRequest request = HttpRequest.newBuilder()
@@ -49,4 +51,5 @@ public class HomeApiService {
             return errorResponse;
         }
     }
+
 }
