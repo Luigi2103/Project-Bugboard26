@@ -4,8 +4,7 @@ import it.unina.bugboard.navigation.SceneRouter;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -33,9 +32,6 @@ public class InsertIssueController {
     private VBox containerCampiDinamici;
     @FXML
     private VBox areaUploadImmagine;
-    @FXML
-    private ImageView anteprimaImmagine;
-
     @FXML
     private Label labelNomeFile;
     @FXML
@@ -150,10 +146,6 @@ public class InsertIssueController {
         fileSelezionato = fileChooser.showOpenDialog(stage);
 
         if (fileSelezionato != null) {
-            Image img = new Image(fileSelezionato.toURI().toString());
-            anteprimaImmagine.setImage(img);
-            anteprimaImmagine.setVisible(true);
-            anteprimaImmagine.setManaged(true);
             labelNomeFile.setText(fileSelezionato.getName());
         }
     }
@@ -175,9 +167,6 @@ public class InsertIssueController {
         comboPriorita.getSelectionModel().clearSelection();
         containerCampiDinamici.getChildren().clear();
 
-        anteprimaImmagine.setImage(null);
-        anteprimaImmagine.setVisible(false);
-        anteprimaImmagine.setManaged(false);
         labelNomeFile.setText("Clicca per caricare un'immagine");
         fileSelezionato = null;
 

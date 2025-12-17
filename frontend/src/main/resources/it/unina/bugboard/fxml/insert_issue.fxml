@@ -79,7 +79,7 @@
                                 <Insets top="10" bottom="10" left="10" right="10"/>
                             </padding>
                             <Label fx:id="labelNomeFile" text="Clicca per caricare un'immagine" styleClass="upload-label"/>
-                            <ImageView fx:id="anteprimaImmagine" fitHeight="150" preserveRatio="true" visible="false" managed="false"/>
+
                         </VBox>
                     </VBox>
 
