@@ -1,8 +1,8 @@
-package it.unina.bugboard.inserimentoIssue;
+package it.unina.bugboard.inserimentoissue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.unina.bugboard.dto.RichiestaInserimentoIssue;
-import it.unina.bugboard.inserimentoIssue.exception.InsertIssueApiException;
+import it.unina.bugboard.inserimentoissue.exception.InsertIssueApiException;
 import it.unina.bugboard.common.SessionManager;
 
 import java.net.URI;

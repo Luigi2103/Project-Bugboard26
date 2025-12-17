@@ -1,4 +1,4 @@
-package it.unina.bugboard.inserimentoIssue;
+package it.unina.bugboard.inserimentoissue;
 
 import java.util.Map;
 

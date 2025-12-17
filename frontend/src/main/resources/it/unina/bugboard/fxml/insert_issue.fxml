@@ -9,7 +9,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="it.unina.bugboard.inserimentoIssue.InsertIssueController"
+            fx:controller="it.unina.bugboard.inserimentoissue.InsertIssueController"
             styleClass="insert-issue-root">
     <stylesheets>
         <URL value="@../css/insert_issue.css"/>

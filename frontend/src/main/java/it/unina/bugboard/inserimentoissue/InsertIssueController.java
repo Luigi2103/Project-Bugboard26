@@ -1,8 +1,7 @@
-package it.unina.bugboard.inserimentoIssue;
+package it.unina.bugboard.inserimentoissue;
 
 import it.unina.bugboard.navigation.SceneRouter;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
 
 import javafx.scene.layout.VBox;
@@ -18,6 +17,7 @@ public class InsertIssueController {
     private static final String ISSUE_DOC = "DOCUMENTATION";
     private static final String ISSUE_FEATURE = "FEATURE";
     private static final String MSG_INPUT_ERROR = "input-error";
+    private static final String TITOLO_ERRORE = "Errore";
 
     @FXML
     private TextField campoTitolo;
@@ -49,7 +49,7 @@ public class InsertIssueController {
     private final it.unina.bugboard.common.SessionManager sessionManager;
 
     public InsertIssueController(InsertIssueApiService apiService,
-            it.unina.bugboard.common.SessionManager sessionManager) {
+                                 it.unina.bugboard.common.SessionManager sessionManager) {
         this.apiService = apiService;
         this.sessionManager = sessionManager;
     }
@@ -64,9 +64,9 @@ public class InsertIssueController {
 
     private void inizializzaComboPriorita() {
         comboPriorita.getItems().addAll("BASSA", "MEDIA", "ALTA", "MASSIMA");
-        comboPriorita.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            resetErrorStyles();
-        });
+        comboPriorita.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) ->
+                resetErrorStyles()
+        );
     }
 
     /* -------------------------- INIT -------------------------- */
@@ -105,9 +105,7 @@ public class InsertIssueController {
                 aggiungiCampoTesto("Descrizione Problema", "Descrivi il problema...");
             }
             case ISSUE_FEATURE -> aggiungiCampoTesto("Richiesta Funzionalità", "Descrivi la funzionalità...");
-            default -> {
-                // Campo di default intenzionalmente vuoto
-            }
+            default -> throw new IllegalArgumentException("Tipo issue non supportato: " + tipo);
         }
     }
 
@@ -177,8 +175,22 @@ public class InsertIssueController {
 
     @FXML
     private void gestisciInserimento() {
-        resetErrorStyles();
+        if (!validaInput()) {
+            return;
+        }
 
+        DatiIssue dati = recuperaDatiIssue();
+
+        Integer idSegnalatore = ottieniIdSegnalatore();
+        if (idSegnalatore == null) {
+            return;
+        }
+
+        inviaIssueAlServer(dati, idSegnalatore);
+    }
+
+    private boolean validaInput() {
+        resetErrorStyles();
         boolean valido = true;
 
         if (isEmpty(campoTitolo.getText())) {
@@ -201,126 +213,146 @@ public class InsertIssueController {
             valido = false;
         }
 
-        for (javafx.scene.Node node : containerCampiDinamici.getChildren()) {
-            if (node instanceof VBox box
-                    && box.getChildren().size() >= 3
-                    && box.getChildren().get(1) instanceof TextField tf
-                    && box.getChildren().get(2) instanceof Label errLbl) {
+        if (!validaCampiDinamici()) {
+            valido = false;
+        }
 
-                if (isEmpty(tf.getText())) {
-                    mostraErrore(tf, errLbl, "Questo campo è obbligatorio");
-                    valido = false;
-                }
+        return valido;
+    }
+
+    private boolean validaCampiDinamici() {
+        boolean valido = true;
+        for (javafx.scene.Node node : containerCampiDinamici.getChildren()) {
+            if (!(node instanceof VBox box) || box.getChildren().size() < 3) {
+                continue;
+            }
+
+            if (box.getChildren().get(1) instanceof TextField tf &&
+                    box.getChildren().get(2) instanceof Label errLbl &&
+                    isEmpty(tf.getText())) {
+                mostraErrore(tf, errLbl, "Questo campo è obbligatorio");
+                valido = false;
             }
         }
+        return valido;
+    }
 
-        if (!valido) {
-            return;
+    private DatiIssue recuperaDatiIssue() {
+        DatiIssue dati = new DatiIssue();
+        dati.titolo = campoTitolo.getText();
+        dati.descrizione = areaDescrizione.getText();
+        dati.tipo = comboTipo.getValue();
+        dati.priorita = comboPriorita.getValue();
+        dati.immagineBytes = caricaImmagine();
+
+        recuperaCampiDinamici(dati);
+
+        return dati;
+    }
+
+    private byte[] caricaImmagine() {
+        if (fileSelezionato == null) {
+            return new byte[0];
         }
 
-        // Recupero campi dinamici
-        String istruzioni = null;
-        String richiestaSpecifica = null;
-        String titoloDoc = null;
-        String descDoc = null;
-        String richiestaFunz = null;
+        try {
+            return java.nio.file.Files.readAllBytes(fileSelezionato.toPath());
+        } catch (java.io.IOException e) {
+            mostraErroreAlert("Errore lettura immagine");
+            return new byte[0];
+        }
+    }
 
-        String tipo = comboTipo.getValue();
-        String priorita = comboPriorita.getValue();
-
+    private void recuperaCampiDinamici(DatiIssue dati) {
         for (javafx.scene.Node node : containerCampiDinamici.getChildren()) {
-            if (node instanceof VBox box && box.getChildren().size() >= 2
-                    && box.getChildren().get(1) instanceof TextField tf) {
+            if (!(node instanceof VBox box) || box.getChildren().size() < 2) {
+                continue;
+            }
+
+            if (box.getChildren().get(1) instanceof TextField tf) {
                 String labelText = ((Label) box.getChildren().get(0)).getText();
-                String val = tf.getText();
-
-                if (labelText.contains("Istruzioni"))
-                    istruzioni = val;
-                else if (labelText.contains("Domanda") || labelText.contains("Richiesta specifica"))
-                    richiestaSpecifica = val;
-                else if (labelText.contains("Titolo Documento"))
-                    titoloDoc = val;
-                else if (labelText.contains("Descrizione Problema"))
-                    descDoc = val;
-                else if (labelText.contains("Richiesta Funzionalità"))
-                    richiestaFunz = val;
+                String valore = tf.getText();
+                assegnaCampoDinamico(dati, labelText, valore);
             }
         }
+    }
 
-        byte[] immagineBytes = null;
-        if (fileSelezionato != null) {
-            try {
-                immagineBytes = java.nio.file.Files.readAllBytes(fileSelezionato.toPath());
-            } catch (java.io.IOException e) {
-                Alert err = new Alert(Alert.AlertType.ERROR);
-                err.setTitle("Errore");
-                err.setContentText("Errore lettura immagine");
-                err.showAndWait();
-                return;
-            }
+    private void assegnaCampoDinamico(DatiIssue dati, String labelText, String valore) {
+        if (labelText.contains("Istruzioni")) {
+            dati.istruzioni = valore;
+        } else if (labelText.contains("Domanda") || labelText.contains("Richiesta specifica")) {
+            dati.richiestaSpecifica = valore;
+        } else if (labelText.contains("Titolo Documento")) {
+            dati.titoloDoc = valore;
+        } else if (labelText.contains("Descrizione Problema")) {
+            dati.descDoc = valore;
+        } else if (labelText.contains("Richiesta Funzionalità")) {
+            dati.richiestaFunz = valore;
         }
+    }
 
-        final byte[] finalImmagineBytes = immagineBytes;
-        final String finalIstruzioni = istruzioni;
-        final String finalRichiestaSpecifica = richiestaSpecifica;
-        final String finalTitoloDoc = titoloDoc;
-        final String finalDescDoc = descDoc;
-        final String finalRichiestaFunz = richiestaFunz;
-
+    private Integer ottieniIdSegnalatore() {
         Long userId = sessionManager.getUserId();
         if (userId == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Errore");
-            alert.setContentText("Utente non loggato. Impossibile inserire l'issue.");
-            alert.showAndWait();
-            return;
+            mostraErroreAlert("Utente non loggato. Impossibile inserire l'issue.");
+            return null;
         }
-        int idSegnalatore = userId.intValue();
+        return userId.intValue();
+    }
 
-        // Background Thread
+    private void inviaIssueAlServer(DatiIssue dati, Integer idSegnalatore) {
         new Thread(() -> {
             try {
                 RispostaIssueService risposta = apiService.inserisciIssue(
-                        campoTitolo.getText(),
-                        areaDescrizione.getText(),
-                        finalImmagineBytes,
-                        tipo,
+                        dati.titolo,
+                        dati.descrizione,
+                        dati.immagineBytes,
+                        dati.tipo,
                         "TO-DO",
-                        priorita,
-                        finalIstruzioni,
-                        finalRichiestaSpecifica,
-                        finalTitoloDoc,
-                        finalDescDoc,
-                        finalRichiestaFunz,
+                        dati.priorita,
+                        dati.istruzioni,
+                        dati.richiestaSpecifica,
+                        dati.titoloDoc,
+                        dati.descDoc,
+                        dati.richiestaFunz,
                         java.time.LocalDate.now(),
                         1, // ID Progetto hardcoded per ora
                         idSegnalatore);
 
-                javafx.application.Platform.runLater(() -> {
-                    if (risposta != null && risposta.isSuccess()) {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Successo");
-                        alert.setContentText("Issue inserita con successo!");
-                        alert.showAndWait();
-                        tornaIndietro();
-                    } else {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Errore");
-                        alert.setContentText(risposta != null ? risposta.getMessage() : "Errore sconosciuto");
-                        alert.showAndWait();
-                    }
-                });
+                javafx.application.Platform.runLater(() -> gestisciRisposta(risposta));
 
             } catch (Exception e) {
-                javafx.application.Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Errore");
-                    String causeMsg = (e.getCause() != null) ? e.getCause().toString() : e.getMessage();
-                    alert.setContentText("Errore di comunicazione: " + causeMsg);
-                    alert.showAndWait();
-                });
+                javafx.application.Platform.runLater(() ->
+                        mostraErroreAlert("Errore di comunicazione: " + getCauseMessage(e)));
             }
         }).start();
+    }
+
+    private void gestisciRisposta(RispostaIssueService risposta) {
+        if (risposta != null && risposta.isSuccess()) {
+            mostraSuccessoAlert("Issue inserita con successo!");
+            tornaIndietro();
+        } else {
+            mostraErroreAlert(risposta != null ? risposta.getMessage() : "Errore sconosciuto");
+        }
+    }
+
+    private String getCauseMessage(Exception e) {
+        return (e.getCause() != null) ? e.getCause().toString() : e.getMessage();
+    }
+
+    private void mostraErroreAlert(String messaggio) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(TITOLO_ERRORE);
+        alert.setContentText(messaggio);
+        alert.showAndWait();
+    }
+
+    private void mostraSuccessoAlert(String messaggio) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Successo");
+        alert.setContentText(messaggio);
+        alert.showAndWait();
     }
 
     private boolean isEmpty(String s) {
@@ -345,5 +377,20 @@ public class InsertIssueController {
         control.getStyleClass().remove(MSG_INPUT_ERROR);
         label.setManaged(false);
         label.setVisible(false);
+    }
+
+    /* -------------------------- CLASSE DATI -------------------------- */
+
+    private static class DatiIssue {
+        String titolo;
+        String descrizione;
+        String tipo;
+        String priorita;
+        byte[] immagineBytes;
+        String istruzioni;
+        String richiestaSpecifica;
+        String titoloDoc;
+        String descDoc;
+        String richiestaFunz;
     }
 }

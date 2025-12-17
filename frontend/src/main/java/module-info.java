@@ -29,7 +29,7 @@ module it.unina.bugboard {
 
     opens it.unina.bugboard.recovery to com.fasterxml.jackson.databind, javafx.fxml;
     opens it.unina.bugboard.homepage to javafx.fxml;
-    opens it.unina.bugboard.inserimentoIssue to javafx.fxml, com.fasterxml.jackson.databind;
+    opens it.unina.bugboard.inserimentoissue to javafx.fxml, com.fasterxml.jackson.databind;
 
     exports it.unina.bugboard.recovery.exception;
 

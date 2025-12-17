@@ -30,7 +30,7 @@ public final class SceneRouter {
     private static final InsertUserApiService insertUserApiService = new InsertUserApiService(sessionManager);
     private static final HomeApiService homeApiService = new it.unina.bugboard.homepage.HomeApiService(sessionManager);
     private static final IssueApiService issueApiService = new IssueApiService(sessionManager);
-    private static final it.unina.bugboard.inserimentoIssue.InsertIssueApiService insertIssueApiService = new it.unina.bugboard.inserimentoIssue.InsertIssueApiService(
+    private static final it.unina.bugboard.inserimentoissue.InsertIssueApiService insertIssueApiService = new it.unina.bugboard.inserimentoissue.InsertIssueApiService(
             sessionManager);
     private static final Map<Class<?>, Callback<Class<?>, Object>> controllerFactories = new HashMap<>();
 
@@ -48,8 +48,8 @@ public final class SceneRouter {
                 param -> new HomePageController(homeApiService, sessionManager));
         controllerFactories.put(DettaglioIssueController.class,
                 param -> new DettaglioIssueController(issueApiService, sessionManager));
-        controllerFactories.put(it.unina.bugboard.inserimentoIssue.InsertIssueController.class,
-                param -> new it.unina.bugboard.inserimentoIssue.InsertIssueController(insertIssueApiService,
+        controllerFactories.put(it.unina.bugboard.inserimentoissue.InsertIssueController.class,
+                param -> new it.unina.bugboard.inserimentoissue.InsertIssueController(insertIssueApiService,
                         sessionManager));
         controllerFactories.put(AllIssuesController.class,
                 param -> new AllIssuesController(homeApiService, sessionManager));
