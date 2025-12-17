@@ -160,24 +160,6 @@ CREATE TABLE Commento (
 );
 
 
-CREATE TABLE TAG (
-                     IdTag SERIAL PRIMARY KEY,
-                     Nome VARCHAR(50) NOT NULL UNIQUE
-);
-
-
-CREATE TABLE Issue_TAG (
-                           Id SERIAL PRIMARY KEY,
-                           IdIssue INTEGER NOT NULL,
-                           IdTag INTEGER NOT NULL,
-
-                           CONSTRAINT fk_issuetag_issue FOREIGN KEY (IdIssue)
-                               REFERENCES Issue(IdIssue) ON DELETE CASCADE,
-                           CONSTRAINT fk_issuetag_tag FOREIGN KEY (IdTag)
-                               REFERENCES TAG(IdTag) ON DELETE CASCADE,
-                           CONSTRAINT unica_issue_tag UNIQUE (IdIssue, IdTag)
-);
-
 
 --trigger necessari
 

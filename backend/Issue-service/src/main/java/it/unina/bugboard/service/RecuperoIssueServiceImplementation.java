@@ -61,7 +61,6 @@ public class RecuperoIssueServiceImplementation implements RecuperoIssueService 
             return response;
 
         } catch (Exception e) {
-            e.printStackTrace();
             return new RispostaRecuperoIssue(false, "Errore durante il recupero: " + e.getMessage(), null);
         }
     }
