@@ -79,6 +79,7 @@ public class RecoveryController implements Initializable {
         animaIngresso();
         gestisciResponsive();
         Platform.runLater(() -> contenitoreRecovery.requestFocus());
+        configuraNavigazioneEnter();
     }
 
     private void gestisciResponsive() {
@@ -143,6 +144,10 @@ public class RecoveryController implements Initializable {
 
     private void inizializzaBindings() {
         campoUsername.prefWidthProperty().bind(boxForm.widthProperty());
+        pulsanteConferma.disableProperty().bind(
+                campoUsername.textProperty().isEmpty()
+                        .or(campoPassword.textProperty().isEmpty())
+                        .or(campoNuovaPassword.textProperty().isEmpty()));
     }
 
     private void inizializzaTogglePassword() {
@@ -238,56 +243,93 @@ public class RecoveryController implements Initializable {
         SceneRouter.cambiaScena(LOGIN_FXML, LOGIN_WIDTH, LOGIN_HEIGHT, LOGIN_TITLE);
     }
 
+    private void configuraNavigazioneEnter() {
+        campoUsername.setOnKeyPressed(event -> {
+            if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                if (passwordVisibile) {
+                    campoPasswordVisibile.requestFocus();
+                } else {
+                    campoPassword.requestFocus();
+                }
+                event.consume();
+            }
+        });
+
+        javafx.event.EventHandler<javafx.scene.input.KeyEvent> goToNuova = event -> {
+            if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                if (nuovaPasswordVisibile) {
+                    campoNuovaPasswordVisibile.requestFocus();
+                } else {
+                    campoNuovaPassword.requestFocus();
+                }
+                event.consume();
+            }
+        };
+        campoPassword.setOnKeyPressed(goToNuova);
+        campoPasswordVisibile.setOnKeyPressed(goToNuova);
+
+        javafx.event.EventHandler<javafx.scene.input.KeyEvent> doConfirm = event -> {
+            if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                if (!pulsanteConferma.isDisable()) {
+                    gestisciConferma();
+                }
+                event.consume();
+            }
+        };
+        campoNuovaPassword.setOnKeyPressed(doConfirm);
+        campoNuovaPasswordVisibile.setOnKeyPressed(doConfirm);
+    }
+
     @FXML
     private void gestisciConferma() {
         resetErrori();
-        boolean valid = true;
 
-        if (campoUsername.getText().isEmpty()) {
-            mostraErrore(erroreUsername, "Inserisci username");
-            valid = false;
-        }
-        if (campoPassword.getText().isEmpty()) {
-            mostraErrore(errorePassword, "Inserisci password attuale");
-            valid = false;
-        }
-        if (campoNuovaPassword.getText().isEmpty()) {
-            mostraErrore(erroreNuovaPassword, "Inserisci nuova password");
-            valid = false;
-        }
+        // La validazione vuota è gestita dal disableProperty del bottone
 
         if (!campoNuovaPassword.getText().equals(campoPassword.getText())) {
-            mostraErrore(erroreNuovaPassword, "Le password non coincidono");
-            valid = false;
+            mostraErrore(erroreNuovaPassword, "Password non valida");
+            setErrorStyle(campoPassword);
+            setErrorStyle(campoNuovaPassword);
+            setErrorStyle(campoPasswordVisibile);
+            setErrorStyle(campoNuovaPasswordVisibile);
+            animaShake();
+            return;
         }
 
-        if (valid) {
-            logger.info("Recupero password per: " + campoUsername.getText());
-            logger.info("Vecchia: " + campoPassword.getText());
-            logger.info("Nuova: " + campoNuovaPassword.getText());
+        logger.info("Recupero password per: " + campoUsername.getText());
 
-            try {
-                RecoveryApiService apiService = new RecoveryApiService();
-                RecoveryRespond response = apiService.updateApi(campoUsername.getText(), campoNuovaPassword.getText());
+        try {
+            RecoveryApiService apiService = new RecoveryApiService();
+            RecoveryRespond response = apiService.updateApi(campoUsername.getText(), campoNuovaPassword.getText());
 
-                if (response.isSuccess()) {
-                    logger.info("Password aggiornata con successo! " + response.getMessage());
-                    SceneRouter.cambiaScena(LOGIN_FXML, LOGIN_WIDTH, LOGIN_HEIGHT, LOGIN_TITLE);
-                } else {
-                    logger.info("Errore aggiornamento: " + response.getMessage());
-                    mostraErrore(erroreNuovaPassword,
-                            response.getMessage() != null ? response.getMessage() : "Errore durante l'aggiornamento");
-                    animaShake();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                mostraErrore(erroreNuovaPassword, "Errore di connessione al server");
+            if (response.isSuccess()) {
+                logger.info("Password aggiornata con successo! " + response.getMessage());
+                SceneRouter.mostraAlert(javafx.scene.control.Alert.AlertType.INFORMATION,
+                        "Successo",
+                        "Password aggiornata",
+                        "La tua password è stata aggiornata con successo.");
+                SceneRouter.cambiaScena(LOGIN_FXML, LOGIN_WIDTH, LOGIN_HEIGHT, LOGIN_TITLE);
+            } else {
+                logger.info("Errore aggiornamento: " + response.getMessage());
+                mostraErrore(erroreNuovaPassword,
+                        response.getMessage() != null ? response.getMessage() : "Errore durante l'aggiornamento");
                 animaShake();
             }
-
-        } else {
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostraErrore(erroreNuovaPassword, "Errore di connessione al server");
             animaShake();
         }
+    }
+
+    private void setErrorStyle(javafx.scene.control.Control control) {
+        if (!control.getStyleClass().contains("text-field-error")) {
+            control.getStyleClass().add("text-field-error");
+        }
+    }
+
+    private void removeErrorStyle(javafx.scene.control.Control control) {
+        control.getStyleClass().remove("text-field-error");
     }
 
     private void mostraErrore(Label label, String msg) {
@@ -299,6 +341,10 @@ public class RecoveryController implements Initializable {
         erroreUsername.setVisible(false);
         errorePassword.setVisible(false);
         erroreNuovaPassword.setVisible(false);
+        removeErrorStyle(campoPassword);
+        removeErrorStyle(campoNuovaPassword);
+        removeErrorStyle(campoPasswordVisibile);
+        removeErrorStyle(campoNuovaPasswordVisibile);
     }
 
     private void animaIngresso() {

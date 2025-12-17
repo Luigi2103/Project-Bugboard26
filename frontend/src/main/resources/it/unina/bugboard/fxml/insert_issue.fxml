@@ -89,7 +89,7 @@
                             <Insets top="10" bottom="10" left="10" right="10"/>
                         </padding>
                         <Button text="Cancella Tutto" onAction="#pulisciCampi" styleClass="clear-button" prefWidth="180"/>
-                        <Button text="Inserisci Issue" onAction="#gestisciInserimento" styleClass="submit-button" prefWidth="180"/>
+                        <Button fx:id="pulsanteInserisci" text="Inserisci Issue" onAction="#gestisciInserimento" styleClass="submit-button" prefWidth="180"/>
                     </HBox>
 
                 </VBox>

@@ -13,6 +13,8 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.Node;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 
 public class InsertUserController {
 
@@ -83,6 +85,40 @@ public class InsertUserController {
     private final InsertUserApiService insertUserApiService;
     private boolean passwordVisibile = false;
     private boolean confermaPasswordVisibile = false;
+    private final BooleanProperty isLoading = new SimpleBooleanProperty(false);
+
+    private static class DatiUtente {
+        final String nome;
+        final String cognome;
+        final String codiceFiscale;
+        final String username;
+        final String password;
+        final String email;
+        final char sesso;
+        final LocalDate dataNascita;
+        final boolean isAdmin;
+
+        DatiUtente(String nome, String cognome, String codiceFiscale, char sesso,
+                   LocalDate dataNascita, String username, String password,
+                   String email, boolean isAdmin) {
+            this.nome = nome;
+            this.cognome = cognome;
+            this.codiceFiscale = codiceFiscale;
+            this.sesso = sesso;
+            this.dataNascita = dataNascita;
+            this.username = username;
+            this.password = password;
+            this.email = email;
+            this.isAdmin = isAdmin;
+        }
+
+        static DatiUtente fromForm(String nome, String cognome, String codiceFiscale,
+                                   char sesso, LocalDate dataNascita, String username,
+                                   String password, String email, boolean isAdmin) {
+            return new DatiUtente(nome, cognome, codiceFiscale, sesso, dataNascita,
+                    username, password, email, isAdmin);
+        }
+    }
 
     public InsertUserController(InsertUserApiService insertUserApiService) {
         this.insertUserApiService = insertUserApiService;
@@ -92,7 +128,7 @@ public class InsertUserController {
     public void initialize() {
         comboSesso.getItems().addAll("M", "F");
         pulsanteCancella.disableProperty().bind(createTuttiCampiVuotiBinding());
-        pulsanteRegistra.disableProperty().bind(createAlmenoUnCampoVuotoBinding());
+        pulsanteRegistra.disableProperty().bind(createAlmenoUnCampoVuotoBinding().or(isLoading));
         inizializzaListenerRuolo();
         campoDataNascita.setEditable(false);
         inizializzaTogglePassword();
@@ -101,26 +137,18 @@ public class InsertUserController {
     }
 
     private void gestisciResponsive() {
-        if (contenitoreInserimento.getScene() != null) {
+        if (contenitoreInserimento.getScene() != null)
             impostaListenerLarghezza(contenitoreInserimento.getScene());
-        } else {
+        else
             contenitoreInserimento.sceneProperty().addListener((obs, oldScene, newScene) -> {
-                if (newScene != null) {
-                    impostaListenerLarghezza(newScene);
-                }
+                if (newScene != null) impostaListenerLarghezza(newScene);
             });
-        }
     }
 
     private void impostaListenerLarghezza(javafx.scene.Scene scene) {
-        javafx.beans.value.ChangeListener<Number> sizeListener = (obs, oldValue, newValue) -> {
-            aggiornaScala(scene);
-        };
-
+        javafx.beans.value.ChangeListener<Number> sizeListener = (obs, oldValue, newValue) -> aggiornaScala(scene);
         scene.widthProperty().addListener(sizeListener);
         scene.heightProperty().addListener(sizeListener);
-
-        // Initial update
         aggiornaScala(scene);
     }
 
@@ -128,36 +156,25 @@ public class InsertUserController {
         double width = scene.getWidth();
         double height = scene.getHeight();
 
-        // Padding responsive (optional here depending on design, matching existing if
-        // needed)
-        if (width < 600) {
+        if (width < 600)
             contenitoreInserimento.setPadding(new javafx.geometry.Insets(20, 20, 20, 20));
-        } else {
+        else
             contenitoreInserimento.setPadding(new javafx.geometry.Insets(30, 40, 30, 40));
-        }
 
-        // Logic for dynamic scaling
         double baseWidth = 1000.0;
         double baseHeight = 900.0;
-
         double scaleX = width / baseWidth;
         double scaleY = height / baseHeight;
-
         double scale = Math.min(scaleX, scaleY);
-
-        // Clamp scale: min 1.0, max 1.3
-        scale = Math.max(1.0, Math.min(scale, 1.3));
+        scale = Math.clamp(scale, 1.0, 1.3);
 
         contenitoreInserimento.setScaleX(scale);
         contenitoreInserimento.setScaleY(scale);
     }
 
     private void inizializzaTogglePassword() {
-        // Main Password
         campoPasswordVisibile.textProperty().bindBidirectional(campoPassword.textProperty());
         aggiornaVisibilitaPassword(false);
-
-        // Confirm Password
         campoConfermaPasswordVisibile.textProperty().bindBidirectional(campoConfermaPassword.textProperty());
         aggiornaVisibilitaConfermaPassword(false);
     }
@@ -216,8 +233,7 @@ public class InsertUserController {
 
     private void inizializzaListenerRuolo() {
         gruppoRuolo.selectedToggleProperty().addListener((obs, vecchio, nuovo) -> {
-            if (nuovo == null)
-                vecchio.setSelected(true);
+            if (nuovo == null) vecchio.setSelected(true);
         });
     }
 
@@ -263,43 +279,44 @@ public class InsertUserController {
         impostaFocusNext(campoDataNascita, campoEmail);
         impostaFocusNext(campoEmail, campoUsername);
 
-        // Gestione navigazione Username -> Password (considerando toggle visibilità)
         campoUsername.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
-                if (campoPassword.isVisible()) {
-                    campoPassword.requestFocus();
-                } else {
-                    campoPasswordVisibile.requestFocus();
-                }
+                navigaAPasswordField();
                 e.consume();
             }
         });
 
-        // Gestione navigazione Password -> Conferma Password
         javafx.event.EventHandler<KeyEvent> goToConfirm = e -> {
             if (e.getCode() == KeyCode.ENTER) {
-                if (campoConfermaPassword.isVisible()) {
-                    campoConfermaPassword.requestFocus();
-                } else {
-                    campoConfermaPasswordVisibile.requestFocus();
-                }
+                navigaAConfermaPasswordField();
                 e.consume();
             }
         };
         campoPassword.setOnKeyPressed(goToConfirm);
         campoPasswordVisibile.setOnKeyPressed(goToConfirm);
 
-        // Gestione Conferma Password -> SUBMIT
         javafx.event.EventHandler<KeyEvent> doSubmit = e -> {
             if (e.getCode() == KeyCode.ENTER) {
-                if (!pulsanteRegistra.isDisable()) {
-                    registraUtente();
-                }
+                if (!pulsanteRegistra.isDisable()) registraUtente();
                 e.consume();
             }
         };
         campoConfermaPassword.setOnKeyPressed(doSubmit);
         campoConfermaPasswordVisibile.setOnKeyPressed(doSubmit);
+    }
+
+    private void navigaAPasswordField() {
+        if (campoPassword.isVisible())
+            campoPassword.requestFocus();
+        else
+            campoPasswordVisibile.requestFocus();
+    }
+
+    private void navigaAConfermaPasswordField() {
+        if (campoConfermaPassword.isVisible())
+            campoConfermaPassword.requestFocus();
+        else
+            campoConfermaPasswordVisibile.requestFocus();
     }
 
     private void impostaFocusNext(Node current, Node next) {
@@ -311,72 +328,62 @@ public class InsertUserController {
         });
     }
 
-    // ================================================================
-    // VALIDAZIONE
-    // ================================================================
-
     @FXML
     private void registraUtente() {
         resetErrorStyles();
 
-        if (!verificaCampiObbligatori())
-            return;
-        if (!verificaMaggiorenne())
-            return;
-        if (!verificaPassword())
-            return;
-        if (!verificaCodiceFiscale())
-            return;
+        if (!eseguiValidazioni()) return;
 
-        // Dati input
-        String nome = campoNome.getText();
-        String cognome = campoCognome.getText();
-        String codiceFiscale = campoCodiceFiscale.getText();
-        char sesso = comboSesso.getValue().charAt(0);
-        LocalDate dataNascita = campoDataNascita.getValue();
-        String username = campoUsername.getText();
-        String email = campoEmail.getText();
-        String password = campoPassword.getText();
-        boolean isAdmin = toggleAdmin.isSelected();
+        DatiUtente dati = DatiUtente.fromForm(
+                campoNome.getText(),
+                campoCognome.getText(),
+                campoCodiceFiscale.getText(),
+                comboSesso.getValue().charAt(0),
+                campoDataNascita.getValue(),
+                campoUsername.getText(),
+                campoPassword.getText(),
+                campoEmail.getText(),
+                toggleAdmin.isSelected()
+        );
 
-        // Disabilita pulsante durante la richiesta
-        pulsanteRegistra.setDisable(true);
+        isLoading.set(true);
+        new Thread(() -> inviaRischiestaInserimentoUtente(dati)).start();
+    }
 
-        new Thread(() -> inviaRischiestaInserimentoUtente(nome, cognome, codiceFiscale, sesso, dataNascita, username,
-                password, email, isAdmin)).start();
+    private boolean eseguiValidazioni() {
+        if (!verificaCampiObbligatori()) return false;
+        if (!verificaMaggiorenne()) return false;
+        if (!verificaPassword()) return false;
+        return verificaCodiceFiscale();
     }
 
     private boolean verificaMaggiorenne() {
         LocalDate data = campoDataNascita.getValue();
-        if (data != null) {
-            if (Period.between(data, LocalDate.now()).getYears() < 18) {
-                setErrorStyle(campoDataNascita);
-                mostraErroreInline(erroreDataNascita, "Devi essere maggiorenne");
-                return false;
-            }
+        if (data != null && Period.between(data, LocalDate.now()).getYears() < 18) {
+            setErrorStyle(campoDataNascita);
+            mostraErroreInline(erroreDataNascita, "Devi essere maggiorenne");
+            return false;
         }
         return true;
     }
 
-    private void inviaRischiestaInserimentoUtente(String nome, String cognome, String codiceFiscale, char sesso,
-            LocalDate dataNascita, String username, String password, String email, boolean isAdmin) {
+    private void inviaRischiestaInserimentoUtente(DatiUtente dati) {
         try {
             RispostaInserimentoUser risposta = insertUserApiService.inserisciUtente(
-                    nome, cognome, codiceFiscale, sesso, dataNascita, username, password, email, isAdmin);
+                    dati.nome, dati.cognome, dati.codiceFiscale, dati.sesso, dati.dataNascita,
+                    dati.username, dati.password, dati.email, dati.isAdmin);
 
             Platform.runLater(() -> {
-                pulsanteRegistra.setDisable(false);
-
-                if (risposta != null && risposta.isSuccess()) {
+                isLoading.set(false);
+                if (risposta != null && risposta.isSuccess())
                     mostraSchermataCorrettoInserimento();
-                } else {
+                else
                     mostraErroreInserimento(risposta);
-                }
             });
 
         } catch (Exception e) {
             Platform.runLater(() -> {
-                pulsanteRegistra.setDisable(false);
+                isLoading.set(false);
                 mostraErroreComunicazione(e);
             });
         }
@@ -410,14 +417,11 @@ public class InsertUserController {
     }
 
     private String costruisciMessaggioErrore(RispostaInserimentoUser risposta) {
-        if (risposta == null) {
-            return "Errore generico dal server";
-        }
+        if (risposta == null) return "Errore generico dal server";
 
         StringBuilder messaggioErrore = new StringBuilder();
         messaggioErrore.append(risposta.getMessage());
 
-        // Se ci sono errori di validazione per campo
         if (risposta.getFieldErrors() != null && !risposta.getFieldErrors().isEmpty()) {
             messaggioErrore.append("\n\nDettagli:\n");
             risposta.getFieldErrors().forEach((campo, errore) -> {
@@ -435,61 +439,53 @@ public class InsertUserController {
     private boolean verificaCampiObbligatori() {
         boolean validi = true;
 
-        if (isTextEmpty(campoNome)) {
-            setErrorStyle(campoNome);
-            mostraErroreInline(erroreNome, MSG_CAMPO_OBBLIGATORIO);
-            validi = false;
-        }
-
-        if (isTextEmpty(campoCognome)) {
-            setErrorStyle(campoCognome);
-            mostraErroreInline(erroreCognome, MSG_CAMPO_OBBLIGATORIO);
-            validi = false;
-        }
-
-        if (isTextEmpty(campoCodiceFiscale)) {
-            setErrorStyle(campoCodiceFiscale);
-            mostraErroreInline(erroreCodiceFiscale, MSG_CAMPO_OBBLIGATORIO);
-            validi = false;
-        }
-
-        if (comboSesso.getValue() == null) {
-            setErrorStyle(comboSesso);
-            mostraErroreInline(erroreSesso, MSG_CAMPO_OBBLIGATORIO);
-            validi = false;
-        }
-
-        if (campoDataNascita.getValue() == null) {
-            setErrorStyle(campoDataNascita);
-            mostraErroreInline(erroreDataNascita, MSG_CAMPO_OBBLIGATORIO);
-            validi = false;
-        }
-
-        if (isTextEmpty(campoUsername)) {
-            setErrorStyle(campoUsername);
-            mostraErroreInline(erroreUsername, MSG_CAMPO_OBBLIGATORIO);
-            validi = false;
-        }
-
-        if (isTextEmpty(campoEmail)) {
-            setErrorStyle(campoEmail);
-            mostraErroreInline(erroreEmail, MSG_CAMPO_OBBLIGATORIO);
-            validi = false;
-        }
-
-        if (campoPassword.getText().isEmpty()) {
-            setErrorStyle(campoPassword);
-            mostraErroreInline(erroreCampoPassword, MSG_CAMPO_OBBLIGATORIO);
-            validi = false;
-        }
-
-        if (campoConfermaPassword.getText().isEmpty()) {
-            setErrorStyle(campoConfermaPassword);
-            mostraErroreInline(errorePassword, MSG_CAMPO_OBBLIGATORIO);
-            validi = false;
-        }
+        validi &= validaCampoTesto(campoNome, erroreNome);
+        validi &= validaCampoTesto(campoCognome, erroreCognome);
+        validi &= validaCampoTesto(campoCodiceFiscale, erroreCodiceFiscale);
+        validi &= validaComboBox(comboSesso, erroreSesso);
+        validi &= validaDatePicker(campoDataNascita, erroreDataNascita);
+        validi &= validaCampoTesto(campoUsername, erroreUsername);
+        validi &= validaCampoTesto(campoEmail, erroreEmail);
+        validi &= validaCampoPassword(campoPassword, erroreCampoPassword);
+        validi &= validaCampoPassword(campoConfermaPassword, errorePassword);
 
         return validi;
+    }
+
+    private boolean validaCampoTesto(TextField campo, Label labelErrore) {
+        if (isTextEmpty(campo)) {
+            setErrorStyle(campo);
+            mostraErroreInline(labelErrore, MSG_CAMPO_OBBLIGATORIO);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validaCampoPassword(PasswordField campo, Label labelErrore) {
+        if (campo.getText().isEmpty()) {
+            setErrorStyle(campo);
+            mostraErroreInline(labelErrore, MSG_CAMPO_OBBLIGATORIO);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validaComboBox(ComboBox<String> combo, Label labelErrore) {
+        if (combo.getValue() == null) {
+            setErrorStyle(combo);
+            mostraErroreInline(labelErrore, MSG_CAMPO_OBBLIGATORIO);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validaDatePicker(DatePicker datePicker, Label labelErrore) {
+        if (datePicker.getValue() == null) {
+            setErrorStyle(datePicker);
+            mostraErroreInline(labelErrore, MSG_CAMPO_OBBLIGATORIO);
+            return false;
+        }
+        return true;
     }
 
     private boolean verificaPassword() {
@@ -518,14 +514,9 @@ public class InsertUserController {
         return true;
     }
 
-    // ================================================================
-    // ERRORI UI
-    // ================================================================
-
     private void setErrorStyle(Control control) {
-        if (!control.getStyleClass().contains(MSG_TXTFIELD_OBBLIGATORIO)) {
+        if (!control.getStyleClass().contains(MSG_TXTFIELD_OBBLIGATORIO))
             control.getStyleClass().add(MSG_TXTFIELD_OBBLIGATORIO);
-        }
     }
 
     private void removeErrorStyle(Control control) {
@@ -545,10 +536,8 @@ public class InsertUserController {
                 erroreCampoPassword, errorePassword
         };
 
-        for (Control c : campi)
-            removeErrorStyle(c);
-        for (Label l : labels)
-            nascondiErrore(l);
+        for (Control c : campi) removeErrorStyle(c);
+        for (Label l : labels) nascondiErrore(l);
     }
 
     private void mostraErroreInline(Label label, String messaggio) {
@@ -561,10 +550,6 @@ public class InsertUserController {
         label.setVisible(false);
         label.setManaged(false);
     }
-
-    // ================================================================
-    // ALTRO
-    // ================================================================
 
     @FXML
     private void cancellaTutto() {

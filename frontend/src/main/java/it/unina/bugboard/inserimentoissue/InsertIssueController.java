@@ -42,6 +42,8 @@ public class InsertIssueController {
     private Label erroreTipo;
     @FXML
     private Label errorePriorita;
+    @FXML
+    private Button pulsanteInserisci;
 
     private File fileSelezionato;
 
@@ -49,7 +51,7 @@ public class InsertIssueController {
     private final it.unina.bugboard.common.SessionManager sessionManager;
 
     public InsertIssueController(InsertIssueApiService apiService,
-            it.unina.bugboard.common.SessionManager sessionManager) {
+                                 it.unina.bugboard.common.SessionManager sessionManager) {
         this.apiService = apiService;
         this.sessionManager = sessionManager;
     }
@@ -59,7 +61,18 @@ public class InsertIssueController {
         inizializzaComboTipo();
         inizializzaComboPriorita();
         inizializzaListeners();
+        inizializzaListeners();
+        inizializzaBindings();
         inizializzaUpload();
+        configuraNavigazioneEnter();
+    }
+
+    private void inizializzaBindings() {
+        pulsanteInserisci.disableProperty().bind(
+                campoTitolo.textProperty().isEmpty()
+                        .or(areaDescrizione.textProperty().isEmpty())
+                        .or(comboTipo.valueProperty().isNull())
+                        .or(comboPriorita.valueProperty().isNull()));
     }
 
     private void inizializzaComboPriorita() {
@@ -82,6 +95,7 @@ public class InsertIssueController {
     private void inizializzaListeners() {
         campoTitolo.textProperty().addListener((obs, old, neu) -> resetErrorStyles());
         areaDescrizione.textProperty().addListener((obs, old, neu) -> resetErrorStyles());
+        // Forza validazione dinamica al cambio tipo
     }
 
     private void inizializzaUpload() {
@@ -149,6 +163,41 @@ public class InsertIssueController {
 
     /* -------------------------- NAVIGAZIONE -------------------------- */
 
+    private void configuraNavigazioneEnter() {
+        campoTitolo.setOnKeyPressed(e -> {
+            if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                areaDescrizione.requestFocus();
+                e.consume();
+            }
+        });
+
+        // Per Text area usiamo CTRL+ENTER per inviare direttamente o TAB per navigare
+        areaDescrizione.setOnKeyPressed(e -> {
+            if (e.isControlDown() && e.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                if (!pulsanteInserisci.isDisable())
+                    gestisciInserimento();
+                e.consume();
+            }
+        });
+
+        // Combo
+        comboTipo.setOnKeyPressed(e -> {
+            if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                comboPriorita.requestFocus();
+                comboPriorita.show();
+                e.consume();
+            }
+        });
+
+        comboPriorita.setOnKeyPressed(e -> {
+            if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                if (!pulsanteInserisci.isDisable())
+                    gestisciInserimento();
+                e.consume();
+            }
+        });
+    }
+
     @FXML
     private void tornaIndietro() {
         SceneRouter.cambiaScena("/it/unina/bugboard/fxml/home.fxml", 1200, 800, "BugBoard - Home");
@@ -174,7 +223,10 @@ public class InsertIssueController {
 
     @FXML
     private void gestisciInserimento() {
-        if (!validaInput()) {
+        // La validazione statica è gestita dal disableProperty
+        // Validiamo solo i campi dinamici
+        if (!validaCampiDinamici()) {
+            mostraErroreAlert("Compila tutti i campi obbligatori");
             return;
         }
 
