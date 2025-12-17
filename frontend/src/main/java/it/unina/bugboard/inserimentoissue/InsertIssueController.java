@@ -49,7 +49,7 @@ public class InsertIssueController {
     private final it.unina.bugboard.common.SessionManager sessionManager;
 
     public InsertIssueController(InsertIssueApiService apiService,
-                                 it.unina.bugboard.common.SessionManager sessionManager) {
+            it.unina.bugboard.common.SessionManager sessionManager) {
         this.apiService = apiService;
         this.sessionManager = sessionManager;
     }
@@ -64,9 +64,8 @@ public class InsertIssueController {
 
     private void inizializzaComboPriorita() {
         comboPriorita.getItems().addAll("BASSA", "MEDIA", "ALTA", "MASSIMA");
-        comboPriorita.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) ->
-                resetErrorStyles()
-        );
+        comboPriorita.getSelectionModel().selectedItemProperty()
+                .addListener((obs, oldVal, newVal) -> resetErrorStyles());
     }
 
     /* -------------------------- INIT -------------------------- */
@@ -322,8 +321,8 @@ public class InsertIssueController {
                 javafx.application.Platform.runLater(() -> gestisciRisposta(risposta));
 
             } catch (Exception e) {
-                javafx.application.Platform.runLater(() ->
-                        mostraErroreAlert("Errore di comunicazione: " + getCauseMessage(e)));
+                javafx.application.Platform
+                        .runLater(() -> mostraErroreAlert("Errore di comunicazione: " + getCauseMessage(e)));
             }
         }).start();
     }
@@ -342,17 +341,19 @@ public class InsertIssueController {
     }
 
     private void mostraErroreAlert(String messaggio) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(TITOLO_ERRORE);
-        alert.setContentText(messaggio);
-        alert.showAndWait();
+        SceneRouter.mostraAlert(
+                Alert.AlertType.ERROR,
+                TITOLO_ERRORE,
+                null,
+                messaggio);
     }
 
     private void mostraSuccessoAlert(String messaggio) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Successo");
-        alert.setContentText(messaggio);
-        alert.showAndWait();
+        SceneRouter.mostraAlert(
+                Alert.AlertType.INFORMATION,
+                "Successo",
+                null,
+                messaggio);
     }
 
     private boolean isEmpty(String s) {

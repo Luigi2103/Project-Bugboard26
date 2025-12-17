@@ -383,30 +383,30 @@ public class InsertUserController {
     }
 
     private void mostraSchermataCorrettoInserimento() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Inserimento Riuscito");
-        alert.setHeaderText(null);
-        alert.setContentText("Utente inserito con successo!");
-        alert.showAndWait();
+        it.unina.bugboard.navigation.SceneRouter.mostraAlert(
+                Alert.AlertType.INFORMATION,
+                "Inserimento Riuscito",
+                null,
+                "Utente inserito con successo!");
         pulisciCampi();
     }
 
     private void mostraErroreInserimento(RispostaInserimentoUser risposta) {
         String messaggioErrore = costruisciMessaggioErrore(risposta);
 
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Errore Inserimento");
-        alert.setHeaderText("Non è stato possibile completare la registrazione");
-        alert.setContentText(messaggioErrore);
-        alert.showAndWait();
+        it.unina.bugboard.navigation.SceneRouter.mostraAlert(
+                Alert.AlertType.ERROR,
+                "Errore Inserimento",
+                "Non è stato possibile completare la registrazione",
+                messaggioErrore);
     }
 
     private void mostraErroreComunicazione(Exception e) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Errore di Comunicazione");
-        alert.setHeaderText("Non è stato possibile contattare il server");
-        alert.setContentText(e.getMessage());
-        alert.showAndWait();
+        it.unina.bugboard.navigation.SceneRouter.mostraAlert(
+                Alert.AlertType.ERROR,
+                "Errore di Comunicazione",
+                "Non è stato possibile contattare il server",
+                e.getMessage());
     }
 
     private String costruisciMessaggioErrore(RispostaInserimentoUser risposta) {

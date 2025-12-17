@@ -107,17 +107,29 @@ public final class SceneRouter {
         }
     }
 
+    /*
+     * HELPER per mostrare Alert collegate allo Stage principale (FIX Mac Fullscreen
+     * crash)
+     */
+    public static void mostraAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        if (primaryStage != null && primaryStage.isShowing()) {
+            alert.initOwner(primaryStage);
+        }
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
     private static void mostraMessaggioErrore(String fxml, Exception e) {
         e.printStackTrace();
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Errore caricamento scena");
-        alert.setHeaderText(null);
+        // Usiamo il nuovo helper per garantire che l'alert abbia un owner
         String msg = "Impossibile caricare " + fxml + "\n" + e.getMessage();
         if (e.getCause() != null) {
             msg += "\nCausa: " + e.getCause().getMessage();
         }
-        alert.setContentText(msg);
-        alert.showAndWait();
+        mostraAlert(Alert.AlertType.ERROR, "Errore caricamento scena", null, msg);
     }
 
     private static void caricaScena(String fxml, double width, double height, String title) {
@@ -146,14 +158,26 @@ public final class SceneRouter {
             }
 
             if (primaryStage.getScene() == null) {
+                // Primo caricamento
                 Scene scene = new Scene(root, width, height);
                 primaryStage.setTitle(title);
-                setupGlobalShortcuts(scene); // Add shortcuts to new scene
+                setupGlobalShortcuts(scene);
                 primaryStage.setScene(scene);
             } else {
+                // Scena già esistente: sostituiamo solo la root per mantenere dimensioni e
+                // stato (Fullscreen)
                 primaryStage.getScene().setRoot(root);
                 primaryStage.setTitle(title);
-                setupGlobalShortcuts(primaryStage.getScene()); // Re-apply or ensure shortcuts on existing scene
+                setupGlobalShortcuts(primaryStage.getScene());
+
+                // NOTA: Non reimpostiamo width/height qui per evitare di uscire dal Fullscreen
+                // su Mac/Windows
+                // Se servisse ridimensionare forzatamente in windowed mode, bisognerebbe
+                // controllare !primaryStage.isFullScreen()
+                if (!primaryStage.isFullScreen() && !primaryStage.isMaximized()) {
+                    primaryStage.setWidth(width);
+                    primaryStage.setHeight(height);
+                }
             }
 
         } catch (IOException e) {
