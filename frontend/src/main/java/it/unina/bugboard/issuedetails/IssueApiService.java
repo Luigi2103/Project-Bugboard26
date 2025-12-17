@@ -9,9 +9,12 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class IssueApiService {
 
+    private static final Logger logger = Logger.getLogger(IssueApiService.class.getName());
     private final SessionManager sessionManager;
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper()
@@ -36,13 +39,20 @@ public class IssueApiService {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                System.err.println("Error fetching issue detail: " + response.statusCode());
+                logger.log(Level.SEVERE, "Errore durante il recupero del dettaglio issue: HTTP {0}", response.statusCode());
             }
 
             return objectMapper.readValue(response.body(), RispostaDettaglioIssue.class);
 
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.info("Operazione interrotta durante il recupero del dettaglio issue: " + e.getMessage());
+            RispostaDettaglioIssue errorResponse = new RispostaDettaglioIssue();
+            errorResponse.setSuccess(false);
+            errorResponse.setMessage("Operazione interrotta");
+            return errorResponse;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.info("Errore durente recupero dettaglio issue: " + e.getMessage());
             RispostaDettaglioIssue errorResponse = new RispostaDettaglioIssue();
             errorResponse.setSuccess(false);
             errorResponse.setMessage("Errore di connessione: " + e.getMessage());
@@ -69,13 +79,17 @@ public class IssueApiService {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 201 && response.statusCode() != 200) {
-                System.err.println("Error inserting comment: " + response.statusCode());
+                logger.info("Errore durante l'inserimento del commento");
             }
 
             return objectMapper.readValue(response.body(), RispostaInserimentoCommentoIssue.class);
 
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.info("Operazione interrotta durante l'inserimento del commento per issue: " + e.getMessage());
+            return new RispostaInserimentoCommentoIssue(false, "Operazione interrotta", null);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.info("Errore durante l'inserimento del commento: " + e.getMessage());
             return new RispostaInserimentoCommentoIssue(false, "Errore di connessione: " + e.getMessage(), null);
         }
     }
