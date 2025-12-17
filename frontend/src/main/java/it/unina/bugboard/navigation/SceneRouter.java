@@ -16,6 +16,7 @@ import it.unina.bugboard.homepage.HomePageController;
 import it.unina.bugboard.issuedetails.DettaglioIssueController;
 import it.unina.bugboard.issuedetails.IssueApiService;
 import it.unina.bugboard.issues.AllIssuesController;
+import it.unina.bugboard.issues.MyIssuesController;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -52,6 +53,8 @@ public final class SceneRouter {
                         sessionManager));
         controllerFactories.put(AllIssuesController.class,
                 param -> new AllIssuesController(homeApiService, sessionManager));
+        controllerFactories.put(MyIssuesController.class,
+                param -> new MyIssuesController(homeApiService, sessionManager));
     }
 
     private SceneRouter() {

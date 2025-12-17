@@ -19,7 +19,7 @@ import javafx.scene.layout.VBox;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class AllIssuesController implements Initializable {
+public class MyIssuesController implements Initializable {
 
     @FXML
     private VBox boxIssues;
@@ -38,7 +38,7 @@ public class AllIssuesController implements Initializable {
     private int currentPage = 0;
     private int totalPages = 0;
 
-    public AllIssuesController(HomeApiService homeApiService, SessionManager sessionManager) {
+    public MyIssuesController(HomeApiService homeApiService, SessionManager sessionManager) {
         this.homeApiService = homeApiService;
         this.sessionManager = sessionManager;
     }
@@ -82,7 +82,7 @@ public class AllIssuesController implements Initializable {
         if (userId == null)
             return;
 
-        RispostaRecuperoIssue response = homeApiService.recuperaIssues(1, null, page);
+        RispostaRecuperoIssue response = homeApiService.recuperaIssues(1, userId.intValue(), page);
 
         if (response != null && response.isSuccess() && response.getIssues() != null) {
             for (IssueDTO issue : response.getIssues()) {
@@ -123,6 +123,12 @@ public class AllIssuesController implements Initializable {
     @FXML
     private void tornaIndietro() {
         tornaAllaHome();
+    }
+
+    @FXML
+    private void vediIssueProgetto() {
+        SceneRouter.cambiaScena("/it/unina/bugboard/fxml/all_issues.fxml", 1200, 800,
+                "BugBoard - Tutte le Issue del Progetto");
     }
 
     private HBox creaIssueRow(IssueDTO issue) {
@@ -183,15 +189,14 @@ public class AllIssuesController implements Initializable {
         buttonsContainer.setAlignment(Pos.CENTER_RIGHT);
         buttonsContainer.getChildren().add(btnAction);
 
-        if (sessionManager.isAdmin()) {
-            Button btnEdit = new Button("Modifica Issue");
-            btnEdit.getStyleClass().add("issue-card__btn");
+        // Since this is "My Issues" page, the user is the assignee, so they can edit.
+        Button btnEdit = new Button("Modifica Issue");
+        btnEdit.getStyleClass().add("issue-card__btn");
 
-            btnEdit.setOnAction(e -> {
-                System.out.println("Modifica issue " + issue.getIdIssue());
-            });
-            buttonsContainer.getChildren().add(btnEdit);
-        }
+        btnEdit.setOnAction(e -> {
+            System.out.println("Modifica issue " + issue.getIdIssue());
+        });
+        buttonsContainer.getChildren().add(btnEdit);
 
         row.getChildren().addAll(content, buttonsContainer);
         return row;

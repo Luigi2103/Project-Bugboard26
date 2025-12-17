@@ -117,7 +117,18 @@ public class HomePageController implements Initializable {
         desc.getStyleClass().add("issue-card__desc");
         desc.setWrapText(true);
 
-        content.getChildren().addAll(title, desc);
+        // Assignee (Current User)
+        String myName = sessionManager.getNome();
+        String mySurname = sessionManager.getCognome();
+        String assigneeName = (myName != null ? myName : "") + " " + (mySurname != null ? mySurname : "");
+        if (assigneeName.trim().isEmpty()) {
+            assigneeName = sessionManager.getUsername();
+        }
+
+        Label assigneeLabel = new Label("Assegnata a: " + assigneeName);
+        assigneeLabel.setStyle("-fx-text-fill: #3498DB; -fx-font-size: 13px; -fx-font-weight: bold;");
+
+        content.getChildren().addAll(title, assigneeLabel, desc);
 
         if (issue.getTags() != null && !issue.getTags().isEmpty()) {
             FlowPane tagsContainer = new FlowPane();
@@ -175,7 +186,8 @@ public class HomePageController implements Initializable {
 
     @FXML
     private void vediMieIssue() {
-
+        SceneRouter.cambiaScena("/it/unina/bugboard/fxml/my_issues.fxml", 1200, 800,
+                "BugBoard - Le mie Issue");
     }
 
     @FXML
