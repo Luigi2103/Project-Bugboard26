@@ -10,6 +10,9 @@ import java.time.LocalDate;
 import java.time.Period;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.Node;
 
 public class InsertUserController {
 
@@ -89,10 +92,12 @@ public class InsertUserController {
     public void initialize() {
         comboSesso.getItems().addAll("M", "F");
         pulsanteCancella.disableProperty().bind(createTuttiCampiVuotiBinding());
+        pulsanteRegistra.disableProperty().bind(createAlmenoUnCampoVuotoBinding());
         inizializzaListenerRuolo();
         campoDataNascita.setEditable(false);
         inizializzaTogglePassword();
         gestisciResponsive();
+        configuraNavigazioneEnter();
     }
 
     private void gestisciResponsive() {
@@ -228,6 +233,18 @@ public class InsertUserController {
                 .and(campoConfermaPassword.textProperty().isEmpty());
     }
 
+    private BooleanBinding createAlmenoUnCampoVuotoBinding() {
+        return isTrimmedEmpty(campoNome)
+                .or(isTrimmedEmpty(campoCognome))
+                .or(isTrimmedEmpty(campoCodiceFiscale))
+                .or(comboSesso.valueProperty().isNull())
+                .or(campoDataNascita.valueProperty().isNull())
+                .or(isTrimmedEmpty(campoUsername))
+                .or(isTrimmedEmpty(campoEmail))
+                .or(campoPassword.textProperty().isEmpty())
+                .or(campoConfermaPassword.textProperty().isEmpty());
+    }
+
     private BooleanBinding isTrimmedEmpty(TextField textField) {
         return Bindings.createBooleanBinding(
                 () -> textField.getText() == null || textField.getText().trim().isEmpty(),
@@ -236,6 +253,62 @@ public class InsertUserController {
 
     private boolean isTextEmpty(TextField textField) {
         return textField.getText() == null || textField.getText().trim().isEmpty();
+    }
+
+    private void configuraNavigazioneEnter() {
+        impostaFocusNext(campoNome, campoCognome);
+        impostaFocusNext(campoCognome, campoCodiceFiscale);
+        impostaFocusNext(campoCodiceFiscale, comboSesso);
+        impostaFocusNext(comboSesso, campoDataNascita);
+        impostaFocusNext(campoDataNascita, campoEmail);
+        impostaFocusNext(campoEmail, campoUsername);
+
+        // Gestione navigazione Username -> Password (considerando toggle visibilità)
+        campoUsername.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER) {
+                if (campoPassword.isVisible()) {
+                    campoPassword.requestFocus();
+                } else {
+                    campoPasswordVisibile.requestFocus();
+                }
+                e.consume();
+            }
+        });
+
+        // Gestione navigazione Password -> Conferma Password
+        javafx.event.EventHandler<KeyEvent> goToConfirm = e -> {
+            if (e.getCode() == KeyCode.ENTER) {
+                if (campoConfermaPassword.isVisible()) {
+                    campoConfermaPassword.requestFocus();
+                } else {
+                    campoConfermaPasswordVisibile.requestFocus();
+                }
+                e.consume();
+            }
+        };
+        campoPassword.setOnKeyPressed(goToConfirm);
+        campoPasswordVisibile.setOnKeyPressed(goToConfirm);
+
+        // Gestione Conferma Password -> SUBMIT
+        javafx.event.EventHandler<KeyEvent> doSubmit = e -> {
+            if (e.getCode() == KeyCode.ENTER) {
+                if (!pulsanteRegistra.isDisable()) {
+                    registraUtente();
+                }
+                e.consume();
+            }
+        };
+        campoConfermaPassword.setOnKeyPressed(doSubmit);
+        campoConfermaPasswordVisibile.setOnKeyPressed(doSubmit);
+    }
+
+    private void impostaFocusNext(Node current, Node next) {
+        current.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                next.requestFocus();
+                event.consume();
+            }
+        });
     }
 
     // ================================================================
@@ -286,11 +359,10 @@ public class InsertUserController {
     }
 
     private void inviaRischiestaInserimentoUtente(String nome, String cognome, String codiceFiscale, char sesso,
-                                                  LocalDate dataNascita, String username, String password, String email, boolean isAdmin) {
+            LocalDate dataNascita, String username, String password, String email, boolean isAdmin) {
         try {
             RispostaInserimentoUser risposta = insertUserApiService.inserisciUtente(
-                    nome, cognome, codiceFiscale, sesso, dataNascita, username, password, email, isAdmin
-            );
+                    nome, cognome, codiceFiscale, sesso, dataNascita, username, password, email, isAdmin);
 
             Platform.runLater(() -> {
                 pulsanteRegistra.setDisable(false);
@@ -309,8 +381,6 @@ public class InsertUserController {
             });
         }
     }
-
-
 
     private void mostraSchermataCorrettoInserimento() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

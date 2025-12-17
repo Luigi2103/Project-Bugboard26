@@ -281,9 +281,20 @@ public class LoginController implements Initializable {
                 SceneRouter.cambiaScena("/it/unina/bugboard/fxml/home.fxml", 1200, 850,
                         "BugBoard - Home");
             } else {
-                setErrorStyle(campoUsername);
-                setErrorStyle(campoPassword);
-                mostraErroreInline(errorePassword, risposta.getMessage());
+                String errorMsg = risposta.getMessage().toLowerCase();
+
+                if (errorMsg.contains("password")) {
+                    setErrorStyle(campoPassword);
+                    mostraErroreInline(errorePassword, risposta.getMessage());
+                } else if (errorMsg.contains("utente")) {
+                    setErrorStyle(campoUsername);
+                    mostraErroreInline(erroreUsername, risposta.getMessage());
+                } else {
+
+                    setErrorStyle(campoUsername);
+                    setErrorStyle(campoPassword);
+                    mostraErroreInline(errorePassword, risposta.getMessage());
+                }
                 animaErrore();
             }
         });
