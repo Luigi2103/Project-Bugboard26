@@ -33,8 +33,17 @@ public class RecuperoIssueServiceImplementation implements RecuperoIssueService 
             int page = richiesta.getPage() != null ? richiesta.getPage() : 0;
             int size = richiesta.getSize() != null ? richiesta.getSize() : 10;
 
+            org.springframework.data.domain.Sort sort = org.springframework.data.domain.Sort.unsorted();
+            if (richiesta.getSortBy() != null && !richiesta.getSortBy().isEmpty()) {
+                org.springframework.data.domain.Sort.Direction direction = "DESC"
+                        .equalsIgnoreCase(richiesta.getSortDirection())
+                                ? org.springframework.data.domain.Sort.Direction.DESC
+                                : org.springframework.data.domain.Sort.Direction.ASC;
+                sort = org.springframework.data.domain.Sort.by(direction, richiesta.getSortBy());
+            }
+
             org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page,
-                    size);
+                    size, sort);
 
             org.springframework.data.domain.Page<Issue> pageResult;
 

@@ -12,7 +12,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
 import javafx.scene.layout.FlowPane;
@@ -66,59 +65,34 @@ public class AllIssuesController implements Initializable {
 
     private void inizializzaOrdinamento() {
         sortComboBox.getItems().addAll(
-                new SortOption("Più recenti",
-                        Comparator.comparing(IssueDTO::getDataCreazione, Comparator.nullsLast(String::compareTo))
-                                .reversed()),
-                new SortOption("Meno recenti",
-                        Comparator.comparing(IssueDTO::getDataCreazione, Comparator.nullsLast(String::compareTo))),
-                new SortOption("Priorità (Alta-Bassa)",
-                        (i1, i2) -> comparePriorita(i1.getPriorita(), i2.getPriorita())),
-                new SortOption("Priorità (Bassa-Alta)",
-                        (i1, i2) -> comparePriorita(i2.getPriorita(), i1.getPriorita())), // Reversed logic for
-                                                                                          // Bassa-Alta
-                new SortOption("Tipologia",
-                        Comparator.comparing(IssueDTO::getTipologia, Comparator.nullsLast(String::compareTo))),
-                new SortOption("Stato",
-                        Comparator.comparing(IssueDTO::getStato, Comparator.nullsLast(String::compareTo))));
+                new SortOption("Più recenti", "dataCreazione", "DESC"),
+                new SortOption("Meno recenti", "dataCreazione", "ASC"),
+                new SortOption("Priorità (Alta-Bassa)", "priorita", "DESC"),
+                new SortOption("Priorità (Bassa-Alta)", "priorita", "ASC"),
+                new SortOption("Tipologia", "tipologia", "ASC"),
+                new SortOption("Stato", "stato", "ASC"));
 
         sortComboBox.getSelectionModel().select(0);
-        sortComboBox.setOnAction(e -> renderIssues());
-    }
-
-    private int comparePriorita(String p1, String p2) {
-        if (p1 == null)
-            p1 = "BASSA";
-        if (p2 == null)
-            p2 = "BASSA";
-        return getPrioritaValore(p2) - getPrioritaValore(p1); // Descending order: Massima > Bassa
-    }
-
-    private int getPrioritaValore(String p) {
-        switch (p.toUpperCase()) {
-            case "MASSIMA":
-                return 4;
-            case "ALTA":
-                return 3;
-            case "MEDIA":
-                return 2;
-            case "BASSA":
-                return 1;
-            default:
-                return 0;
-        }
+        sortComboBox.setOnAction(e -> caricaIssues(0)); // Reload from first page on sort change
     }
 
     private static class SortOption {
         private final String label;
-        private final Comparator<IssueDTO> comparator;
+        private final String sortBy;
+        private final String sortDirection;
 
-        public SortOption(String label, Comparator<IssueDTO> comparator) {
+        public SortOption(String label, String sortBy, String sortDirection) {
             this.label = label;
-            this.comparator = comparator;
+            this.sortBy = sortBy;
+            this.sortDirection = sortDirection;
         }
 
-        public Comparator<IssueDTO> getComparator() {
-            return comparator;
+        public String getSortBy() {
+            return sortBy;
+        }
+
+        public String getSortDirection() {
+            return sortDirection;
         }
 
         @Override
@@ -155,11 +129,6 @@ public class AllIssuesController implements Initializable {
             return;
         }
 
-        SortOption selectedSort = sortComboBox.getSelectionModel().getSelectedItem();
-        if (selectedSort != null) {
-            currentIssues.sort(selectedSort.getComparator());
-        }
-
         for (IssueDTO issue : currentIssues) {
             HBox issueRow = creaIssueRow(issue);
             boxIssues.getChildren().add(issueRow);
@@ -173,13 +142,18 @@ public class AllIssuesController implements Initializable {
         loadingLabel.setStyle("-fx-text-fill: gray; -fx-font-style: italic; -fx-padding: 20;");
         boxIssues.getChildren().add(loadingLabel);
 
+        // Read sorting parameters
+        SortOption selectedSort = sortComboBox.getSelectionModel().getSelectedItem();
+        String sortBy = selectedSort != null ? selectedSort.getSortBy() : "dataCreazione";
+        String sortDirection = selectedSort != null ? selectedSort.getSortDirection() : "DESC";
+
         Long userId = sessionManager.getUserId();
         if (userId == null)
             return;
 
         // Run in background thread to avoid blocking UI
         new Thread(() -> {
-            RispostaRecuperoIssue response = homeApiService.recuperaIssues(1, null, page);
+            RispostaRecuperoIssue response = homeApiService.recuperaIssues(1, null, page, sortBy, sortDirection);
 
             // Update UI on JavaFX Application Thread
             javafx.application.Platform.runLater(() -> {

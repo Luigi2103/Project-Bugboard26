@@ -71,7 +71,7 @@ public class HomePageController implements Initializable {
             return;
         }
 
-        RispostaRecuperoIssue response = homeApiService.recuperaIssues(1, userId.intValue(), 0);
+        RispostaRecuperoIssue response = homeApiService.recuperaIssues(1, userId.intValue(), 0, null, null);
 
         if (response != null && response.isSuccess() && response.getIssues() != null) {
             int count = 0;

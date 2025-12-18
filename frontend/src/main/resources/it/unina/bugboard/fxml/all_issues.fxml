@@ -60,35 +60,30 @@
                 <Button mnemonicParsing="false" onAction="#tornaAllaHome" styleClass="link-btn" text="&lt;- Indietro" />
             </HBox>
 
-            <!-- SCROLLABLE CONTENT -->
-            <ScrollPane fitToWidth="true" styleClass="content-scroll" VBox.vgrow="ALWAYS">
-                <VBox spacing="30">
-                    <padding>
-                        <Insets top="30" bottom="30" left="30" right="30"/>
-                    </padding>
+            <!-- STICKY CONTROLS BAR (Sorting) -->
+            <HBox alignment="CENTER_LEFT" spacing="20" styleClass="sticky-controls-bar">
+                <ComboBox fx:id="sortComboBox" promptText="Filtra per..." prefWidth="220"/>
+            </HBox>
+ 
+             <!-- SCROLLABLE CONTENT (Only Issues) -->
+             <ScrollPane fitToWidth="true" styleClass="content-scroll" VBox.vgrow="ALWAYS">
+                 <VBox spacing="30">
+                     <padding>
+                         <Insets top="30" bottom="30" left="30" right="30"/>
+                     </padding>
+ 
+                     <VBox fx:id="boxIssues" spacing="15" styleClass="issues-list-container">
+                         <!-- Issues will be loaded here -->
+                     </VBox>
+                 </VBox>
+             </ScrollPane>
 
-                    <VBox fx:id="boxIssues" spacing="15" styleClass="issues-list-container">
-                        <!-- Issues will be loaded here -->
-                    </VBox>
-             
-                     <!-- PAGINATION CONTROLS in separate HBox at bottom -->
-                     <HBox alignment="CENTER_LEFT" spacing="20">
-                         <padding><Insets top="10" bottom="10"/></padding>
-                         
-                         <ComboBox fx:id="sortComboBox" promptText="Filtra per..." prefWidth="220"/>
-                         
-                         <Pane HBox.hgrow="ALWAYS" />
-                         
-                         <Button fx:id="btnPrev" mnemonicParsing="false" onAction="#paginaPrecedente" styleClass="issue-card__btn" text="Precedente" />
-                         <Label fx:id="labelPagina" styleClass="stat-label" text="Pagina 1 di 1" />
-                         <Button fx:id="btnNext" mnemonicParsing="false" onAction="#paginaSuccessiva" styleClass="issue-card__btn" text="Successiva" />
-                         
-                         <Pane HBox.hgrow="ALWAYS" />
-                         <Pane prefWidth="220" /> <!-- Spacer to balance layout -->
-                     </HBox>
-
-                </VBox>
-            </ScrollPane>
+             <!-- STICKY FOOTER BAR (Pagination) -->
+             <HBox alignment="CENTER" spacing="20" styleClass="sticky-footer-bar">
+                 <Button fx:id="btnPrev" mnemonicParsing="false" onAction="#paginaPrecedente" styleClass="issue-card__btn" text="Precedente" />
+                 <Label fx:id="labelPagina" styleClass="stat-label" text="Pagina 1 di 1" />
+                 <Button fx:id="btnNext" mnemonicParsing="false" onAction="#paginaSuccessiva" styleClass="issue-card__btn" text="Successiva" />
+             </HBox>
         </VBox>
     </center>
 </BorderPane>

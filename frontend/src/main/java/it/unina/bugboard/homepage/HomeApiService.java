@@ -23,9 +23,11 @@ public class HomeApiService {
         this.sessionManager = sessionManager;
     }
 
-    public RispostaRecuperoIssue recuperaIssues(Integer idProgetto, Integer idAssegnatario, Integer page) {
+    public RispostaRecuperoIssue recuperaIssues(Integer idProgetto, Integer idAssegnatario, Integer page, String sortBy,
+            String sortDirection) {
         try {
-            RichiestaRecuperoIssue richiesta = new RichiestaRecuperoIssue(idProgetto, idAssegnatario, page, 6); // Default
+            RichiestaRecuperoIssue richiesta = new RichiestaRecuperoIssue(idProgetto, idAssegnatario, page, 6, sortBy,
+                    sortDirection);
 
             String jsonBody = objectMapper.writeValueAsString(richiesta);
 

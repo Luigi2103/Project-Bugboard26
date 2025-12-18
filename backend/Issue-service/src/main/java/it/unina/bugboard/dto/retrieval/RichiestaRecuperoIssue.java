@@ -9,5 +9,7 @@ public class RichiestaRecuperoIssue {
     private Integer idAssegnatario;
     private Integer page; // Default 0
     private Integer size; // Default 10
+    private String sortBy;
+    private String sortDirection;
 
 }

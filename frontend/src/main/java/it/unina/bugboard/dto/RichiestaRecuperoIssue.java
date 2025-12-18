@@ -14,9 +14,9 @@ public class RichiestaRecuperoIssue {
     private Integer idAssegnatario;
     private Integer page;
     private Integer size;
+    private String sortBy;
+    private String sortDirection;
 
-    // Custom constructor for partial fields if needed, OR just rely on
-    // AllArgsConstructor
     public RichiestaRecuperoIssue(Integer idProgetto, Integer idAssegnatario) {
         this.idProgetto = idProgetto;
         this.idAssegnatario = idAssegnatario;
