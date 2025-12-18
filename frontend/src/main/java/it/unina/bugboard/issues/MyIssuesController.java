@@ -192,6 +192,11 @@ public class MyIssuesController implements Initializable {
                 "BugBoard - Tutte le Issue del Progetto");
     }
 
+    @FXML
+    private void refreshIssues() {
+        caricaIssues(0);
+    }
+
     private HBox creaIssueRow(IssueDTO issue) {
         HBox row = new HBox();
         row.getStyleClass().add("issue-card");

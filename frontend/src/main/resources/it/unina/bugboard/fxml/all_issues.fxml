@@ -60,8 +60,10 @@
             </HBox>
 
             <!-- STICKY CONTROLS BAR (Sorting) -->
-            <HBox alignment="CENTER_LEFT" spacing="20" styleClass="sticky-controls-bar">
-                <ComboBox fx:id="sortComboBox" promptText="Filtra per..." prefWidth="220"/>
+            <HBox alignment="CENTER_RIGHT" spacing="15" styleClass="sticky-controls-bar">
+                <Label text="Ordina per:" styleClass="stat-label" style="-fx-font-size: 14px;"/>
+                <ComboBox fx:id="sortComboBox" promptText="Filtra per..." prefWidth="200" style="-fx-background-radius: 8; -fx-background-color: white; -fx-border-color: #BDC3C7; -fx-border-radius: 8;"/>
+                <Button text="↻" onAction="#refreshIssues" styleClass="issue-card__btn" style="-fx-min-width: 40px; -fx-padding: 5 10; -fx-font-size: 16px;" />
             </HBox>
 
             <!-- SCROLLABLE CONTENT (Only Issues) -->

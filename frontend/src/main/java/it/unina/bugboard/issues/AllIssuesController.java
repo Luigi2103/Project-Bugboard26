@@ -112,6 +112,11 @@ public class AllIssuesController implements Initializable {
     }
 
     @FXML
+    private void refreshIssues() {
+        caricaIssues(0);
+    }
+
+    @FXML
     private void vaiAInserimentoUtente() {
         SceneRouter.cambiaScena("/it/unina/bugboard/fxml/insert_user.fxml", 1000, 900,
                 "BugBoard - Registra Nuovo Utente");
