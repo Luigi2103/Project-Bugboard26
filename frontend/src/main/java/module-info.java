@@ -37,4 +37,7 @@ module it.unina.bugboard {
     opens it.unina.bugboard.issuedetails to javafx.fxml, com.fasterxml.jackson.databind;
     opens it.unina.bugboard.issues to javafx.fxml;
 
+    exports it.unina.bugboard.common;
+
+    opens it.unina.bugboard.common to com.fasterxml.jackson.databind;
 }

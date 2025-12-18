@@ -32,6 +32,7 @@ public class RecuperoIssueServiceImplementation implements RecuperoIssueService 
         try {
             int page = richiesta.getPage() != null ? richiesta.getPage() : 0;
             int size = richiesta.getSize() != null ? richiesta.getSize() : 10;
+
             org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page,
                     size);
 
