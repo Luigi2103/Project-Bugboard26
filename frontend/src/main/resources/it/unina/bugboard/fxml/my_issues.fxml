@@ -32,13 +32,13 @@
                 <padding>
                     <Insets top="20" right="15" left="15"/>
                 </padding>
-                
+
                 <Button text="Home" styleClass="nav-btn" onAction="#tornaAllaHome"/>
                 <Button text="Issue del Progetto" styleClass="nav-btn" onAction="#vediIssueProgetto"/>
                 <!-- Button removed as per request -->
                 <Button text="Inserisci nuova issue" styleClass="nav-btn" onAction="#segnalaIssue"/>
                 <Button fx:id="btnAggiungiUtente" text="Registra Nuovo Utente" styleClass="nav-btn" onAction="#vaiAInserimentoUtente"/>
-                
+
                 <Pane VBox.vgrow="ALWAYS"/> <!-- Spacer -->
 
                 <Button text="Logout" styleClass="nav-btn, logout-btn" onAction="#logout"/>
@@ -57,34 +57,33 @@
                     <Insets left="30" right="30"/>
                 </padding>
                 <Label text="Le mie Issue" styleClass="header-title"/>
-                <Pane HBox.hgrow="ALWAYS"/>
-                <Button mnemonicParsing="false" onAction="#tornaAllaHome" styleClass="link-btn" text="&lt;- Indietro" />
+
             </HBox>
 
             <!-- STICKY CONTROLS BAR (Sorting) -->
             <HBox alignment="CENTER_LEFT" spacing="20" styleClass="sticky-controls-bar">
                 <ComboBox fx:id="sortComboBox" promptText="Filtra per..." prefWidth="220"/>
             </HBox>
- 
-             <!-- SCROLLABLE CONTENT (Only Issues) -->
-             <ScrollPane fitToWidth="true" styleClass="content-scroll" VBox.vgrow="ALWAYS">
-                 <VBox spacing="30">
-                     <padding>
-                         <Insets top="30" bottom="30" left="30" right="30"/>
-                     </padding>
- 
-                     <VBox fx:id="boxIssues" spacing="15" styleClass="issues-list-container">
-                         <!-- Issues will be loaded here -->
-                     </VBox>
-                 </VBox>
-             </ScrollPane>
 
-             <!-- STICKY FOOTER BAR (Pagination) -->
-             <HBox alignment="CENTER" spacing="20" styleClass="sticky-footer-bar">
-                 <Button fx:id="btnPrev" mnemonicParsing="false" onAction="#paginaPrecedente" styleClass="issue-card__btn" text="Precedente" />
-                 <Label fx:id="labelPagina" styleClass="stat-label" text="Pagina 1 di 1" />
-                 <Button fx:id="btnNext" mnemonicParsing="false" onAction="#paginaSuccessiva" styleClass="issue-card__btn" text="Successiva" />
-             </HBox>
+            <!-- SCROLLABLE CONTENT (Only Issues) -->
+            <ScrollPane fitToWidth="true" styleClass="content-scroll" VBox.vgrow="ALWAYS">
+                <VBox spacing="30">
+                    <padding>
+                        <Insets top="30" bottom="30" left="30" right="30"/>
+                    </padding>
+
+                    <VBox fx:id="boxIssues" spacing="15" styleClass="issues-list-container">
+                        <!-- Issues will be loaded here -->
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+
+            <!-- STICKY FOOTER BAR (Pagination) -->
+            <HBox alignment="CENTER" spacing="20" styleClass="sticky-footer-bar">
+                <Button fx:id="btnPrev" mnemonicParsing="false" onAction="#paginaPrecedente" styleClass="issue-card__btn" text="Precedente" />
+                <Label fx:id="labelPagina" styleClass="stat-label" text="Pagina 1 di 1" />
+                <Button fx:id="btnNext" mnemonicParsing="false" onAction="#paginaSuccessiva" styleClass="issue-card__btn" text="Successiva" />
+            </HBox>
         </VBox>
     </center>
 </BorderPane>
