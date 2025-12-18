@@ -239,8 +239,8 @@ public class RecoveryController implements Initializable {
 
     @FXML
     private void tornaIndietro() {
-        // Torna al login
-        SceneRouter.cambiaScena(LOGIN_FXML, LOGIN_WIDTH, LOGIN_HEIGHT, LOGIN_TITLE);
+        // Torna al login o alla scena precedente
+        SceneRouter.tornaIndietro();
     }
 
     private void configuraNavigazioneEnter() {

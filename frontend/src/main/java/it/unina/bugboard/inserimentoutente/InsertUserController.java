@@ -99,8 +99,8 @@ public class InsertUserController {
         final boolean isAdmin;
 
         DatiUtente(String nome, String cognome, String codiceFiscale, char sesso,
-                   LocalDate dataNascita, String username, String password,
-                   String email, boolean isAdmin) {
+                LocalDate dataNascita, String username, String password,
+                String email, boolean isAdmin) {
             this.nome = nome;
             this.cognome = cognome;
             this.codiceFiscale = codiceFiscale;
@@ -113,8 +113,8 @@ public class InsertUserController {
         }
 
         static DatiUtente fromForm(String nome, String cognome, String codiceFiscale,
-                                   char sesso, LocalDate dataNascita, String username,
-                                   String password, String email, boolean isAdmin) {
+                char sesso, LocalDate dataNascita, String username,
+                String password, String email, boolean isAdmin) {
             return new DatiUtente(nome, cognome, codiceFiscale, sesso, dataNascita,
                     username, password, email, isAdmin);
         }
@@ -141,7 +141,8 @@ public class InsertUserController {
             impostaListenerLarghezza(contenitoreInserimento.getScene());
         else
             contenitoreInserimento.sceneProperty().addListener((obs, oldScene, newScene) -> {
-                if (newScene != null) impostaListenerLarghezza(newScene);
+                if (newScene != null)
+                    impostaListenerLarghezza(newScene);
             });
     }
 
@@ -233,7 +234,8 @@ public class InsertUserController {
 
     private void inizializzaListenerRuolo() {
         gruppoRuolo.selectedToggleProperty().addListener((obs, vecchio, nuovo) -> {
-            if (nuovo == null) vecchio.setSelected(true);
+            if (nuovo == null)
+                vecchio.setSelected(true);
         });
     }
 
@@ -297,7 +299,8 @@ public class InsertUserController {
 
         javafx.event.EventHandler<KeyEvent> doSubmit = e -> {
             if (e.getCode() == KeyCode.ENTER) {
-                if (!pulsanteRegistra.isDisable()) registraUtente();
+                if (!pulsanteRegistra.isDisable())
+                    registraUtente();
                 e.consume();
             }
         };
@@ -332,7 +335,8 @@ public class InsertUserController {
     private void registraUtente() {
         resetErrorStyles();
 
-        if (!eseguiValidazioni()) return;
+        if (!eseguiValidazioni())
+            return;
 
         DatiUtente dati = DatiUtente.fromForm(
                 campoNome.getText(),
@@ -343,17 +347,19 @@ public class InsertUserController {
                 campoUsername.getText(),
                 campoPassword.getText(),
                 campoEmail.getText(),
-                toggleAdmin.isSelected()
-        );
+                toggleAdmin.isSelected());
 
         isLoading.set(true);
         new Thread(() -> inviaRischiestaInserimentoUtente(dati)).start();
     }
 
     private boolean eseguiValidazioni() {
-        if (!verificaCampiObbligatori()) return false;
-        if (!verificaMaggiorenne()) return false;
-        if (!verificaPassword()) return false;
+        if (!verificaCampiObbligatori())
+            return false;
+        if (!verificaMaggiorenne())
+            return false;
+        if (!verificaPassword())
+            return false;
         return verificaCodiceFiscale();
     }
 
@@ -417,7 +423,8 @@ public class InsertUserController {
     }
 
     private String costruisciMessaggioErrore(RispostaInserimentoUser risposta) {
-        if (risposta == null) return "Errore generico dal server";
+        if (risposta == null)
+            return "Errore generico dal server";
 
         StringBuilder messaggioErrore = new StringBuilder();
         messaggioErrore.append(risposta.getMessage());
@@ -536,8 +543,10 @@ public class InsertUserController {
                 erroreCampoPassword, errorePassword
         };
 
-        for (Control c : campi) removeErrorStyle(c);
-        for (Label l : labels) nascondiErrore(l);
+        for (Control c : campi)
+            removeErrorStyle(c);
+        for (Label l : labels)
+            nascondiErrore(l);
     }
 
     private void mostraErroreInline(Label label, String messaggio) {
@@ -558,8 +567,7 @@ public class InsertUserController {
 
     @FXML
     private void tornaIndietro() {
-        it.unina.bugboard.navigation.SceneRouter.cambiaScena("/it/unina/bugboard/fxml/home.fxml", 900, 800,
-                "BugBoard - HomePage");
+        it.unina.bugboard.navigation.SceneRouter.tornaIndietro();
     }
 
     private void pulisciCampi() {

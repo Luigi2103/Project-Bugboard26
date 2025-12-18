@@ -51,7 +51,7 @@ public class InsertIssueController {
     private final it.unina.bugboard.common.SessionManager sessionManager;
 
     public InsertIssueController(InsertIssueApiService apiService,
-                                 it.unina.bugboard.common.SessionManager sessionManager) {
+            it.unina.bugboard.common.SessionManager sessionManager) {
         this.apiService = apiService;
         this.sessionManager = sessionManager;
     }
@@ -200,7 +200,7 @@ public class InsertIssueController {
 
     @FXML
     private void tornaIndietro() {
-        SceneRouter.cambiaScena("/it/unina/bugboard/fxml/home.fxml", 1200, 800, "BugBoard - Home");
+        SceneRouter.tornaIndietro();
     }
 
     /* -------------------------- RESET -------------------------- */

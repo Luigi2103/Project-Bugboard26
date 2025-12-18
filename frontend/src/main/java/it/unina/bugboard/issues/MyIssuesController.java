@@ -122,7 +122,7 @@ public class MyIssuesController implements Initializable {
 
     @FXML
     private void tornaIndietro() {
-        tornaAllaHome();
+        SceneRouter.tornaIndietro();
     }
 
     @FXML

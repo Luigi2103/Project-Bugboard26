@@ -269,7 +269,7 @@ public class DettaglioIssueController implements Initializable {
 
     @FXML
     private void tornaIndietro() {
-        SceneRouter.cambiaScena("/it/unina/bugboard/fxml/home.fxml", 1200, 800, "BugBoard - Home");
+        SceneRouter.tornaIndietro();
     }
 
     @FXML
