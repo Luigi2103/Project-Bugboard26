@@ -74,13 +74,20 @@
                     <!-- Upload Immagine -->
                     <VBox spacing="5" maxWidth="Infinity">
                         <Label text="Allegato (Opzionale)" styleClass="field-label"/>
-                        <VBox fx:id="areaUploadImmagine" styleClass="image-upload-area" alignment="CENTER" spacing="10" minHeight="100">
-                            <padding>
-                                <Insets top="10" bottom="10" left="10" right="10"/>
-                            </padding>
-                            <Label fx:id="labelNomeFile" text="Clicca per caricare un'immagine" styleClass="upload-label"/>
-
-                        </VBox>
+                        <StackPane alignment="TOP_RIGHT">
+                            <VBox fx:id="areaUploadImmagine" styleClass="image-upload-area" alignment="CENTER" spacing="10" minHeight="100">
+                                <padding>
+                                    <Insets top="10" bottom="10" left="10" right="10"/>
+                                </padding>
+                                <Label fx:id="labelNomeFile" text="Clicca per caricare un'immagine" styleClass="upload-label"/>
+                            </VBox>
+                            
+                            <Button fx:id="pulsanteRimuoviImmagine" text="X" onAction="#rimuoviImmagine" visible="false" managed="false" styleClass="remove-file-button" StackPane.alignment="TOP_RIGHT">
+                                <StackPane.margin>
+                                    <Insets top="5" right="5"/>
+                                </StackPane.margin>
+                            </Button>
+                        </StackPane>
                     </VBox>
 
                     <!-- Pulsanti Azione -->

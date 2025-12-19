@@ -44,6 +44,8 @@ public class InsertIssueController {
     private Label errorePriorita;
     @FXML
     private Button pulsanteInserisci;
+    @FXML
+    private Button pulsanteRimuoviImmagine;
 
     private File fileSelezionato;
 
@@ -65,6 +67,7 @@ public class InsertIssueController {
         inizializzaBindings();
         inizializzaUpload();
         configuraNavigazioneEnter();
+        pulsanteRimuoviImmagine.setOnMouseClicked(javafx.scene.input.MouseEvent::consume);
     }
 
     private void inizializzaBindings() {
@@ -158,7 +161,17 @@ public class InsertIssueController {
 
         if (fileSelezionato != null) {
             labelNomeFile.setText(fileSelezionato.getName());
+            pulsanteRimuoviImmagine.setVisible(true);
+            pulsanteRimuoviImmagine.setManaged(true);
         }
+    }
+
+    @FXML
+    private void rimuoviImmagine() {
+        fileSelezionato = null;
+        labelNomeFile.setText("Clicca per caricare un'immagine");
+        pulsanteRimuoviImmagine.setVisible(false);
+        pulsanteRimuoviImmagine.setManaged(false);
     }
 
     /* -------------------------- NAVIGAZIONE -------------------------- */
@@ -215,6 +228,8 @@ public class InsertIssueController {
 
         labelNomeFile.setText("Clicca per caricare un'immagine");
         fileSelezionato = null;
+        pulsanteRimuoviImmagine.setVisible(false);
+        pulsanteRimuoviImmagine.setManaged(false);
 
         resetErrorStyles();
     }

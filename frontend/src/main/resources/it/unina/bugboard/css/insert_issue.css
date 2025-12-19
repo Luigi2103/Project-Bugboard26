@@ -217,3 +217,26 @@
     -fx-border-width: 2;
     -fx-effect: dropshadow(three-pass-box, rgba(231, 76, 60, 0.2), 8, 0, 0, 4);
 }
+
+.remove-file-button {
+    -fx-background-color: white;
+    -fx-text-fill: #E74C3C;
+    -fx-font-weight: 700;
+    -fx-font-size: 14px;
+    -fx-background-radius: 15;
+    -fx-padding: 2 8;
+    -fx-cursor: hand;
+    -fx-border-color: #E74C3C;
+    -fx-border-radius: 15;
+    -fx-border-width: 1;
+    -fx-min-width: 30;
+    -fx-min-height: 30;
+    -fx-max-width: 30;
+    -fx-max-height: 30;
+    -fx-alignment: center;
+}
+
+.remove-file-button:hover {
+    -fx-background-color: #E74C3C;
+    -fx-text-fill: white;
+}
