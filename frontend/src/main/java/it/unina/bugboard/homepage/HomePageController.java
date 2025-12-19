@@ -157,8 +157,9 @@ public class HomePageController implements Initializable {
         Button btnEdit = new Button("Modifica Issue");
         btnEdit.getStyleClass().add("issue-card__btn");
         btnEdit.setOnAction(e -> {
-            System.out.println("Modifica issue " + issue.getIdIssue());
-            // TODO: Implement edit logic
+            SceneRouter.apriPopupModifica(issue, () -> {
+                caricaIssues(); // Refresh list
+            });
         });
 
         VBox buttonsContainer = new VBox(10);

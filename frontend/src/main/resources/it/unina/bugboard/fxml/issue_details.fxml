@@ -27,7 +27,11 @@
             <Button text="← Indietro" onAction="#tornaIndietro" styleClass="back-btn"/>
             <Label text="Dettaglio Issue" styleClass="page-title"/>
             <Region HBox.hgrow="ALWAYS"/>
-            <!-- Optional: header actions like Edit/Delete -->
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button fx:id="btnModifica" text="Modifica" onAction="#abilitaModifica" styleClass="action-button" style="-fx-background-color: #2980B9; -fx-text-fill: white;"/>
+                <Button fx:id="btnSalva" text="Salva" onAction="#salvaModifiche" visible="false" managed="false" styleClass="action-button" style="-fx-background-color: #27AE60; -fx-text-fill: white;"/>
+                <Button fx:id="btnAnnulla" text="Annulla" onAction="#annullaModifiche" visible="false" managed="false" styleClass="action-button" style="-fx-background-color: #7F8C8D; -fx-text-fill: white;"/>
+            </HBox>
         </HBox>
     </top>
 
@@ -48,18 +52,28 @@
                         <!-- Date -->
                         <Label fx:id="labelDataCreazione" styleClass="issue-date" text="Aperta il: ..."/>
 
-                        <!-- Tags Row -->
-                        <HBox alignment="CENTER_LEFT" spacing="10">
-                            <Label text="Tag:" styleClass="field-label" style="-fx-font-weight: bold;"/>
-                            <FlowPane fx:id="tagsContainer" hgap="10" vgap="5"/>
-                        </HBox>
+                        <!-- Status/Priority/Type Row -->
+                        <VBox spacing="10">
+                            <!-- STATO -->
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="Stato :" styleClass="field-label" style="-fx-font-weight: bold;"/>
+                                <Label fx:id="labelStato" text="APERTA" styleClass="status-badge" style="-fx-background-color: #FFF3CD; -fx-text-fill: #856404;"/>
+                                <javafx.scene.control.ComboBox fx:id="cmbStato" visible="false" managed="false"/>
+                            </HBox>
 
-                        <!-- Badges Row -->
-                        <HBox spacing="10" alignment="CENTER_LEFT">
-                            <Label fx:id="labelStato" text="APERTA" styleClass="status-badge" style="-fx-background-color: #FFF3CD; -fx-text-fill: #856404;"/>
-                            <Label fx:id="labelPriorita" text="ALTA" styleClass="status-badge" style="-fx-background-color: #F8D7DA; -fx-text-fill: #721C24;"/>
-                            <Label fx:id="labelTipologia" text="BUG" styleClass="status-badge" style="-fx-background-color: #D1ECF1; -fx-text-fill: #0C5460;"/>
-                        </HBox>
+                            <!-- TIPOLOGIA -->
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="Tipologia :" styleClass="field-label" style="-fx-font-weight: bold;"/>
+                                <Label fx:id="labelTipologia" text="BUG" styleClass="status-badge" style="-fx-background-color: #D1ECF1; -fx-text-fill: #0C5460;"/>
+                            </HBox>
+
+                            <!-- PRIORITA -->
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="Priorità :" styleClass="field-label" style="-fx-font-weight: bold;"/>
+                                <Label fx:id="labelPriorita" text="ALTA" styleClass="status-badge" style="-fx-background-color: #F8D7DA; -fx-text-fill: #721C24;"/>
+                                <javafx.scene.control.ComboBox fx:id="cmbPriorita" visible="false" managed="false"/>
+                            </HBox>
+                        </VBox>
                     </VBox>
 
                     <Region prefHeight="10" />

@@ -96,4 +96,41 @@ public class IssueApiService {
             return new RispostaInserimentoCommentoIssue(false, "Errore di connessione: " + e.getMessage(), null);
         }
     }
+
+    public RispostaDettaglioIssue modificaIssue(Integer idIssue, String stato, String priorita) {
+        try {
+            String jsonBody = String.format("{\"stato\":\"%s\", \"priorita\":\"%s\"}", stato, priorita);
+
+            String url = "http://localhost:8080/api/issues/" + idIssue;
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + sessionManager.getToken())
+                    .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                logger.info("Errore durante la modifica dell'issue");
+            }
+
+            return objectMapper.readValue(response.body(), RispostaDettaglioIssue.class);
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.info("Operazione interrotta durante la modifica dell'issue: " + e.getMessage());
+            RispostaDettaglioIssue err = new RispostaDettaglioIssue();
+            err.setSuccess(false);
+            err.setMessage("Operazione interrotta");
+            return err;
+        } catch (Exception e) {
+            logger.info("Errore durante la modifica dell'issue: " + e.getMessage());
+            RispostaDettaglioIssue err = new RispostaDettaglioIssue();
+            err.setSuccess(false);
+            err.setMessage("Errore di connessione: " + e.getMessage());
+            return err;
+        }
+    }
 }

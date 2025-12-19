@@ -55,6 +55,16 @@ public class DettaglioIssueController implements Initializable {
     private Button btnInvia;
     @FXML
     private Button btnIndietro;
+    @FXML
+    private Button btnModifica;
+    @FXML
+    private Button btnSalva;
+    @FXML
+    private Button btnAnnulla;
+    @FXML
+    private javafx.scene.control.ComboBox<String> cmbStato;
+    @FXML
+    private javafx.scene.control.ComboBox<String> cmbPriorita;
 
     private final IssueApiService apiService;
     private final SessionManager sessionManager;
@@ -75,6 +85,112 @@ public class DettaglioIssueController implements Initializable {
 
         if (imageFoto != null && imageContainer != null) {
             imageFoto.fitWidthProperty().bind(imageContainer.widthProperty().subtract(20));
+        }
+
+        // Initialize ComboBoxes
+        if (cmbStato != null) {
+            cmbStato.getItems().addAll("TO-DO", "IN PROGRESS", "RESOLVED", "CLOSED");
+        }
+        if (cmbPriorita != null) {
+            cmbPriorita.getItems().addAll("BASSA", "MEDIA", "ALTA", "MASSIMA");
+        }
+    }
+
+    public void setModificaMode(boolean attiva) {
+        if (attiva) {
+            abilitaModifica();
+        }
+    }
+
+    @FXML
+    private void abilitaModifica() {
+        if (btnModifica != null) {
+            btnModifica.setVisible(false);
+            btnModifica.setManaged(false);
+        }
+        if (btnSalva != null) {
+            btnSalva.setVisible(true);
+            btnSalva.setManaged(true);
+        }
+        if (btnAnnulla != null) {
+            btnAnnulla.setVisible(true);
+            btnAnnulla.setManaged(true);
+        }
+
+        if (labelStato != null && cmbStato != null) {
+            cmbStato.setValue(labelStato.getText());
+            labelStato.setVisible(false);
+            labelStato.setManaged(false);
+            cmbStato.setVisible(true);
+            cmbStato.setManaged(true);
+        }
+
+        if (labelPriorita != null && cmbPriorita != null) {
+            cmbPriorita.setValue(labelPriorita.getText());
+            labelPriorita.setVisible(false);
+            labelPriorita.setManaged(false);
+            cmbPriorita.setVisible(true);
+            cmbPriorita.setManaged(true);
+        }
+    }
+
+    @FXML
+    private void annullaModifiche() {
+        ripristinaVista();
+    }
+
+    @FXML
+    private void salvaModifiche() {
+        if (cmbStato == null || cmbPriorita == null)
+            return;
+
+        String nuovoStato = cmbStato.getValue();
+        String nuovaPriorita = cmbPriorita.getValue();
+
+        RispostaDettaglioIssue risposta = apiService.modificaIssue(issueId, nuovoStato, nuovaPriorita);
+
+        if (risposta != null && risposta.isSuccess()) {
+            if (risposta.getIssue() != null) {
+                popolaCampi(risposta.getIssue());
+            } else {
+                // If issue is null for some reason, at least update labels locally
+                labelStato.setText(nuovoStato);
+                applicaStileBadge(labelStato, nuovoStato, "STATO");
+                labelPriorita.setText(nuovaPriorita);
+                applicaStileBadge(labelPriorita, nuovaPriorita, "PRIORITA");
+            }
+            ripristinaVista();
+        } else {
+            mostraErrore(risposta != null ? risposta.getMessage() : "Errore durante il salvataggio");
+        }
+    }
+
+    private void ripristinaVista() {
+        if (btnModifica != null) {
+            btnModifica.setVisible(true);
+            btnModifica.setManaged(true);
+        }
+        if (btnSalva != null) {
+            btnSalva.setVisible(false);
+            btnSalva.setManaged(false);
+        }
+        if (btnAnnulla != null) {
+            btnAnnulla.setVisible(false);
+            btnAnnulla.setManaged(false);
+        }
+
+        if (labelStato != null && cmbStato != null) {
+            labelStato.setVisible(true);
+            labelStato.setManaged(true);
+            cmbStato.setVisible(false);
+            cmbStato.setManaged(false);
+        }
+
+        if (labelPriorita != null && cmbPriorita != null) {
+            labelPriorita.setVisible(true);
+            labelPriorita.setManaged(true);
+            cmbPriorita.setVisible(false);
+            cmbPriorita.setManaged(false);
         }
     }
 
@@ -239,7 +355,7 @@ public class DettaglioIssueController implements Initializable {
         String style = "-fx-background-radius: 4; -fx-padding: 2 6; ";
 
         if ("PRIORITA".equals(tipo)) {
-            if (valore.contains("ALTA")) {
+            if (valore.contains("ALTA") || valore.contains("MASSIMA")) {
                 style += "-fx-background-color: #F8D7DA; -fx-text-fill: #721C24;"; // Rosso
             } else if (valore.contains("MEDIA")) {
                 style += "-fx-background-color: #FFF3CD; -fx-text-fill: #856404;"; // Giallo
@@ -247,12 +363,14 @@ public class DettaglioIssueController implements Initializable {
                 style += "-fx-background-color: #D4EDDA; -fx-text-fill: #155724;";
             }
         } else if ("STATO".equals(tipo)) {
-            if (valore.contains("APERTA")) {
-                style += "-fx-background-color: #D1ECF1; -fx-text-fill: #0C5460;";
-            } else if (valore.contains("CHIUSA")) {
-                style += "-fx-background-color: #E2E3E5; -fx-text-fill: #383D41;";
+            if (valore.contains("TO-DO") || valore.contains("APERTA")) {
+                style += "-fx-background-color: #D1ECF1; -fx-text-fill: #0C5460;"; // Azzurro
+            } else if (valore.contains("IN PROGRESS") || valore.contains("CORSO")) {
+                style += "-fx-background-color: #FFF3CD; -fx-text-fill: #856404;"; // Giallo
+            } else if (valore.contains("RESOLVED") || valore.contains("CLOSED") || valore.contains("CHIUSA")) {
+                style += "-fx-background-color: #E2E3E5; -fx-text-fill: #383D41;"; // Grigio
             } else {
-                style += "-fx-background-color: #FFF3CD; -fx-text-fill: #856404;";
+                style += "-fx-background-color: #EBF5FB; -fx-text-fill: #2980B9;";
             }
         } else {
 

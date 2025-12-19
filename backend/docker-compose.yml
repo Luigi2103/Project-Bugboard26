@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   api-gateway:
     build:
@@ -11,7 +9,10 @@ services:
     depends_on:
       - login-service
       - inserimento-utente-service
-      - issue-service
+      - inserimento-issue-service
+      - recupero-issue-service
+      - modifica-issue-service
+      - commenta-issue-service
     networks:
       - bugboard-network
     environment:
@@ -27,13 +28,43 @@ services:
       SPRING_CLOUD_GATEWAY_ROUTES_1_PREDICATES_0: Path=/api/users/**
       SPRING_CLOUD_GATEWAY_ROUTES_1_FILTERS_0: StripPrefix=0
       
-      SPRING_CLOUD_GATEWAY_ROUTES_2_ID: issue-service
-      SPRING_CLOUD_GATEWAY_ROUTES_2_URI: http://issue-service:${SERVER_PORT_ISSUE}
-      SPRING_CLOUD_GATEWAY_ROUTES_2_PREDICATES_0: Path=/api/issues/**
+      # INSERIMENTO ISSUE (POST /api/issues)
+      SPRING_CLOUD_GATEWAY_ROUTES_2_ID: inserimento-issue-service
+      SPRING_CLOUD_GATEWAY_ROUTES_2_URI: http://inserimento-issue-service:${SERVER_PORT_INSERIMENTO_ISSUE}
+      SPRING_CLOUD_GATEWAY_ROUTES_2_PREDICATES_0: Path=/api/issues
+      SPRING_CLOUD_GATEWAY_ROUTES_2_PREDICATES_1: Method=POST
       SPRING_CLOUD_GATEWAY_ROUTES_2_FILTERS_0: StripPrefix=0
+
+      # RECUPERO ISSUE (GET /api/issues/**)
+      SPRING_CLOUD_GATEWAY_ROUTES_3_ID: recupero-issue-service
+      SPRING_CLOUD_GATEWAY_ROUTES_3_URI: http://recupero-issue-service:${SERVER_PORT_RECUPERO_ISSUE}
+      SPRING_CLOUD_GATEWAY_ROUTES_3_PREDICATES_0: Path=/api/issues/**
+      SPRING_CLOUD_GATEWAY_ROUTES_3_PREDICATES_1: Method=GET
+      SPRING_CLOUD_GATEWAY_ROUTES_3_FILTERS_0: StripPrefix=0
+
+      # MODIFICA ISSUE (PUT /api/issues/**)
+      SPRING_CLOUD_GATEWAY_ROUTES_4_ID: modifica-issue-service
+      SPRING_CLOUD_GATEWAY_ROUTES_4_URI: http://modifica-issue-service:${SERVER_PORT_MODIFICA_ISSUE}
+      SPRING_CLOUD_GATEWAY_ROUTES_4_PREDICATES_0: Path=/api/issues/**
+      SPRING_CLOUD_GATEWAY_ROUTES_4_PREDICATES_1: Method=PUT
+      SPRING_CLOUD_GATEWAY_ROUTES_4_FILTERS_0: StripPrefix=0
+
+      # COMMENTA ISSUE (POST /api/issues/*/comments)
+      SPRING_CLOUD_GATEWAY_ROUTES_5_ID: commenta-issue-service
+      SPRING_CLOUD_GATEWAY_ROUTES_5_URI: http://commenta-issue-service:${SERVER_PORT_COMMENTA_ISSUE}
+      SPRING_CLOUD_GATEWAY_ROUTES_5_PREDICATES_0: Path=/api/issues/*/comments
+      SPRING_CLOUD_GATEWAY_ROUTES_5_PREDICATES_1: Method=POST
+      SPRING_CLOUD_GATEWAY_ROUTES_5_FILTERS_0: StripPrefix=0
       
       # JWT Secret also needed for Gateway if it parses tokens
       JWT_SECRET: ${JWT_SECRET}
+
+      # CORS Configuration
+      SPRING_CLOUD_GATEWAY_GLOBALCORS_CORSCONFIGURATIONS_[/**]_ALLOWEDORIGINS: "*"
+      SPRING_CLOUD_GATEWAY_GLOBALCORS_CORSCONFIGURATIONS_[/**]_ALLOWEDMETHODS: "GET,POST,PUT,DELETE,OPTIONS"
+      SPRING_CLOUD_GATEWAY_GLOBALCORS_CORSCONFIGURATIONS_[/**]_ALLOWEDHEADERS: "*"
+      SPRING_CLOUD_GATEWAY_GLOBALCORS_CORSCONFIGURATIONS_[/**]_EXPOSEDHEADERS: "Authorization"
+      SPRING_CLOUD_GATEWAY_GLOBALCORS_CORSCONFIGURATIONS_[/**]_MAXAGE: 3600
 
   login-service:
     build:
@@ -73,17 +104,71 @@ services:
       SPRING_JPA_HIBERNATE_DIALECT: ${DB_DIALECT}
       JWT_SECRET: ${JWT_SECRET}
 
-  issue-service:
+  inserimento-issue-service:
     build:
       context: .
-      dockerfile: Issue-service/Dockerfile
-    container_name: issue-service
+      dockerfile: InserimentoIssue-service/Dockerfile
+    container_name: inserimento-issue-service
     ports:
-      - "${SERVER_PORT_ISSUE}:${SERVER_PORT_ISSUE}"
+      - "${SERVER_PORT_INSERIMENTO_ISSUE}:${SERVER_PORT_INSERIMENTO_ISSUE}"
     networks:
       - bugboard-network
     environment:
-      SERVER_PORT: ${SERVER_PORT_ISSUE}
+      SERVER_PORT: ${SERVER_PORT_INSERIMENTO_ISSUE}
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: ${DB_DRIVER}
+      SPRING_JPA_HIBERNATE_DIALECT: ${DB_DIALECT}
+      JWT_SECRET: ${JWT_SECRET}
+
+  recupero-issue-service:
+    build:
+      context: .
+      dockerfile: RecuperoIssue-service/Dockerfile
+    container_name: recupero-issue-service
+    ports:
+      - "${SERVER_PORT_RECUPERO_ISSUE}:${SERVER_PORT_RECUPERO_ISSUE}"
+    networks:
+      - bugboard-network
+    environment:
+      SERVER_PORT: ${SERVER_PORT_RECUPERO_ISSUE}
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: ${DB_DRIVER}
+      SPRING_JPA_HIBERNATE_DIALECT: ${DB_DIALECT}
+      JWT_SECRET: ${JWT_SECRET}
+
+  modifica-issue-service:
+    build:
+      context: .
+      dockerfile: ModificaIssue-service/Dockerfile
+    container_name: modifica-issue-service
+    ports:
+      - "${SERVER_PORT_MODIFICA_ISSUE}:${SERVER_PORT_MODIFICA_ISSUE}"
+    networks:
+      - bugboard-network
+    environment:
+      SERVER_PORT: ${SERVER_PORT_MODIFICA_ISSUE}
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: ${DB_DRIVER}
+      SPRING_JPA_HIBERNATE_DIALECT: ${DB_DIALECT}
+      JWT_SECRET: ${JWT_SECRET}
+
+  commenta-issue-service:
+    build:
+      context: .
+      dockerfile: CommentaIssue-service/Dockerfile
+    container_name: commenta-issue-service
+    ports:
+      - "${SERVER_PORT_COMMENTA_ISSUE}:${SERVER_PORT_COMMENTA_ISSUE}"
+    networks:
+      - bugboard-network
+    environment:
+      SERVER_PORT: ${SERVER_PORT_COMMENTA_ISSUE}
       SPRING_DATASOURCE_URL: ${DB_URL}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}

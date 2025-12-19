@@ -260,7 +260,9 @@ public class MyIssuesController implements Initializable {
             Button btnEdit = new Button("Modifica Issue");
             btnEdit.getStyleClass().add("issue-card__btn");
             btnEdit.setOnAction(e -> {
-                System.out.println("Modifica issue " + issue.getIdIssue());
+                SceneRouter.apriPopupModifica(issue, () -> {
+                    caricaIssues(currentPage); // Refresh page
+                });
             });
             buttonsContainer.getChildren().add(btnEdit);
         }

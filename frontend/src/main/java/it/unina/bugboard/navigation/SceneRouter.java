@@ -34,12 +34,11 @@ public final class SceneRouter {
             sessionManager);
     private static final Map<Class<?>, Callback<Class<?>, Object>> controllerFactories = new HashMap<>();
 
-    // Stack per la cronologia
     private static final Stack<SceneData> history = new Stack<>();
     private static SceneData currentSceneData;
 
-    // Variabile per passare l'ID dell'issue tra scene
     private static Integer currentIssueId;
+    private static boolean currentEditMode = false;
 
     static {
         controllerFactories.put(LoginController.class, param -> new LoginController(loginApiService, sessionManager));
@@ -65,18 +64,26 @@ public final class SceneRouter {
     }
 
     public static void cambiaScena(String fxml, double width, double height, String title) {
-        eseguiCambioScena(fxml, width, height, title, null);
+        eseguiCambioScena(fxml, width, height, title, null, false);
     }
 
     // NUOVO METODO
     public static void cambiaScenaConIssue(String fxml, double width, double height, String title, Integer issueId) {
         currentIssueId = issueId; // Set static for immediate use by controller factory/init if needed
-        eseguiCambioScena(fxml, width, height, title, issueId);
+        eseguiCambioScena(fxml, width, height, title, issueId, false);
     }
 
-    private static void eseguiCambioScena(String fxml, double width, double height, String title, Integer issueId) {
+    public static void cambiaScenaModificaIssue(String fxml, double width, double height, String title,
+            Integer issueId) {
+        currentIssueId = issueId;
+        eseguiCambioScena(fxml, width, height, title, issueId, true);
+    }
+
+    private static void eseguiCambioScena(String fxml, double width, double height, String title, Integer issueId,
+            boolean editMode) {
         pushHistory();
         currentSceneData = new SceneData(fxml, width, height, title, issueId);
+        currentEditMode = editMode;
         try {
             caricaScena(fxml, width, height, title);
         } catch (Exception e) {
@@ -107,10 +114,6 @@ public final class SceneRouter {
         }
     }
 
-    /*
-     * HELPER per mostrare Alert collegate allo Stage principale (FIX Mac Fullscreen
-     * crash)
-     */
     public static void mostraAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         if (primaryStage != null && primaryStage.isShowing()) {
@@ -124,7 +127,7 @@ public final class SceneRouter {
 
     private static void mostraMessaggioErrore(String fxml, Exception e) {
         e.printStackTrace();
-        // Usiamo il nuovo helper per garantire che l'alert abbia un owner
+
         String msg = "Impossibile caricare " + fxml + "\n" + e.getMessage();
         if (e.getCause() != null) {
             msg += "\nCausa: " + e.getCause().getMessage();
@@ -153,27 +156,25 @@ public final class SceneRouter {
             javafx.scene.Parent root = loader.load();
 
             if (currentIssueId != null && loader.getController() instanceof DettaglioIssueController) {
-                ((DettaglioIssueController) loader.getController()).setIssueId(currentIssueId);
-
+                DettaglioIssueController controller = (DettaglioIssueController) loader.getController();
+                controller.setIssueId(currentIssueId);
+                controller.setModificaMode(currentEditMode);
             }
 
+            currentEditMode = false;
+
             if (primaryStage.getScene() == null) {
-                // Primo caricamento
+
                 Scene scene = new Scene(root, width, height);
                 primaryStage.setTitle(title);
                 setupGlobalShortcuts(scene);
                 primaryStage.setScene(scene);
             } else {
-                // Scena già esistente: sostituiamo solo la root per mantenere dimensioni e
-                // stato (Fullscreen)
+
                 primaryStage.getScene().setRoot(root);
                 primaryStage.setTitle(title);
                 setupGlobalShortcuts(primaryStage.getScene());
 
-                // NOTA: Non reimpostiamo width/height qui per evitare di uscire dal Fullscreen
-                // su Mac/Windows
-                // Se servisse ridimensionare forzatamente in windowed mode, bisognerebbe
-                // controllare !primaryStage.isFullScreen()
                 if (!primaryStage.isFullScreen() && !primaryStage.isMaximized()) {
                     primaryStage.setWidth(width);
                     primaryStage.setHeight(height);
@@ -226,6 +227,34 @@ public final class SceneRouter {
                 tornaIndietro();
             }
         });
+    }
+
+    public static void apriPopupModifica(it.unina.bugboard.dto.IssueDTO issue, Runnable onSaveSuccess) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    BugBoard.class.getResource("/it/unina/bugboard/fxml/modifica_issue_popup.fxml"));
+
+            javafx.scene.Parent root = loader.load();
+
+            Object controllerObj = loader.getController();
+            if (controllerObj instanceof it.unina.bugboard.popup.ModificaIssuePopupController) {
+                it.unina.bugboard.popup.ModificaIssuePopupController controller = (it.unina.bugboard.popup.ModificaIssuePopupController) controllerObj;
+                controller.setApiService(issueApiService);
+                controller.setData(issue, onSaveSuccess);
+            }
+
+            Stage popupStage = new Stage();
+            popupStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            popupStage.initOwner(primaryStage);
+            popupStage.setTitle("Modifica Issue: " + issue.getTitolo());
+            popupStage.setScene(new Scene(root));
+            popupStage.setResizable(false);
+            popupStage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostraAlert(Alert.AlertType.ERROR, "Errore", "Impossibile aprire popup", e.getMessage());
+        }
     }
 
     private static class SceneData {
