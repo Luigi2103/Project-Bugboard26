@@ -22,8 +22,8 @@ public class InsertUserApiService {
     }
 
     public RispostaInserimentoUser inserisciUtente(String nome, String cognome, String codiceFiscale,
-                                                   char sesso, LocalDate dataNascita, String username,
-                                                   String password, String email, boolean isAdmin) {
+            char sesso, LocalDate dataNascita, String username,
+            String password, String email, boolean isAdmin) {
 
         try {
             Map<String, Object> insertData = getMap(nome, cognome, codiceFiscale, sesso, dataNascita,
@@ -33,7 +33,7 @@ public class InsertUserApiService {
             String token = this.sessionManager.getToken();
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8080/api/inserimentoUtente"))
+                    .uri(URI.create("http://localhost:8080/api/users"))
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + token)
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
@@ -48,7 +48,7 @@ public class InsertUserApiService {
     }
 
     private static Map<String, Object> getMap(String nome, String cognome, String codiceFiscale, char sesso,
-                                              LocalDate dataNascita, String username, String password, String email, boolean isAdmin) {
+            LocalDate dataNascita, String username, String password, String email, boolean isAdmin) {
         Map<String, Object> insertData = new HashMap<>();
         insertData.put("nome", nome);
         insertData.put("cognome", cognome);

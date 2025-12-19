@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/inserimentoUtente")
+@RequestMapping("/api/users")
 public class InserimentoUtenteController {
 
     private final InserimentoUtenteService inserimentoUtenteService;
@@ -26,9 +26,9 @@ public class InserimentoUtenteController {
         RispostaInserimentoUtente risposta = inserimentoUtenteService.inserisciUtente(richiesta);
 
         if (risposta.isSuccess()) {
-            return ResponseEntity.status(201).body(risposta);  // 201 Created
+            return ResponseEntity.status(201).body(risposta);
         } else {
-            return ResponseEntity.status(400).body(risposta);  // 400 Bad Request
+            return ResponseEntity.status(400).body(risposta);
         }
     }
 }

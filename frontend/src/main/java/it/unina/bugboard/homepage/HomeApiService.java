@@ -2,13 +2,14 @@ package it.unina.bugboard.homepage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.unina.bugboard.common.SessionManager;
-import it.unina.bugboard.dto.RichiestaRecuperoIssue;
 import it.unina.bugboard.dto.RispostaRecuperoIssue;
 
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,16 +27,32 @@ public class HomeApiService {
     public RispostaRecuperoIssue recuperaIssues(Integer idProgetto, Integer idAssegnatario, Integer page, String sortBy,
             String sortDirection) {
         try {
-            RichiestaRecuperoIssue richiesta = new RichiestaRecuperoIssue(idProgetto, idAssegnatario, page, 6, sortBy,
-                    sortDirection);
+            StringBuilder queryParams = new StringBuilder();
+            queryParams.append("?size=6");
 
-            String jsonBody = objectMapper.writeValueAsString(richiesta);
+            if (page != null) {
+                queryParams.append("&page=").append(page);
+            }
+            if (idProgetto != null) {
+                queryParams.append("&idProgetto=").append(idProgetto);
+            }
+            if (idAssegnatario != null) {
+                queryParams.append("&idAssegnatario=").append(idAssegnatario);
+            }
+            if (sortBy != null) {
+                queryParams.append("&sortBy=").append(URLEncoder.encode(sortBy, StandardCharsets.UTF_8));
+            }
+            if (sortDirection != null) {
+                queryParams.append("&sortDirection=").append(URLEncoder.encode(sortDirection, StandardCharsets.UTF_8));
+            }
+
+            String url = "http://localhost:8080/api/issues" + queryParams.toString();
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8080/api/issue/recupera"))
+                    .uri(URI.create(url))
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + sessionManager.getToken())
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                    .GET()
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -62,5 +79,4 @@ public class HomeApiService {
             return errorResponse;
         }
     }
-
 }

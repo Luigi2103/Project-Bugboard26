@@ -26,20 +26,20 @@ public class IssueApiService {
 
     public RispostaDettaglioIssue recuperaDettaglio(Integer idIssue) {
         try {
-            RichiestaDettaglioIssue richiesta = new RichiestaDettaglioIssue(idIssue);
-            String jsonBody = objectMapper.writeValueAsString(richiesta);
+            String url = "http://localhost:8080/api/issues/" + idIssue;
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8080/api/issue/dettaglio"))
+                    .uri(URI.create(url))
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + sessionManager.getToken())
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                    .GET()
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                logger.log(Level.SEVERE, "Errore durante il recupero del dettaglio issue: HTTP {0}", response.statusCode());
+                logger.log(Level.SEVERE, "Errore durante il recupero del dettaglio issue: HTTP {0}",
+                        response.statusCode());
             }
 
             return objectMapper.readValue(response.body(), RispostaDettaglioIssue.class);
@@ -62,10 +62,13 @@ public class IssueApiService {
 
     public RispostaInserimentoCommentoIssue inserisciCommento(RichiestaInserimentoCommentoIssue richiesta) {
         try {
+            Integer idIssue = richiesta.getIdIssue();
             String jsonBody = objectMapper.writeValueAsString(richiesta);
 
+            String url = "http://localhost:8080/api/issues/" + idIssue + "/comments";
+
             HttpRequest.Builder builder = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8080/api/issue/commento"))
+                    .uri(URI.create(url))
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + sessionManager.getToken())
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody));

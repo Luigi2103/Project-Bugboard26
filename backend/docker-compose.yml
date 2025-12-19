@@ -24,12 +24,12 @@ services:
       
       SPRING_CLOUD_GATEWAY_ROUTES_1_ID: inserimento-utente-service
       SPRING_CLOUD_GATEWAY_ROUTES_1_URI: http://inserimento-utente-service:${SERVER_PORT_INSERIMENTO}
-      SPRING_CLOUD_GATEWAY_ROUTES_1_PREDICATES_0: Path=/api/inserimentoUtente/**
+      SPRING_CLOUD_GATEWAY_ROUTES_1_PREDICATES_0: Path=/api/users/**
       SPRING_CLOUD_GATEWAY_ROUTES_1_FILTERS_0: StripPrefix=0
       
       SPRING_CLOUD_GATEWAY_ROUTES_2_ID: issue-service
       SPRING_CLOUD_GATEWAY_ROUTES_2_URI: http://issue-service:${SERVER_PORT_ISSUE}
-      SPRING_CLOUD_GATEWAY_ROUTES_2_PREDICATES_0: Path=/api/issue/**
+      SPRING_CLOUD_GATEWAY_ROUTES_2_PREDICATES_0: Path=/api/issues/**
       SPRING_CLOUD_GATEWAY_ROUTES_2_FILTERS_0: StripPrefix=0
       
       # JWT Secret also needed for Gateway if it parses tokens
