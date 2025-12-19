@@ -1,0 +1,10 @@
+**/target/
+**/*.class
+**/.git
+**/.idea
+**/*.iml
+**/mvnw
+**/mvnw.cmd
+**/.mvn
+Dockerfile
+docker-compose.yml

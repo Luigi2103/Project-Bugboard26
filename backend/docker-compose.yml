@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - login-service
+      - inserimento-utente-service
+      - issue-service
+    networks:
+      - bugboard-network
+    environment:
+      SERVER_PORT: ${SERVER_PORT_GATEWAY}
+      # Override routes to use docker service names
+      SPRING_CLOUD_GATEWAY_ROUTES_0_ID: login-service
+      SPRING_CLOUD_GATEWAY_ROUTES_0_URI: http://login-service:${SERVER_PORT_LOGIN}
+      SPRING_CLOUD_GATEWAY_ROUTES_0_PREDICATES_0: Path=/api/auth/**
+      SPRING_CLOUD_GATEWAY_ROUTES_0_FILTERS_0: StripPrefix=0
+      
+      SPRING_CLOUD_GATEWAY_ROUTES_1_ID: inserimento-utente-service
+      SPRING_CLOUD_GATEWAY_ROUTES_1_URI: http://inserimento-utente-service:${SERVER_PORT_INSERIMENTO}
+      SPRING_CLOUD_GATEWAY_ROUTES_1_PREDICATES_0: Path=/api/inserimentoUtente/**
+      SPRING_CLOUD_GATEWAY_ROUTES_1_FILTERS_0: StripPrefix=0
+      
+      SPRING_CLOUD_GATEWAY_ROUTES_2_ID: issue-service
+      SPRING_CLOUD_GATEWAY_ROUTES_2_URI: http://issue-service:${SERVER_PORT_ISSUE}
+      SPRING_CLOUD_GATEWAY_ROUTES_2_PREDICATES_0: Path=/api/issue/**
+      SPRING_CLOUD_GATEWAY_ROUTES_2_FILTERS_0: StripPrefix=0
+      
+      # JWT Secret also needed for Gateway if it parses tokens
+      JWT_SECRET: ${JWT_SECRET}
+
+  login-service:
+    build:
+      context: .
+      dockerfile: login-service/Dockerfile
+    container_name: login-service
+    ports:
+      - "${SERVER_PORT_LOGIN}:${SERVER_PORT_LOGIN}"
+    networks:
+      - bugboard-network
+    environment:
+      SERVER_PORT: ${SERVER_PORT_LOGIN}
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: ${DB_DRIVER}
+      SPRING_JPA_HIBERNATE_DIALECT: ${DB_DIALECT}
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+      JWT_SECRET: ${JWT_SECRET}
+
+  inserimento-utente-service:
+    build:
+      context: .
+      dockerfile: InserimentoUtente-service/Dockerfile
+    container_name: inserimento-utente-service
+    ports:
+      - "${SERVER_PORT_INSERIMENTO}:${SERVER_PORT_INSERIMENTO}"
+    networks:
+      - bugboard-network
+    environment:
+      SERVER_PORT: ${SERVER_PORT_INSERIMENTO}
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: ${DB_DRIVER}
+      SPRING_JPA_HIBERNATE_DIALECT: ${DB_DIALECT}
+      JWT_SECRET: ${JWT_SECRET}
+
+  issue-service:
+    build:
+      context: .
+      dockerfile: Issue-service/Dockerfile
+    container_name: issue-service
+    ports:
+      - "${SERVER_PORT_ISSUE}:${SERVER_PORT_ISSUE}"
+    networks:
+      - bugboard-network
+    environment:
+      SERVER_PORT: ${SERVER_PORT_ISSUE}
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: ${DB_DRIVER}
+      SPRING_JPA_HIBERNATE_DIALECT: ${DB_DIALECT}
+      JWT_SECRET: ${JWT_SECRET}
+
+networks:
+  bugboard-network:
+    driver: bridge
