@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/issue")
+@RequestMapping("/api/issues")
 public class IssueController {
 
     private final RecuperoIssueService recuperoIssueService;
@@ -30,7 +30,7 @@ public class IssueController {
         this.inserimentoIssueService = inserimentoIssueService;
     }
 
-    @PostMapping("/inserimento")
+    @PostMapping
     public ResponseEntity<RispostaInserimentoIssue> inserisciIssue(@RequestBody RichiestaInserimentoIssue richiesta) {
         RispostaInserimentoIssue risposta = inserimentoIssueService.insert(richiesta);
 
@@ -41,8 +41,8 @@ public class IssueController {
         }
     }
 
-    @PostMapping("/recupera")
-    public ResponseEntity<RispostaRecuperoIssue> recuperaIssue(@RequestBody RichiestaRecuperoIssue richiesta) {
+    @GetMapping
+    public ResponseEntity<RispostaRecuperoIssue> recuperaIssue(@ModelAttribute RichiestaRecuperoIssue richiesta) {
         RispostaRecuperoIssue risposta = recuperoIssueService.recuperaIssue(richiesta);
         if (risposta.isSuccess()) {
             return ResponseEntity.ok(risposta);
@@ -51,8 +51,9 @@ public class IssueController {
         }
     }
 
-    @PostMapping("/dettaglio")
-    public ResponseEntity<RispostaDettaglioIssue> dettaglioIssue(@RequestBody RichiestaDettaglioIssue richiesta) {
+    @GetMapping("/{id}")
+    public ResponseEntity<RispostaDettaglioIssue> dettaglioIssue(@PathVariable Integer id) {
+        RichiestaDettaglioIssue richiesta = new RichiestaDettaglioIssue(id);
         RispostaDettaglioIssue risposta = dettaglioIssueService.recuperaDettaglioIssue(richiesta);
         if (risposta.isSuccess()) {
             return ResponseEntity.ok(risposta);
@@ -61,11 +62,13 @@ public class IssueController {
         }
     }
 
-    @PostMapping("/commento")
+    @PostMapping("/{id}/comments")
     public ResponseEntity<RispostaInserimentoCommentoIssue> inserisciCommento(
+            @PathVariable Integer id,
             @RequestBody RichiestaInserimentoCommentoIssue richiesta,
             @RequestHeader("X-User-Id") Long userId) {
 
+        richiesta.setIdIssue(id);
         RispostaInserimentoCommentoIssue risposta = inserimentoCommentoService.inserisciCommento(richiesta, userId);
         if (risposta.isSuccess()) {
             return ResponseEntity.status(201).body(risposta);
