@@ -42,7 +42,6 @@ public class InserimentoIssueServiceImpl implements InserimentoIssueService {
             return new RispostaInserimentoIssue("Issue inserita con successo", true);
 
         } catch (Exception e) {
-            e.printStackTrace();
             return new RispostaInserimentoIssue("Errore durante l'inserimento: " + e.getMessage(), false);
         }
     }

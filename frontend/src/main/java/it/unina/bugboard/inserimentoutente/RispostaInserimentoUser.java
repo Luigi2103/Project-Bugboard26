@@ -6,7 +6,7 @@ public class RispostaInserimentoUser {
 
     private boolean success;
     private String message;
-    private Map<String, String> fieldErrors;  // ✓ NUOVO
+    private Map<String, String> fieldErrors;
 
     public RispostaInserimentoUser() {}
 

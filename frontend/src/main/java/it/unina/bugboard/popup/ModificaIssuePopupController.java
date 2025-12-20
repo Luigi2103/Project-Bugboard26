@@ -9,11 +9,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import lombok.Setter;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 public class ModificaIssuePopupController implements Initializable {
+
+    private static final Logger LOGGER = Logger.getLogger(ModificaIssuePopupController.class.getName());
 
     @FXML
     private Label lblTitolo;
@@ -26,16 +31,13 @@ public class ModificaIssuePopupController implements Initializable {
     @FXML
     private Button btnAnnulla;
 
+    @Setter
     private IssueApiService apiService;
     private IssueDTO currentIssue;
     private Runnable onSuccessCallback;
 
     private String initialStato;
     private String initialPriorita;
-
-    public void setApiService(IssueApiService apiService) {
-        this.apiService = apiService;
-    }
 
     public void setData(IssueDTO issue, Runnable onSuccess) {
         this.currentIssue = issue;
@@ -49,16 +51,13 @@ public class ModificaIssuePopupController implements Initializable {
 
             if (cmbStato != null) {
                 cmbStato.setValue(initialStato);
-                // Listener per cambiamenti
                 cmbStato.valueProperty().addListener((obs, oldVal, newVal) -> checkChanges());
             }
             if (cmbPriorita != null) {
                 cmbPriorita.setValue(initialPriorita);
-                // Listener per cambiamenti
                 cmbPriorita.valueProperty().addListener((obs, oldVal, newVal) -> checkChanges());
             }
 
-            // Disabilita inizialmente il pulsante salva
             btnSalva.setDisable(true);
         }
     }
@@ -70,19 +69,14 @@ public class ModificaIssuePopupController implements Initializable {
         String currentStato = cmbStato.getValue();
         String currentPriorita = cmbPriorita.getValue();
 
-        boolean statoChanged = !isSame(currentStato, initialStato);
-        boolean prioritaChanged = !isSame(currentPriorita, initialPriorita);
+        boolean statoChanged = isDifferent(currentStato, initialStato);
+        boolean prioritaChanged = isDifferent(currentPriorita, initialPriorita);
 
-        // Abilita salva solo se qualcosa è cambiato
         btnSalva.setDisable(!(statoChanged || prioritaChanged));
     }
 
-    private boolean isSame(String s1, String s2) {
-        if (s1 == null && s2 == null)
-            return true;
-        if (s1 == null || s2 == null)
-            return false;
-        return s1.equals(s2);
+    private boolean isDifferent(String s1, String s2) {
+        return !Objects.equals(s1, s2);
     }
 
     @Override
@@ -111,8 +105,8 @@ public class ModificaIssuePopupController implements Initializable {
             }
             chiudi();
         } else {
-            // TODO: Mostrare errore? Per ora stampiamo
-            System.err.println("Errore modifica: " + (res != null ? res.getMessage() : "Unknown"));
+            String errorMessage = res != null ? res.getMessage() : "Unknown";
+            LOGGER.log(java.util.logging.Level.SEVERE, "Errore modifica: {0}", errorMessage);
         }
     }
 

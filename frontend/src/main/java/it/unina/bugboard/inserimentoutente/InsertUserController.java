@@ -87,36 +87,48 @@ public class InsertUserController {
     private boolean confermaPasswordVisibile = false;
     private final BooleanProperty isLoading = new SimpleBooleanProperty(false);
 
+    // REFACTORED: Reduced parameters by grouping related data
     private static class DatiUtente {
+        final DatiAnagrafici anagrafici;
+        final DatiAccesso accesso;
+        final boolean isAdmin;
+
+        DatiUtente(DatiAnagrafici anagrafici, DatiAccesso accesso, boolean isAdmin) {
+            this.anagrafici = anagrafici;
+            this.accesso = accesso;
+            this.isAdmin = isAdmin;
+        }
+
+        static DatiUtente fromForm(DatiAnagrafici anagrafici, DatiAccesso accesso, boolean isAdmin) {
+            return new DatiUtente(anagrafici, accesso, isAdmin);
+        }
+    }
+
+    private static class DatiAnagrafici {
         final String nome;
         final String cognome;
         final String codiceFiscale;
-        final String username;
-        final String password;
-        final String email;
         final char sesso;
         final LocalDate dataNascita;
-        final boolean isAdmin;
 
-        DatiUtente(String nome, String cognome, String codiceFiscale, char sesso,
-                LocalDate dataNascita, String username, String password,
-                String email, boolean isAdmin) {
+        DatiAnagrafici(String nome, String cognome, String codiceFiscale, char sesso, LocalDate dataNascita) {
             this.nome = nome;
             this.cognome = cognome;
             this.codiceFiscale = codiceFiscale;
             this.sesso = sesso;
             this.dataNascita = dataNascita;
+        }
+    }
+
+    private static class DatiAccesso {
+        final String username;
+        final String password;
+        final String email;
+
+        DatiAccesso(String username, String password, String email) {
             this.username = username;
             this.password = password;
             this.email = email;
-            this.isAdmin = isAdmin;
-        }
-
-        static DatiUtente fromForm(String nome, String cognome, String codiceFiscale,
-                char sesso, LocalDate dataNascita, String username,
-                String password, String email, boolean isAdmin) {
-            return new DatiUtente(nome, cognome, codiceFiscale, sesso, dataNascita,
-                    username, password, email, isAdmin);
         }
     }
 
@@ -338,16 +350,19 @@ public class InsertUserController {
         if (!eseguiValidazioni())
             return;
 
-        DatiUtente dati = DatiUtente.fromForm(
+        DatiAnagrafici anagrafici = new DatiAnagrafici(
                 campoNome.getText(),
                 campoCognome.getText(),
                 campoCodiceFiscale.getText(),
                 comboSesso.getValue().charAt(0),
-                campoDataNascita.getValue(),
+                campoDataNascita.getValue());
+
+        DatiAccesso accesso = new DatiAccesso(
                 campoUsername.getText(),
                 campoPassword.getText(),
-                campoEmail.getText(),
-                toggleAdmin.isSelected());
+                campoEmail.getText());
+
+        DatiUtente dati = DatiUtente.fromForm(anagrafici, accesso, toggleAdmin.isSelected());
 
         isLoading.set(true);
         new Thread(() -> inviaRischiestaInserimentoUtente(dati)).start();
@@ -373,11 +388,19 @@ public class InsertUserController {
         return true;
     }
 
+    // REFACTORED: Now uses grouped data objects
     private void inviaRischiestaInserimentoUtente(DatiUtente dati) {
         try {
             RispostaInserimentoUser risposta = insertUserApiService.inserisciUtente(
-                    dati.nome, dati.cognome, dati.codiceFiscale, dati.sesso, dati.dataNascita,
-                    dati.username, dati.password, dati.email, dati.isAdmin);
+                    dati.anagrafici.nome,
+                    dati.anagrafici.cognome,
+                    dati.anagrafici.codiceFiscale,
+                    dati.anagrafici.sesso,
+                    dati.anagrafici.dataNascita,
+                    dati.accesso.username,
+                    dati.accesso.password,
+                    dati.accesso.email,
+                    dati.isAdmin);
 
             Platform.runLater(() -> {
                 isLoading.set(false);
@@ -431,13 +454,13 @@ public class InsertUserController {
 
         if (risposta.getFieldErrors() != null && !risposta.getFieldErrors().isEmpty()) {
             messaggioErrore.append("\n\nDettagli:\n");
-            risposta.getFieldErrors().forEach((campo, errore) -> {
-                messaggioErrore.append("• ")
-                        .append(campo)
-                        .append(": ")
-                        .append(errore)
-                        .append("\n");
-            });
+            risposta.getFieldErrors().forEach((campo, errore) ->
+                    messaggioErrore.append("• ")
+                            .append(campo)
+                            .append(": ")
+                            .append(errore)
+                            .append("\n")
+            );
         }
 
         return messaggioErrore.toString();
