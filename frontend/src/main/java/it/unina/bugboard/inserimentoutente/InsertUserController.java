@@ -87,50 +87,7 @@ public class InsertUserController {
     private boolean confermaPasswordVisibile = false;
     private final BooleanProperty isLoading = new SimpleBooleanProperty(false);
 
-    // REFACTORED: Reduced parameters by grouping related data
-    private static class DatiUtente {
-        final DatiAnagrafici anagrafici;
-        final DatiAccesso accesso;
-        final boolean isAdmin;
 
-        DatiUtente(DatiAnagrafici anagrafici, DatiAccesso accesso, boolean isAdmin) {
-            this.anagrafici = anagrafici;
-            this.accesso = accesso;
-            this.isAdmin = isAdmin;
-        }
-
-        static DatiUtente fromForm(DatiAnagrafici anagrafici, DatiAccesso accesso, boolean isAdmin) {
-            return new DatiUtente(anagrafici, accesso, isAdmin);
-        }
-    }
-
-    private static class DatiAnagrafici {
-        final String nome;
-        final String cognome;
-        final String codiceFiscale;
-        final char sesso;
-        final LocalDate dataNascita;
-
-        DatiAnagrafici(String nome, String cognome, String codiceFiscale, char sesso, LocalDate dataNascita) {
-            this.nome = nome;
-            this.cognome = cognome;
-            this.codiceFiscale = codiceFiscale;
-            this.sesso = sesso;
-            this.dataNascita = dataNascita;
-        }
-    }
-
-    private static class DatiAccesso {
-        final String username;
-        final String password;
-        final String email;
-
-        DatiAccesso(String username, String password, String email) {
-            this.username = username;
-            this.password = password;
-            this.email = email;
-        }
-    }
 
     public InsertUserController(InsertUserApiService insertUserApiService) {
         this.insertUserApiService = insertUserApiService;
@@ -350,19 +307,20 @@ public class InsertUserController {
         if (!eseguiValidazioni())
             return;
 
-        DatiAnagrafici anagrafici = new DatiAnagrafici(
+        InsertUserApiService.DatiAnagrafici anagrafici = new InsertUserApiService.DatiAnagrafici(
                 campoNome.getText(),
                 campoCognome.getText(),
                 campoCodiceFiscale.getText(),
                 comboSesso.getValue().charAt(0),
                 campoDataNascita.getValue());
 
-        DatiAccesso accesso = new DatiAccesso(
+        InsertUserApiService.DatiAccesso accesso = new InsertUserApiService.DatiAccesso(
                 campoUsername.getText(),
                 campoPassword.getText(),
                 campoEmail.getText());
 
-        DatiUtente dati = DatiUtente.fromForm(anagrafici, accesso, toggleAdmin.isSelected());
+        InsertUserApiService.DatiUtente dati = new InsertUserApiService.DatiUtente(
+                anagrafici, accesso, toggleAdmin.isSelected());
 
         isLoading.set(true);
         new Thread(() -> inviaRischiestaInserimentoUtente(dati)).start();
@@ -388,19 +346,10 @@ public class InsertUserController {
         return true;
     }
 
-    // REFACTORED: Now uses grouped data objects
-    private void inviaRischiestaInserimentoUtente(DatiUtente dati) {
+    // REFACTORED: Now uses grouped data objects from the API service
+    private void inviaRischiestaInserimentoUtente(InsertUserApiService.DatiUtente dati) {
         try {
-            RispostaInserimentoUser risposta = insertUserApiService.inserisciUtente(
-                    dati.anagrafici.nome,
-                    dati.anagrafici.cognome,
-                    dati.anagrafici.codiceFiscale,
-                    dati.anagrafici.sesso,
-                    dati.anagrafici.dataNascita,
-                    dati.accesso.username,
-                    dati.accesso.password,
-                    dati.accesso.email,
-                    dati.isAdmin);
+            RispostaInserimentoUser risposta = insertUserApiService.inserisciUtente(dati);
 
             Platform.runLater(() -> {
                 isLoading.set(false);
