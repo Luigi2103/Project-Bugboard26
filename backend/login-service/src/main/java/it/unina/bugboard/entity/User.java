@@ -1,6 +1,13 @@
 package it.unina.bugboard.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@Getter
+@Setter
+@NoArgsConstructor
+
 
 @Entity
 @Table(name = "Utente")
@@ -15,6 +22,7 @@ public class User extends BasicUser {
     private String email;
 
     @Column(nullable = false, name = "isadmin")
+    @JsonProperty("isAdmin")
     private boolean isAdmin;
 
     @Column(name = "nome")
@@ -23,52 +31,10 @@ public class User extends BasicUser {
     @Column(name = "cognome")
     private String cognome;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public User(String username, String passwordHash, String email, boolean isAdmin) {
         super(username, passwordHash);
         this.email = email;
         this.isAdmin = isAdmin;
-    }
-
-    public User() {
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getCognome() {
-        return cognome;
-    }
-
-    public void setCognome(String cognome) {
-        this.cognome = cognome;
     }
 }

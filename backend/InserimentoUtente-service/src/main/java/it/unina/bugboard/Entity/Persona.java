@@ -3,6 +3,14 @@ package it.unina.bugboard.entity;
 import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
 
 @MappedSuperclass
 public abstract class Persona {
@@ -16,55 +24,4 @@ public abstract class Persona {
     private char sesso;
     @Column(nullable = false, name = "datadinascita")
     private LocalDate dataNascita;
-
-    protected Persona(String nome, String cognome, String codiceFiscale, char sesso, LocalDate dataNascita) {
-        this.nome = nome;
-        this.cognome = cognome;
-        this.codiceFiscale = codiceFiscale;
-        this.sesso = sesso;
-        this.dataNascita = dataNascita;
-    }
-
-    protected Persona() {
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getCognome() {
-        return cognome;
-    }
-
-    public void setCognome(String cognome) {
-        this.cognome = cognome;
-    }
-
-    public String getCodiceFiscale() {
-        return codiceFiscale;
-    }
-
-    public void setCodiceFiscale(String codiceFiscale) {
-        this.codiceFiscale = codiceFiscale;
-    }
-
-    public char getSesso() {
-        return sesso;
-    }
-
-    public void setSesso(char sesso) {
-        this.sesso = sesso;
-    }
-
-    public LocalDate getDataNascita() {
-        return dataNascita;
-    }
-
-    public void setDataNascita(LocalDate dataNascita) {
-        this.dataNascita = dataNascita;
-    }
 }
