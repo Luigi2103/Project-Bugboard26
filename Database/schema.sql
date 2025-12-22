@@ -382,3 +382,38 @@ CREATE TRIGGER trg_check_maggiorenne
     BEFORE INSERT OR UPDATE ON Utente
     FOR EACH ROW
 EXECUTE FUNCTION check_maggiorenne();
+
+
+CREATE OR REPLACE FUNCTION log_solo_assegnazione()
+RETURNS TRIGGER AS $$
+DECLARE
+nome_utente VARCHAR;
+    cognome_utente VARCHAR;
+BEGIN
+    IF NEW.IdAssegnatario IS NOT NULL AND
+       (TG_OP = 'INSERT' OR NEW.IdAssegnatario IS DISTINCT FROM OLD.IdAssegnatario) THEN
+
+SELECT Nome, Cognome INTO nome_utente, cognome_utente
+FROM Utente
+WHERE IdUtente = NEW.IdAssegnatario;
+
+INSERT INTO Cronologia (Data, Descrizione, IdUtente, IdIssue)
+VALUES (
+                   CURRENT_TIMESTAMP,
+                   'Issue assegnata a ' || nome_utente || ' ' || cognome_utente,
+                   NEW.IdAssegnatario,
+                   NEW.IdIssue
+       );
+
+END IF;
+
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_log_assegnazione ON Issue;
+
+CREATE TRIGGER trg_log_assegnazione
+    AFTER INSERT OR UPDATE ON Issue
+                        FOR EACH ROW
+                        EXECUTE FUNCTION log_solo_assegnazione();
