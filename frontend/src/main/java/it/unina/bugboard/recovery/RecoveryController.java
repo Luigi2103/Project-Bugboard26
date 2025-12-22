@@ -113,7 +113,6 @@ public class RecoveryController implements Initializable {
             contenitoreRecovery.setPadding(new javafx.geometry.Insets(30, 40, 30, 40));
         }
 
-        // Logica di scaling
         double baseWidth = 1200.0;
         double baseHeight = 800.0;
 
@@ -122,7 +121,6 @@ public class RecoveryController implements Initializable {
 
         double scale = Math.min(scaleX, scaleY);
 
-        // Usa Math.clamp (Java 21+)
         scale = Math.clamp(scale, 1.0, 1.3);
 
         contenitoreRecovery.setScaleX(scale);
@@ -179,9 +177,8 @@ public class RecoveryController implements Initializable {
         aggiornaVisibilitaCampo(visibile, toggleNuovaPassword, campoNuovaPassword, campoNuovaPasswordVisibile);
     }
 
-    // Metodo estratto per eliminare duplicazione
     private void aggiornaVisibilitaCampo(boolean visibile, Button toggleButton,
-                                         PasswordField campoPassword, TextField campoVisibile) {
+            PasswordField campoPassword, TextField campoVisibile) {
         aggiornaIconaToggle(toggleButton, visibile);
 
         campoPassword.setVisible(!visibile);
@@ -297,20 +294,23 @@ public class RecoveryController implements Initializable {
     }
 
     private boolean validaPassword() {
+
+        if (campoPassword.getText().length() < 8) {
+            mostraErrore(errorePassword, "La password deve essere di almeno 8 caratteri");
+            setErrorStyle(campoPassword);
+            setErrorStyle(campoPasswordVisibile);
+            animaShake();
+            return false;
+        }
+
         if (!campoNuovaPassword.getText().equals(campoPassword.getText())) {
-            mostraErrore(erroreNuovaPassword, "Password non valida");
-            applicaStileErrore();
+            mostraErrore(erroreNuovaPassword, "Le password non coincidono");
+            setErrorStyle(campoNuovaPassword);
+            setErrorStyle(campoNuovaPasswordVisibile);
             animaShake();
             return false;
         }
         return true;
-    }
-
-    private void applicaStileErrore() {
-        setErrorStyle(campoPassword);
-        setErrorStyle(campoNuovaPassword);
-        setErrorStyle(campoPasswordVisibile);
-        setErrorStyle(campoNuovaPasswordVisibile);
     }
 
     private void eseguiAggiornamentoPassword() {
