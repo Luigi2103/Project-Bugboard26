@@ -78,7 +78,6 @@ public class RecuperoIssueServiceImpl implements RecuperoIssueService {
             return response;
 
         } catch (Exception e) {
-            e.printStackTrace();
             return new RispostaRecuperoIssue(false, "Errore durante il recupero: " + e.getMessage(), null);
         }
     }
@@ -104,7 +103,6 @@ public class RecuperoIssueServiceImpl implements RecuperoIssueService {
             return new RispostaDettaglioIssue(true, "Issue recuperata con successo", dto, foto, commentiDTO);
 
         } catch (Exception e) {
-            e.printStackTrace();
             return new RispostaDettaglioIssue(false, "Errore durante il recupero: " + e.getMessage(), null, null, null);
         }
     }

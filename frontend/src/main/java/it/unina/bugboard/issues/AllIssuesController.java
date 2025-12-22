@@ -133,12 +133,8 @@ public class AllIssuesController implements Initializable {
 
     private void renderIssues() {
         boxIssues.getChildren().clear();
-        if (currentIssues == null || currentIssues.isEmpty()) {
-            Label noIssues = new Label("Nessuna issue trovata.");
-            noIssues.getStyleClass().add("placeholder-text");
-            boxIssues.getChildren().add(noIssues);
+        if (currentIssues == null || currentIssues.isEmpty())
             return;
-        }
 
         for (IssueDTO issue : currentIssues) {
             HBox issueRow = creaIssueRow(issue);

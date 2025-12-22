@@ -16,7 +16,8 @@ public class InserimentoUtenteImplementation implements InserimentoUtenteService
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public InserimentoUtenteImplementation(RepositoryInserimentoUtente utenteRepository, PasswordEncoder passwordEncoder) {
+    public InserimentoUtenteImplementation(RepositoryInserimentoUtente utenteRepository,
+                                           PasswordEncoder passwordEncoder) {
         this.inserimentoUtente = utenteRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -36,7 +37,7 @@ public class InserimentoUtenteImplementation implements InserimentoUtenteService
         }
 
         try {
-            Utente nuovoUtente = new Utente.Builder()
+            Utente nuovoUtente = Utente.builder()
                     .nome(richiesta.getNome())
                     .cognome(richiesta.getCognome())
                     .codiceFiscale(richiesta.getCodiceFiscale().toUpperCase())
@@ -45,7 +46,7 @@ public class InserimentoUtenteImplementation implements InserimentoUtenteService
                     .username(richiesta.getUsername())
                     .password(passwordEncoder.encode(richiesta.getPassword()))
                     .mail(richiesta.getMail().toLowerCase())
-                    .isAdmin(richiesta.getIsAdmin())
+                    .isAdmin(richiesta.isAdmin())
                     .build();
 
             inserimentoUtente.save(nuovoUtente);

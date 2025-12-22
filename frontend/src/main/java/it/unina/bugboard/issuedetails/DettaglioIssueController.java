@@ -89,27 +89,19 @@ public class DettaglioIssueController implements Initializable {
             btnInvia.disableProperty().bind(txtNuovoCommento.textProperty().isEmpty());
         }
 
-        inizializzaComboBoxes();
-
-        if (imageFoto != null) {
-            imageFoto.setOnMouseEntered(e -> imageFoto.setCursor(javafx.scene.Cursor.HAND));
-            imageFoto.setOnMouseExited(e -> imageFoto.setCursor(javafx.scene.Cursor.DEFAULT));
-            imageFoto.setOnMouseClicked(e -> {
-                if (imageFoto.getImage() != null) {
-                    apriImmagineIngrandita(imageFoto.getImage());
-                }
-            });
+        if (imageFoto != null && imageContainer != null) {
+            imageFoto.fitWidthProperty().bind(imageContainer.widthProperty().subtract(20));
         }
+
+        inizializzaComboBoxes();
     }
 
     private void inizializzaComboBoxes() {
         if (cmbStato != null) {
             cmbStato.getItems().addAll("TO-DO", "IN PROGRESS", "RESOLVED", "CLOSED");
-            cmbStato.valueProperty().addListener((obs, oldVal, newVal) -> checkChanges());
         }
         if (cmbPriorita != null) {
             cmbPriorita.getItems().addAll("BASSA", "MEDIA", "ALTA", "MASSIMA");
-            cmbPriorita.valueProperty().addListener((obs, oldVal, newVal) -> checkChanges());
         }
     }
 
@@ -118,41 +110,10 @@ public class DettaglioIssueController implements Initializable {
             abilitaModifica();
     }
 
-    private String initialStato;
-    private String initialPriorita;
-
     @FXML
     private void abilitaModifica() {
-
-        this.initialStato = labelStato.getText();
-        this.initialPriorita = labelPriorita.getText();
-
         toggleBottoniModifica(true);
         toggleCampiModifica(true);
-
-        if (cmbStato != null) {
-            cmbStato.setValue(this.initialStato);
-        }
-        if (cmbPriorita != null) {
-            cmbPriorita.setValue(this.initialPriorita);
-        }
-
-        checkChanges();
-    }
-
-    private void checkChanges() {
-        if (btnSalva == null || cmbStato == null || cmbPriorita == null)
-            return;
-
-        String currentStato = cmbStato.getValue();
-        String currentPriorita = cmbPriorita.getValue();
-
-        boolean changed = isDifferent(currentStato, initialStato) || isDifferent(currentPriorita, initialPriorita);
-        btnSalva.setDisable(!changed);
-    }
-
-    private boolean isDifferent(String s1, String s2) {
-        return s1 != null ? !s1.equals(s2) : s2 != null;
     }
 
     @FXML
@@ -218,8 +179,7 @@ public class DettaglioIssueController implements Initializable {
         toggleCampoModifica(labelPriorita, cmbPriorita, modalitaModifica);
     }
 
-    private void toggleCampoModifica(Label label, javafx.scene.control.ComboBox<String> combo,
-            boolean modalitaModifica) {
+    private void toggleCampoModifica(Label label, javafx.scene.control.ComboBox<String> combo, boolean modalitaModifica) {
         if (label != null && combo != null) {
             if (modalitaModifica) {
                 combo.setValue(label.getText());
@@ -545,26 +505,5 @@ public class DettaglioIssueController implements Initializable {
         String autore = (c.getNomeUtente() != null ? c.getNomeUtente() : "") + " "
                 + (c.getCognomeUtente() != null ? c.getCognomeUtente() : "");
         return autore.trim().isEmpty() ? "Tu" : autore;
-    }
-
-    private void apriImmagineIngrandita(Image image) {
-        if (image == null)
-            return;
-
-        javafx.stage.Stage stage = new javafx.stage.Stage();
-        stage.setTitle("Visualizzazione Immagine");
-
-        ImageView imageView = new ImageView(image);
-        imageView.setPreserveRatio(true);
-
-        javafx.scene.layout.StackPane root = new javafx.scene.layout.StackPane(imageView);
-        root.setStyle("-fx-background-color: rgba(0,0,0,0.9);");
-
-        imageView.fitWidthProperty().bind(root.widthProperty());
-        imageView.fitHeightProperty().bind(root.heightProperty());
-
-        javafx.scene.Scene scene = new javafx.scene.Scene(root, 1000, 800);
-        stage.setScene(scene);
-        stage.show();
     }
 }

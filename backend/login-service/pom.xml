@@ -5,7 +5,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Parent corretto -->
+
     <parent>
         <groupId>it.unina.bugboard</groupId>
         <artifactId>backend</artifactId>
@@ -53,6 +53,12 @@
             <groupId>it.unina.bugboard</groupId>
             <artifactId>jwt-common</artifactId>
             <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
         </dependency>
 
     </dependencies>

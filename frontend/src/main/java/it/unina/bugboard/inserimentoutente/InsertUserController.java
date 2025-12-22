@@ -87,6 +87,8 @@ public class InsertUserController {
     private boolean confermaPasswordVisibile = false;
     private final BooleanProperty isLoading = new SimpleBooleanProperty(false);
 
+
+
     public InsertUserController(InsertUserApiService insertUserApiService) {
         this.insertUserApiService = insertUserApiService;
     }
@@ -97,59 +99,7 @@ public class InsertUserController {
         pulsanteCancella.disableProperty().bind(createTuttiCampiVuotiBinding());
         pulsanteRegistra.disableProperty().bind(createAlmenoUnCampoVuotoBinding().or(isLoading));
         inizializzaListenerRuolo();
-        campoDataNascita.setEditable(true);
-
-        // Define format pattern
-        String pattern = "dd/MM/yyyy";
-        java.time.format.DateTimeFormatter dateFormatter = java.time.format.DateTimeFormatter.ofPattern(pattern);
-
-        // Set StringConverter for DatePicker
-        campoDataNascita.setConverter(new javafx.util.StringConverter<LocalDate>() {
-            @Override
-            public String toString(LocalDate date) {
-                if (date != null) {
-                    return dateFormatter.format(date);
-                } else {
-                    return "";
-                }
-            }
-
-            @Override
-            public LocalDate fromString(String string) {
-                if (string != null && !string.isEmpty()) {
-                    try {
-                        return LocalDate.parse(string, dateFormatter);
-                    } catch (Exception e) {
-                        return null;
-                    }
-                }
-                return null;
-            }
-        });
-
-        javafx.scene.control.TextFormatter<String> formatter = new javafx.scene.control.TextFormatter<>(change -> {
-            if (!change.isContentChange()) {
-                return change;
-            }
-
-            String newText = change.getControlNewText();
-
-            if (!newText.matches("[0-9/]*") || newText.length() > 10) {
-                return null;
-            }
-
-            if (change.isAdded()) {
-                if (newText.length() == 2 || newText.length() == 5) {
-                    change.setText(change.getText() + "/");
-                    change.setCaretPosition(change.getCaretPosition() + 1);
-                    change.setAnchor(change.getAnchor() + 1);
-                }
-            }
-
-            return change;
-        });
-        campoDataNascita.getEditor().setTextFormatter(formatter);
-
+        campoDataNascita.setEditable(false);
         inizializzaTogglePassword();
         gestisciResponsive();
         configuraNavigazioneEnter();
@@ -396,6 +346,7 @@ public class InsertUserController {
         return true;
     }
 
+    // REFACTORED: Now uses grouped data objects from the API service
     private void inviaRischiestaInserimentoUtente(InsertUserApiService.DatiUtente dati) {
         try {
             RispostaInserimentoUser risposta = insertUserApiService.inserisciUtente(dati);
@@ -452,11 +403,13 @@ public class InsertUserController {
 
         if (risposta.getFieldErrors() != null && !risposta.getFieldErrors().isEmpty()) {
             messaggioErrore.append("\n\nDettagli:\n");
-            risposta.getFieldErrors().forEach((campo, errore) -> messaggioErrore.append("• ")
-                    .append(campo)
-                    .append(": ")
-                    .append(errore)
-                    .append("\n"));
+            risposta.getFieldErrors().forEach((campo, errore) ->
+                    messaggioErrore.append("• ")
+                            .append(campo)
+                            .append(": ")
+                            .append(errore)
+                            .append("\n")
+            );
         }
 
         return messaggioErrore.toString();
