@@ -28,9 +28,9 @@
             <Label text="Dettaglio Issue" styleClass="page-title"/>
             <Region HBox.hgrow="ALWAYS"/>
             <HBox spacing="10" alignment="CENTER_RIGHT">
-                <Button fx:id="btnModifica" text="Modifica" onAction="#abilitaModifica" styleClass="action-button" style="-fx-background-color: #2980B9; -fx-text-fill: white;"/>
-                <Button fx:id="btnSalva" text="Salva" onAction="#salvaModifiche" visible="false" managed="false" styleClass="action-button" style="-fx-background-color: #27AE60; -fx-text-fill: white;"/>
-                <Button fx:id="btnAnnulla" text="Annulla" onAction="#annullaModifiche" visible="false" managed="false" styleClass="action-button" style="-fx-background-color: #7F8C8D; -fx-text-fill: white;"/>
+                <Button fx:id="btnModifica" text="Modifica" onAction="#abilitaModifica" styleClass="action-button"/>
+                <Button fx:id="btnSalva" text="Salva" onAction="#salvaModifiche" visible="false" managed="false" styleClass="save-btn"/>
+                <Button fx:id="btnAnnulla" text="Annulla" onAction="#annullaModifiche" visible="false" managed="false" styleClass="cancel-btn"/>
             </HBox>
         </HBox>
     </top>
@@ -53,7 +53,8 @@
                         <Label fx:id="labelDataCreazione" styleClass="issue-date" text="Aperta il: ..."/>
 
                         <!-- Status/Priority/Type Row -->
-                        <VBox spacing="10">
+                        <!-- Status/Priority/Type Row -->
+                        <FlowPane hgap="20" vgap="10">
                             <!-- STATO -->
                             <HBox alignment="CENTER_LEFT" spacing="10">
                                 <Label text="Stato :" styleClass="field-label" style="-fx-font-weight: bold;"/>
@@ -73,7 +74,7 @@
                                 <Label fx:id="labelPriorita" text="ALTA" styleClass="status-badge" style="-fx-background-color: #F8D7DA; -fx-text-fill: #721C24;"/>
                                 <javafx.scene.control.ComboBox fx:id="cmbPriorita" visible="false" managed="false"/>
                             </HBox>
-                        </VBox>
+                        </FlowPane>
                     </VBox>
 
                     <Region prefHeight="10" />
@@ -93,7 +94,7 @@
                     <VBox spacing="5" fx:id="imageContainer">
                         <Label text="Allegato" styleClass="section-label" style="-fx-font-weight: bold;"/>
                         <Label fx:id="labelNoAllegati" text="Non sono presenti allegati" visible="false" managed="false"/>
-                        <ImageView fx:id="imageFoto" preserveRatio="true"/>
+                        <ImageView fx:id="imageFoto" preserveRatio="true" fitHeight="300"/>
                     </VBox>
 
                 </VBox>
@@ -117,7 +118,7 @@
                         <Label text="Scrivi un commento" styleClass="section-label" style="-fx-font-size: 12px;"/>
                         <javafx.scene.control.TextArea fx:id="txtNuovoCommento" promptText="Inserisci il tuo commento qui..." wrapText="true" prefHeight="60"/>
                         <HBox alignment="CENTER_RIGHT">
-                            <Button fx:id="btnInvia" text="Invia" onAction="#inviaCommento" styleClass="action-button" style="-fx-background-color: #2980B9; -fx-text-fill: white;"/>
+                            <Button fx:id="btnInvia" text="Invia" onAction="#inviaCommento" styleClass="small-action-button"/>
                         </HBox>
                     </VBox>
                 </VBox>

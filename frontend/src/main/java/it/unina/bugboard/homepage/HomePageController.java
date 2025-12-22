@@ -86,10 +86,12 @@ public class HomePageController implements Initializable {
 
             if (count == 0) {
                 Label noIssues = new Label("Nessuna issue assegnata.");
+                noIssues.getStyleClass().add("placeholder-text");
                 boxIssues.getChildren().add(noIssues);
             }
         } else {
             Label noIssues = new Label("Nessuna issue assegnata o errore nel caricamento.");
+            noIssues.getStyleClass().add("placeholder-text");
             boxIssues.getChildren().add(noIssues);
         }
     }

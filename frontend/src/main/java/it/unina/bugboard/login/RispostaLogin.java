@@ -4,19 +4,19 @@ public class RispostaLogin {
     private boolean success;
     private String message;
     private String modalita;
-    private Long id_utente;
+    private Long idUtente;
 
     private String token;
 
     public RispostaLogin() {
     }
 
-    public RispostaLogin(boolean success, String message, String modalita, String token, Long id_utente) {
+    public RispostaLogin(boolean success, String message, String modalita, String token, Long idUtente) {
         this.success = success;
         this.message = message;
         this.modalita = modalita;
         this.token = token;
-        this.id_utente = id_utente;
+        this.idUtente = idUtente;
     }
 
     public boolean isSuccess() {
@@ -52,10 +52,10 @@ public class RispostaLogin {
     }
 
     public Long getIdUtente() {
-        return id_utente;
+        return idUtente;
     }
 
-    public void setIdUtente(Long id_utente) {
-        this.id_utente = id_utente;
+    public void setIdUtente(Long idUtente) {
+        this.idUtente = idUtente;
     }
 }

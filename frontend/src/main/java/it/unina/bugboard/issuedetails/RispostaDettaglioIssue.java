@@ -15,6 +15,7 @@ public class RispostaDettaglioIssue {
     private List<CommentoDTO> commenti;
 
     public RispostaDettaglioIssue() {
+        //costruttore vuoto
     }
 
     public boolean isSuccess() {

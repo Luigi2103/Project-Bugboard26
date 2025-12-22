@@ -24,6 +24,10 @@ import java.util.ResourceBundle;
 
 public class AllIssuesController implements Initializable {
 
+    private static final String SORT_BY_DATA_CREAZIONE = "dataCreazione";
+    private static final String SORT_DIRECTION_DESC = "DESC";
+    private static final String SORT_DIRECTION_ASC = "ASC";
+
     @FXML
     private VBox boxIssues;
     @FXML
@@ -37,7 +41,6 @@ public class AllIssuesController implements Initializable {
     @FXML
     private ComboBox<SortOption> sortComboBox;
 
-    // Store current issues for client-side sorting
     private List<IssueDTO> currentIssues = new ArrayList<>();
 
     private final HomeApiService homeApiService;
@@ -65,15 +68,15 @@ public class AllIssuesController implements Initializable {
 
     private void inizializzaOrdinamento() {
         sortComboBox.getItems().addAll(
-                new SortOption("Più recenti", "dataCreazione", "DESC"),
-                new SortOption("Meno recenti", "dataCreazione", "ASC"),
-                new SortOption("Priorità (Alta-Bassa)", "priorita", "DESC"),
-                new SortOption("Priorità (Bassa-Alta)", "priorita", "ASC"),
-                new SortOption("Tipologia", "tipologia", "ASC"),
-                new SortOption("Stato", "stato", "ASC"));
+                new SortOption("Più recenti", SORT_BY_DATA_CREAZIONE, SORT_DIRECTION_DESC),
+                new SortOption("Meno recenti", SORT_BY_DATA_CREAZIONE, SORT_DIRECTION_ASC),
+                new SortOption("Priorità (Alta-Bassa)", "priorita", SORT_DIRECTION_DESC),
+                new SortOption("Priorità (Bassa-Alta)", "priorita", SORT_DIRECTION_ASC),
+                new SortOption("Tipologia", "tipologia", SORT_DIRECTION_ASC),
+                new SortOption("Stato", "stato", SORT_DIRECTION_ASC));
 
         sortComboBox.getSelectionModel().select(0);
-        sortComboBox.setOnAction(e -> caricaIssues(0)); // Reload from first page on sort change
+        sortComboBox.setOnAction(e -> caricaIssues(0));
     }
 
     private static class SortOption {
@@ -131,6 +134,9 @@ public class AllIssuesController implements Initializable {
     private void renderIssues() {
         boxIssues.getChildren().clear();
         if (currentIssues == null || currentIssues.isEmpty()) {
+            Label noIssues = new Label("Nessuna issue trovata.");
+            noIssues.getStyleClass().add("placeholder-text");
+            boxIssues.getChildren().add(noIssues);
             return;
         }
 
@@ -141,63 +147,71 @@ public class AllIssuesController implements Initializable {
     }
 
     private void caricaIssues(int page) {
-        // Show loading state
-        boxIssues.getChildren().clear();
-        Label loadingLabel = new Label("Caricamento in corso...");
-        loadingLabel.setStyle("-fx-text-fill: gray; -fx-font-style: italic; -fx-padding: 20;");
-        boxIssues.getChildren().add(loadingLabel);
+        mostraLoadingIndicator();
 
-        // Read sorting parameters
         SortOption selectedSort = sortComboBox.getSelectionModel().getSelectedItem();
-        String sortBy = selectedSort != null ? selectedSort.getSortBy() : "dataCreazione";
-        String sortDirection = selectedSort != null ? selectedSort.getSortDirection() : "DESC";
+        String sortBy = selectedSort != null ? selectedSort.getSortBy() : SORT_BY_DATA_CREAZIONE;
+        String sortDirection = selectedSort != null ? selectedSort.getSortDirection() : SORT_DIRECTION_DESC;
 
         Long userId = sessionManager.getUserId();
         if (userId == null)
             return;
 
-        // Run in background thread to avoid blocking UI
         new Thread(() -> {
             RispostaRecuperoIssue response = homeApiService.recuperaIssues(1, null, page, sortBy, sortDirection);
 
-            // Update UI on JavaFX Application Thread
-            javafx.application.Platform.runLater(() -> {
-                if (response != null && response.isSuccess() && response.getIssues() != null) {
-                    this.currentIssues = response.getIssues();
-
-                    this.currentPage = page;
-                    this.totalPages = response.getTotalPages();
-                    if (this.totalPages == 0)
-                        this.totalPages = 1;
-
-                    labelPagina.setText("Pagina " + (currentPage + 1) + " di " + totalPages);
-
-                    btnPrev.setDisable(currentPage == 0);
-                    btnNext.setDisable(currentPage >= totalPages - 1);
-
-                    renderIssues();
-                } else {
-                    boxIssues.getChildren().clear();
-                    Label errorLabel = new Label("Impossibile caricare le issue.");
-                    errorLabel.getStyleClass().add("danger-text");
-                    boxIssues.getChildren().add(errorLabel);
-                }
-            });
+            javafx.application.Platform.runLater(() -> processaRisposta(response, page));
         }).start();
+    }
+
+    private void mostraLoadingIndicator() {
+        boxIssues.getChildren().clear();
+        Label loadingLabel = new Label("Caricamento in corso...");
+        loadingLabel.setStyle("-fx-text-fill: gray; -fx-font-style: italic; -fx-padding: 20;");
+        boxIssues.getChildren().add(loadingLabel);
+    }
+
+    private void processaRisposta(RispostaRecuperoIssue response, int page) {
+        if (response != null && response.isSuccess() && response.getIssues() != null) {
+            mostraIssues(response, page);
+        } else {
+            mostraErrore();
+        }
+    }
+
+    private void mostraIssues(RispostaRecuperoIssue response, int page) {
+        this.currentIssues = response.getIssues();
+        aggiornaPaginazione(page, response.getTotalPages());
+        renderIssues();
+    }
+
+    private void aggiornaPaginazione(int page, int totalPages) {
+        this.currentPage = page;
+        this.totalPages = totalPages == 0 ? 1 : totalPages;
+
+        labelPagina.setText("Pagina " + (currentPage + 1) + " di " + this.totalPages);
+
+        btnPrev.setDisable(currentPage == 0);
+        btnNext.setDisable(currentPage >= this.totalPages - 1);
+    }
+
+    private void mostraErrore() {
+        boxIssues.getChildren().clear();
+        Label errorLabel = new Label("Impossibile caricare le issue.");
+        errorLabel.getStyleClass().add("danger-text");
+        boxIssues.getChildren().add(errorLabel);
     }
 
     @FXML
     private void paginaPrecedente() {
-        if (currentPage > 0) {
+        if (currentPage > 0)
             caricaIssues(currentPage - 1);
-        }
     }
 
     @FXML
     private void paginaSuccessiva() {
-        if (currentPage < totalPages - 1) {
+        if (currentPage < totalPages - 1)
             caricaIssues(currentPage + 1);
-        }
     }
 
     @FXML
@@ -211,26 +225,23 @@ public class AllIssuesController implements Initializable {
         row.setSpacing(20);
         row.setAlignment(Pos.CENTER_LEFT);
 
+        VBox content = creaContenutoIssue(issue);
+        VBox buttonsContainer = creaBottoniIssue(issue);
+
+        row.getChildren().addAll(content, buttonsContainer);
+        return row;
+    }
+
+    private VBox creaContenutoIssue(IssueDTO issue) {
         VBox content = new VBox();
         content.setSpacing(5);
         HBox.setHgrow(content, Priority.ALWAYS);
 
-        // Title
         Label title = new Label(issue.getTitolo());
         title.getStyleClass().add("issue-card__title");
 
-        // Assignee
-        String assigneeName = "Non assegnata";
-        if (issue.getNomeAssegnatario() != null) {
-            assigneeName = issue.getNomeAssegnatario() + " "
-                    + (issue.getCognomeAssegnatario() != null ? issue.getCognomeAssegnatario() : "");
-        } else if (issue.getIdAssegnatario() != null) {
-            assigneeName = "ID: " + issue.getIdAssegnatario();
-        }
-        Label assigneeLabel = new Label("Assegnata a: " + assigneeName);
-        assigneeLabel.setStyle("-fx-text-fill: #3498DB; -fx-font-size: 13px; -fx-font-weight: bold;");
+        Label assigneeLabel = creaAssegnataLabel(issue);
 
-        // Description
         Label desc = new Label(issue.getDescrizione());
         desc.getStyleClass().add("issue-card__desc");
         desc.setWrapText(true);
@@ -238,90 +249,132 @@ public class AllIssuesController implements Initializable {
         content.getChildren().addAll(title, assigneeLabel, desc);
 
         if (issue.getTags() != null && !issue.getTags().isEmpty()) {
-            FlowPane tagsContainer = new FlowPane();
-            tagsContainer.setHgap(10);
-            for (String tag : issue.getTags()) {
-                Label tagLabel = new Label(tag);
-                tagLabel.setStyle(
-                        "-fx-background-color: #EBF5FB; -fx-text-fill: #2980B9; -fx-padding: 3 8; -fx-background-radius: 12; -fx-border-color: #A9CCE3; -fx-border-radius: 12;");
-                tagsContainer.getChildren().add(tagLabel);
-            }
+            FlowPane tagsContainer = creaTagsContainer(issue);
             content.getChildren().add(tagsContainer);
         }
 
-        Button btnAction = new Button("Dettagli");
-        btnAction.getStyleClass().add("issue-card__btn");
-        btnAction.setOnAction(e -> {
-            SceneRouter.cambiaScenaConIssue(
-                    "/it/unina/bugboard/fxml/issue_details.fxml",
-                    1200, 800,
-                    "BugBoard - Dettaglio Issue #" + issue.getIdIssue(),
-                    issue.getIdIssue());
-        });
+        return content;
+    }
 
+    private Label creaAssegnataLabel(IssueDTO issue) {
+        String assigneeName = determineAssigneeName(issue);
+        Label assigneeLabel = new Label("Assegnata a: " + assigneeName);
+        assigneeLabel.setStyle("-fx-text-fill: #3498DB; -fx-font-size: 13px; -fx-font-weight: bold;");
+        return assigneeLabel;
+    }
+
+    private String determineAssigneeName(IssueDTO issue) {
+        if (issue.getNomeAssegnatario() != null) {
+            return issue.getNomeAssegnatario() + " "
+                    + (issue.getCognomeAssegnatario() != null ? issue.getCognomeAssegnatario() : "");
+        } else if (issue.getIdAssegnatario() != null) {
+            return "ID: " + issue.getIdAssegnatario();
+        }
+        return "Non assegnata";
+    }
+
+    private FlowPane creaTagsContainer(IssueDTO issue) {
+        FlowPane tagsContainer = new FlowPane();
+        tagsContainer.setHgap(10);
+        for (String tag : issue.getTags()) {
+            Label tagLabel = new Label(tag);
+            tagLabel.setStyle(
+                    "-fx-background-color: #EBF5FB; -fx-text-fill: #2980B9; -fx-padding: 3 8; -fx-background-radius: 12; -fx-border-color: #A9CCE3; -fx-border-radius: 12;");
+            tagsContainer.getChildren().add(tagLabel);
+        }
+        return tagsContainer;
+    }
+
+    private VBox creaBottoniIssue(IssueDTO issue) {
         VBox buttonsContainer = new VBox(10);
         buttonsContainer.setAlignment(Pos.CENTER_RIGHT);
+
+        Button btnAction = creaBottoneDettagli(issue);
         buttonsContainer.getChildren().add(btnAction);
 
         if (sessionManager.isAdmin()) {
-            Button btnEdit = new Button("Modifica Issue");
-            btnEdit.getStyleClass().add("issue-card__btn");
-
-            btnEdit.setOnAction(e -> {
-                SceneRouter.apriPopupModifica(issue, () -> {
-                    caricaIssues(currentPage); // Refresh page
-                });
-            });
+            Button btnEdit = creaBottoneModifica(issue);
             buttonsContainer.getChildren().add(btnEdit);
         }
 
-        // --- BADGES ROW (Under Buttons) ---
+        HBox badgesBox = creaBadges(issue);
+        buttonsContainer.getChildren().add(badgesBox);
+
+        return buttonsContainer;
+    }
+
+    private Button creaBottoneDettagli(IssueDTO issue) {
+        Button btnAction = new Button("Dettagli");
+        btnAction.getStyleClass().add("issue-card__btn");
+        btnAction.setOnAction(e -> SceneRouter.cambiaScenaConIssue(
+                "/it/unina/bugboard/fxml/issue_details.fxml",
+                1200, 800,
+                "BugBoard - Dettaglio Issue #" + issue.getIdIssue(),
+                issue.getIdIssue()));
+        return btnAction;
+    }
+
+    private Button creaBottoneModifica(IssueDTO issue) {
+        Button btnEdit = new Button("Modifica Issue");
+        btnEdit.getStyleClass().add("issue-card__btn");
+        btnEdit.setOnAction(e -> SceneRouter.apriPopupModifica(issue, () -> caricaIssues(currentPage)));
+        return btnEdit;
+    }
+
+    private HBox creaBadges(IssueDTO issue) {
         HBox badgesBox = new HBox(10);
         badgesBox.setAlignment(Pos.CENTER_RIGHT);
-        // badgesBox.setPadding(new javafx.geometry.Insets(10, 0, 0, 0));
 
-        // 1. Tipologia
+        Label typeBadge = creaTipologiaBadge(issue);
+        Label statusBadge = creaStatoBadge(issue);
+        Label priorityBadge = creaPrioritaBadge(issue);
+
+        badgesBox.getChildren().addAll(typeBadge, statusBadge, priorityBadge);
+        return badgesBox;
+    }
+
+    private Label creaTipologiaBadge(IssueDTO issue) {
         Label typeBadge = new Label(issue.getTipologia());
         typeBadge.setStyle(
                 "-fx-background-color: #D1ECF1; -fx-text-fill: #0C5460; -fx-padding: 5 12; -fx-background-radius: 15; -fx-font-weight: bold; -fx-font-size: 11px;");
+        return typeBadge;
+    }
 
-        // 2. Stato
+    private Label creaStatoBadge(IssueDTO issue) {
         Label statusBadge = new Label(issue.getStato());
-        String statusColor = "#FFF3CD"; // Default APERTA (Yellow)
-        String statusText = "#856404";
-        if ("CHIUSA".equalsIgnoreCase(issue.getStato())) {
-            statusColor = "#D4EDDA"; // Green
-            statusText = "#155724";
-        } else if ("IN_CORSO".equalsIgnoreCase(issue.getStato()) || "IN PROGRESS".equalsIgnoreCase(issue.getStato())) {
-            statusColor = "#CCE5FF"; // Blue
-            statusText = "#004085";
-        }
-        statusBadge.setStyle("-fx-background-color: " + statusColor + "; -fx-text-fill: " + statusText
+        String[] colors = determineStatusColors(issue.getStato());
+        statusBadge.setStyle("-fx-background-color: " + colors[0] + "; -fx-text-fill: " + colors[1]
                 + "; -fx-padding: 5 12; -fx-background-radius: 15; -fx-font-weight: bold; -fx-font-size: 11px;");
+        return statusBadge;
+    }
 
-        // 3. Priorità
-        Label priorityBadge = new Label(issue.getPriorita() != null ? issue.getPriorita() : "N/A");
-        String priorityColor = "#E2E3E5"; // Default Gray
-        String priorityText = "#383D41";
-        String p = issue.getPriorita() != null ? issue.getPriorita().toUpperCase() : "";
+    private String[] determineStatusColors(String stato) {
+        if ("CHIUSA".equalsIgnoreCase(stato)) {
+            return new String[] { "#D4EDDA", "#155724" };
+        } else if ("IN_CORSO".equalsIgnoreCase(stato) || "IN PROGRESS".equalsIgnoreCase(stato)) {
+            return new String[] { "#CCE5FF", "#004085" };
+        }
+        return new String[] { "#FFF3CD", "#856404" };
+    }
+
+    private Label creaPrioritaBadge(IssueDTO issue) {
+        String priorita = issue.getPriorita() != null ? issue.getPriorita() : "N/A";
+        Label priorityBadge = new Label(priorita);
+        String[] colors = determinePriorityColors(issue.getPriorita());
+        priorityBadge.setStyle("-fx-background-color: " + colors[0] + "; -fx-text-fill: " + colors[1]
+                + "; -fx-padding: 5 12; -fx-background-radius: 15; -fx-font-weight: bold; -fx-font-size: 11px;");
+        return priorityBadge;
+    }
+
+    private String[] determinePriorityColors(String priorita) {
+        String p = priorita != null ? priorita.toUpperCase() : "";
         if (p.equals("ALTA") || p.equals("MASSIMA")) {
-            priorityColor = "#F8D7DA"; // Red
-            priorityText = "#721C24";
+            return new String[] { "#F8D7DA", "#721C24" };
         } else if (p.equals("MEDIA")) {
-            priorityColor = "#FFF3CD"; // Orange/Yellow
-            priorityText = "#856404";
+            return new String[] { "#FFF3CD", "#856404" };
         } else if (p.equals("BASSA")) {
-            priorityColor = "#D4EDDA"; // Green
-            priorityText = "#155724";
+            return new String[] { "#D4EDDA", "#155724" };
         }
-        priorityBadge.setStyle("-fx-background-color: " + priorityColor + "; -fx-text-fill: " + priorityText
-                + "; -fx-padding: 5 12; -fx-background-radius: 15; -fx-font-weight: bold; -fx-font-size: 11px;");
-
-        badgesBox.getChildren().addAll(typeBadge, statusBadge, priorityBadge);
-        buttonsContainer.getChildren().add(badgesBox);
-        // ----------------------------------
-
-        row.getChildren().addAll(content, buttonsContainer);
-        return row;
+        return new String[] { "#E2E3E5", "#383D41" };
     }
 }

@@ -12,7 +12,9 @@ public class CommentoDTO {
     private String cognomeUtente;
 
     public CommentoDTO() {
+        //costruttore vuoto
     }
+
 
     public Long getIdCommento() {
         return idCommento;

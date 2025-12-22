@@ -20,6 +20,7 @@ public class SessionManager {
     private String cognome;
 
     public SessionManager() {
+        //costruttore vuoto
     }
 
     public String getToken() {

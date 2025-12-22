@@ -23,6 +23,12 @@ import java.util.ResourceBundle;
 
 public class DettaglioIssueController implements Initializable {
 
+    private static final String TIPO_STATO = "STATO";
+    private static final String TIPO_PRIORITA = "PRIORITA";
+    private static final String TIPO_TIPOLOGIA = "TIPOLOGIA";
+
+    private static final Logger LOGGER = Logger.getLogger(DettaglioIssueController.class.getName());
+
     @FXML
     private Label labelTitolo;
     @FXML
@@ -65,11 +71,12 @@ public class DettaglioIssueController implements Initializable {
     private javafx.scene.control.ComboBox<String> cmbStato;
     @FXML
     private javafx.scene.control.ComboBox<String> cmbPriorita;
+    @FXML
+    private javafx.scene.control.ScrollPane scrollPaneCommenti;
 
     private final IssueApiService apiService;
     private final SessionManager sessionManager;
     private Integer issueId;
-    private static final Logger logger = Logger.getLogger(DettaglioIssueController.class.getName());
 
     public DettaglioIssueController(IssueApiService apiService, SessionManager sessionManager) {
         this.apiService = apiService;
@@ -79,59 +86,73 @@ public class DettaglioIssueController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         if (btnInvia != null && txtNuovoCommento != null) {
-            btnInvia.disableProperty().bind(
-                    txtNuovoCommento.textProperty().isEmpty());
+            btnInvia.disableProperty().bind(txtNuovoCommento.textProperty().isEmpty());
         }
 
-        if (imageFoto != null && imageContainer != null) {
-            imageFoto.fitWidthProperty().bind(imageContainer.widthProperty().subtract(20));
-        }
+        inizializzaComboBoxes();
 
-        // Initialize ComboBoxes
+        if (imageFoto != null) {
+            imageFoto.setOnMouseEntered(e -> imageFoto.setCursor(javafx.scene.Cursor.HAND));
+            imageFoto.setOnMouseExited(e -> imageFoto.setCursor(javafx.scene.Cursor.DEFAULT));
+            imageFoto.setOnMouseClicked(e -> {
+                if (imageFoto.getImage() != null) {
+                    apriImmagineIngrandita(imageFoto.getImage());
+                }
+            });
+        }
+    }
+
+    private void inizializzaComboBoxes() {
         if (cmbStato != null) {
             cmbStato.getItems().addAll("TO-DO", "IN PROGRESS", "RESOLVED", "CLOSED");
+            cmbStato.valueProperty().addListener((obs, oldVal, newVal) -> checkChanges());
         }
         if (cmbPriorita != null) {
             cmbPriorita.getItems().addAll("BASSA", "MEDIA", "ALTA", "MASSIMA");
+            cmbPriorita.valueProperty().addListener((obs, oldVal, newVal) -> checkChanges());
         }
     }
 
     public void setModificaMode(boolean attiva) {
-        if (attiva) {
+        if (attiva)
             abilitaModifica();
-        }
     }
+
+    private String initialStato;
+    private String initialPriorita;
 
     @FXML
     private void abilitaModifica() {
-        if (btnModifica != null) {
-            btnModifica.setVisible(false);
-            btnModifica.setManaged(false);
+
+        this.initialStato = labelStato.getText();
+        this.initialPriorita = labelPriorita.getText();
+
+        toggleBottoniModifica(true);
+        toggleCampiModifica(true);
+
+        if (cmbStato != null) {
+            cmbStato.setValue(this.initialStato);
         }
-        if (btnSalva != null) {
-            btnSalva.setVisible(true);
-            btnSalva.setManaged(true);
-        }
-        if (btnAnnulla != null) {
-            btnAnnulla.setVisible(true);
-            btnAnnulla.setManaged(true);
+        if (cmbPriorita != null) {
+            cmbPriorita.setValue(this.initialPriorita);
         }
 
-        if (labelStato != null && cmbStato != null) {
-            cmbStato.setValue(labelStato.getText());
-            labelStato.setVisible(false);
-            labelStato.setManaged(false);
-            cmbStato.setVisible(true);
-            cmbStato.setManaged(true);
-        }
+        checkChanges();
+    }
 
-        if (labelPriorita != null && cmbPriorita != null) {
-            cmbPriorita.setValue(labelPriorita.getText());
-            labelPriorita.setVisible(false);
-            labelPriorita.setManaged(false);
-            cmbPriorita.setVisible(true);
-            cmbPriorita.setManaged(true);
-        }
+    private void checkChanges() {
+        if (btnSalva == null || cmbStato == null || cmbPriorita == null)
+            return;
+
+        String currentStato = cmbStato.getValue();
+        String currentPriorita = cmbPriorita.getValue();
+
+        boolean changed = isDifferent(currentStato, initialStato) || isDifferent(currentPriorita, initialPriorita);
+        btnSalva.setDisable(!changed);
+    }
+
+    private boolean isDifferent(String s1, String s2) {
+        return s1 != null ? !s1.equals(s2) : s2 != null;
     }
 
     @FXML
@@ -150,47 +171,63 @@ public class DettaglioIssueController implements Initializable {
         RispostaDettaglioIssue risposta = apiService.modificaIssue(issueId, nuovoStato, nuovaPriorita);
 
         if (risposta != null && risposta.isSuccess()) {
-            if (risposta.getIssue() != null) {
-                popolaCampi(risposta.getIssue());
-            } else {
-                // If issue is null for some reason, at least update labels locally
-                labelStato.setText(nuovoStato);
-                applicaStileBadge(labelStato, nuovoStato, "STATO");
-                labelPriorita.setText(nuovaPriorita);
-                applicaStileBadge(labelPriorita, nuovaPriorita, "PRIORITA");
-            }
+            aggiornaIssueDopoModifica(risposta, nuovoStato, nuovaPriorita);
             ripristinaVista();
         } else {
             mostraErrore(risposta != null ? risposta.getMessage() : "Errore durante il salvataggio");
         }
     }
 
+    private void aggiornaIssueDopoModifica(RispostaDettaglioIssue risposta, String nuovoStato, String nuovaPriorita) {
+        if (risposta.getIssue() != null) {
+            popolaCampi(risposta.getIssue());
+        } else {
+            aggiornaLabelsLocalmente(nuovoStato, nuovaPriorita);
+        }
+    }
+
+    private void aggiornaLabelsLocalmente(String nuovoStato, String nuovaPriorita) {
+        labelStato.setText(nuovoStato);
+        applicaStileBadge(labelStato, nuovoStato, TIPO_STATO);
+        labelPriorita.setText(nuovaPriorita);
+        applicaStileBadge(labelPriorita, nuovaPriorita, TIPO_PRIORITA);
+    }
+
     private void ripristinaVista() {
+        toggleBottoniModifica(false);
+        toggleCampiModifica(false);
+    }
+
+    private void toggleBottoniModifica(boolean modalitaModifica) {
         if (btnModifica != null) {
-            btnModifica.setVisible(true);
-            btnModifica.setManaged(true);
+            btnModifica.setVisible(!modalitaModifica);
+            btnModifica.setManaged(!modalitaModifica);
         }
         if (btnSalva != null) {
-            btnSalva.setVisible(false);
-            btnSalva.setManaged(false);
+            btnSalva.setVisible(modalitaModifica);
+            btnSalva.setManaged(modalitaModifica);
         }
         if (btnAnnulla != null) {
-            btnAnnulla.setVisible(false);
-            btnAnnulla.setManaged(false);
+            btnAnnulla.setVisible(modalitaModifica);
+            btnAnnulla.setManaged(modalitaModifica);
         }
+    }
 
-        if (labelStato != null && cmbStato != null) {
-            labelStato.setVisible(true);
-            labelStato.setManaged(true);
-            cmbStato.setVisible(false);
-            cmbStato.setManaged(false);
-        }
+    private void toggleCampiModifica(boolean modalitaModifica) {
+        toggleCampoModifica(labelStato, cmbStato, modalitaModifica);
+        toggleCampoModifica(labelPriorita, cmbPriorita, modalitaModifica);
+    }
 
-        if (labelPriorita != null && cmbPriorita != null) {
-            labelPriorita.setVisible(true);
-            labelPriorita.setManaged(true);
-            cmbPriorita.setVisible(false);
-            cmbPriorita.setManaged(false);
+    private void toggleCampoModifica(Label label, javafx.scene.control.ComboBox<String> combo,
+            boolean modalitaModifica) {
+        if (label != null && combo != null) {
+            if (modalitaModifica) {
+                combo.setValue(label.getText());
+            }
+            label.setVisible(!modalitaModifica);
+            label.setManaged(!modalitaModifica);
+            combo.setVisible(modalitaModifica);
+            combo.setManaged(modalitaModifica);
         }
     }
 
@@ -208,38 +245,38 @@ public class DettaglioIssueController implements Initializable {
         RispostaDettaglioIssue risposta = apiService.recuperaDettaglio(issueId);
 
         if (risposta != null && risposta.isSuccess() && risposta.getIssue() != null) {
-            IssueDTO issue = risposta.getIssue();
-            popolaCampi(issue);
-            popolaCommenti(risposta.getCommenti());
-
-            if (risposta.getFoto() != null && risposta.getFoto().length > 0) {
-                mostraImmagine(risposta.getFoto());
-            } else {
-                mostraNoAllegati();
-            }
+            processaRispostaDettaglio(risposta);
         } else {
             mostraErrore(risposta != null ? risposta.getMessage() : "Errore nel caricamento");
         }
     }
 
+    private void processaRispostaDettaglio(RispostaDettaglioIssue risposta) {
+        IssueDTO issue = risposta.getIssue();
+        popolaCampi(issue);
+        popolaCommenti(risposta.getCommenti());
+
+        if (risposta.getFoto() != null && risposta.getFoto().length > 0) {
+            mostraImmagine(risposta.getFoto());
+        } else {
+            mostraNoAllegati();
+        }
+    }
+
     private void popolaCampi(IssueDTO issue) {
         labelTitolo.setText(issue.getTitolo());
-        String data = issue.getDataCreazione();
-        if (data != null && data.contains("T")) {
-            data = data.split("T")[0];
-        } else if (data != null && data.length() > 10) {
-            data = data.substring(0, 10);
-        }
-        labelDataCreazione.setText("Aperta il: " + (data != null ? data : "N/D"));
 
-        labelStato.setText((issue.getStato() != null ? issue.getStato() : ""));
-        applicaStileBadge(labelStato, issue.getStato(), "STATO");
+        String dataFormattata = formattaData(issue.getDataCreazione());
+        labelDataCreazione.setText("Aperta il: " + dataFormattata);
 
-        labelPriorita.setText((issue.getPriorita() != null ? issue.getPriorita() : "N/D"));
-        applicaStileBadge(labelPriorita, issue.getPriorita(), "PRIORITA");
+        labelStato.setText(issue.getStato() != null ? issue.getStato() : "");
+        applicaStileBadge(labelStato, issue.getStato(), TIPO_STATO);
 
-        labelTipologia.setText((issue.getTipologia() != null ? issue.getTipologia() : ""));
-        applicaStileBadge(labelTipologia, issue.getTipologia(), "TIPOLOGIA");
+        labelPriorita.setText(issue.getPriorita() != null ? issue.getPriorita() : "N/D");
+        applicaStileBadge(labelPriorita, issue.getPriorita(), TIPO_PRIORITA);
+
+        labelTipologia.setText(issue.getTipologia() != null ? issue.getTipologia() : "");
+        applicaStileBadge(labelTipologia, issue.getTipologia(), TIPO_TIPOLOGIA);
 
         labelDescrizione.setText(issue.getDescrizione());
 
@@ -247,26 +284,41 @@ public class DettaglioIssueController implements Initializable {
         popolaTags(issue);
     }
 
-    @FXML
-    private javafx.scene.control.ScrollPane scrollPaneCommenti;
+    private String formattaData(String data) {
+        if (data == null)
+            return "N/D";
+        if (data.contains("T")) {
+            return data.split("T")[0];
+        } else if (data.length() > 10) {
+            return data.substring(0, 10);
+        }
+        return data;
+    }
 
     private void popolaCommenti(List<CommentoDTO> commenti) {
         campiCommentiContainer.getChildren().clear();
 
         if (commenti == null || commenti.isEmpty()) {
-            if (placeholderCommenti != null) {
-                placeholderCommenti.setVisible(true);
-                placeholderCommenti.setManaged(true);
-                campiCommentiContainer.getChildren().add(placeholderCommenti);
-            }
+            mostraPlaceholderCommenti();
             return;
         }
 
-        for (it.unina.bugboard.dto.CommentoDTO c : commenti) {
+        for (CommentoDTO c : commenti) {
             campiCommentiContainer.getChildren().add(creaBoxCommento(c));
         }
 
-        // Scroll to bottom
+        scrollToBottomCommenti();
+    }
+
+    private void mostraPlaceholderCommenti() {
+        if (placeholderCommenti != null) {
+            placeholderCommenti.setVisible(true);
+            placeholderCommenti.setManaged(true);
+            campiCommentiContainer.getChildren().add(placeholderCommenti);
+        }
+    }
+
+    private void scrollToBottomCommenti() {
         if (scrollPaneCommenti != null) {
             javafx.application.Platform.runLater(() -> scrollPaneCommenti.setVvalue(1.0));
         }
@@ -309,14 +361,19 @@ public class DettaglioIssueController implements Initializable {
         if (issue.getTags() != null && !issue.getTags().isEmpty()) {
             tagsContainer.getChildren().clear();
             for (String tag : issue.getTags()) {
-                Label tagLabel = new Label(tag);
-                tagLabel.getStyleClass().add("tag-label");
-                tagLabel.setStyle(
-                        "-fx-background-color: #EBF5FB; -fx-text-fill: #2980B9; -fx-padding: 3 8; " +
-                                "-fx-background-radius: 12; -fx-border-color: #A9CCE3; -fx-border-radius: 12;");
+                Label tagLabel = creaTagLabel(tag);
                 tagsContainer.getChildren().add(tagLabel);
             }
         }
+    }
+
+    private Label creaTagLabel(String tag) {
+        Label tagLabel = new Label(tag);
+        tagLabel.getStyleClass().add("tag-label");
+        tagLabel.setStyle(
+                "-fx-background-color: #EBF5FB; -fx-text-fill: #2980B9; -fx-padding: 3 8; " +
+                        "-fx-background-radius: 12; -fx-border-color: #A9CCE3; -fx-border-radius: 12;");
+        return tagLabel;
     }
 
     private void mostraImmagine(byte[] fotoBytes) {
@@ -332,7 +389,7 @@ public class DettaglioIssueController implements Initializable {
                 labelNoAllegati.setManaged(false);
             }
         } catch (Exception e) {
-            logger.info("Errore carimento immagine : " + e.getMessage());
+            LOGGER.info("Errore caricamento immagine: " + e.getMessage());
         }
     }
 
@@ -348,36 +405,38 @@ public class DettaglioIssueController implements Initializable {
     }
 
     private void applicaStileBadge(Label label, String valore, String tipo) {
-        if (valore == null)
-            valore = "";
-        valore = valore.toUpperCase();
-
+        String valoreUpper = valore != null ? valore.toUpperCase() : "";
         String style = "-fx-background-radius: 4; -fx-padding: 2 6; ";
 
-        if ("PRIORITA".equals(tipo)) {
-            if (valore.contains("ALTA") || valore.contains("MASSIMA")) {
-                style += "-fx-background-color: #F8D7DA; -fx-text-fill: #721C24;"; // Rosso
-            } else if (valore.contains("MEDIA")) {
-                style += "-fx-background-color: #FFF3CD; -fx-text-fill: #856404;"; // Giallo
-            } else {
-                style += "-fx-background-color: #D4EDDA; -fx-text-fill: #155724;";
-            }
-        } else if ("STATO".equals(tipo)) {
-            if (valore.contains("TO-DO") || valore.contains("APERTA")) {
-                style += "-fx-background-color: #D1ECF1; -fx-text-fill: #0C5460;"; // Azzurro
-            } else if (valore.contains("IN PROGRESS") || valore.contains("CORSO")) {
-                style += "-fx-background-color: #FFF3CD; -fx-text-fill: #856404;"; // Giallo
-            } else if (valore.contains("RESOLVED") || valore.contains("CLOSED") || valore.contains("CHIUSA")) {
-                style += "-fx-background-color: #E2E3E5; -fx-text-fill: #383D41;"; // Grigio
-            } else {
-                style += "-fx-background-color: #EBF5FB; -fx-text-fill: #2980B9;";
-            }
+        if (TIPO_PRIORITA.equals(tipo)) {
+            style += getStylePriorita(valoreUpper);
+        } else if (TIPO_STATO.equals(tipo)) {
+            style += getStyleStato(valoreUpper);
         } else {
-
             style += "-fx-background-color: #EBF5FB; -fx-text-fill: #2980B9;";
         }
 
         label.setStyle(style);
+    }
+
+    private String getStylePriorita(String valore) {
+        if (valore.contains("ALTA") || valore.contains("MASSIMA")) {
+            return "-fx-background-color: #F8D7DA; -fx-text-fill: #721C24;";
+        } else if (valore.contains("MEDIA")) {
+            return "-fx-background-color: #FFF3CD; -fx-text-fill: #856404;";
+        }
+        return "-fx-background-color: #D4EDDA; -fx-text-fill: #155724;";
+    }
+
+    private String getStyleStato(String valore) {
+        if (valore.contains("TO-DO") || valore.contains("APERTA")) {
+            return "-fx-background-color: #D1ECF1; -fx-text-fill: #0C5460;";
+        } else if (valore.contains("IN PROGRESS") || valore.contains("CORSO")) {
+            return "-fx-background-color: #FFF3CD; -fx-text-fill: #856404;";
+        } else if (valore.contains("RESOLVED") || valore.contains("CLOSED") || valore.contains("CHIUSA")) {
+            return "-fx-background-color: #E2E3E5; -fx-text-fill: #383D41;";
+        }
+        return "-fx-background-color: #EBF5FB; -fx-text-fill: #2980B9;";
     }
 
     private void mostraErrore(String messaggio) {
@@ -392,71 +451,86 @@ public class DettaglioIssueController implements Initializable {
 
     @FXML
     private void inviaCommento() {
-
         if (txtNuovoCommento == null)
             return;
+
         String testo = txtNuovoCommento.getText();
-        if (testo == null || testo.trim().isEmpty()) {
+        if (testo == null || testo.trim().isEmpty())
             return;
-        }
 
         RichiestaInserimentoCommentoIssue richiesta = new RichiestaInserimentoCommentoIssue(issueId, testo);
         RispostaInserimentoCommentoIssue risposta = apiService.inserisciCommento(richiesta);
 
         if (risposta != null && risposta.isSuccess()) {
-            if (campiCommentiContainer != null) {
-                if (placeholderCommenti != null && placeholderCommenti.isVisible()) {
-                    placeholderCommenti.setVisible(false);
-                    placeholderCommenti.setManaged(false);
-                    campiCommentiContainer.getChildren().remove(placeholderCommenti);
-                }
-
-                CommentoDTO nuovoCommentoDTO = risposta.getCommento();
-                if (nuovoCommentoDTO == null) {
-                    nuovoCommentoDTO = new CommentoDTO();
-                    nuovoCommentoDTO.setTesto(testo);
-                    nuovoCommentoDTO.setNomeUtente(
-                            sessionManager.getNome() != null ? sessionManager.getNome() : sessionManager.getUsername());
-                    nuovoCommentoDTO
-                            .setCognomeUtente(sessionManager.getCognome() != null ? sessionManager.getCognome() : "");
-                    nuovoCommentoDTO.setData(java.time.LocalDate.now());
-                } else {
-                    if (nuovoCommentoDTO.getNomeUtente() == null) {
-                        nuovoCommentoDTO.setNomeUtente(sessionManager.getNome() != null ? sessionManager.getNome()
-                                : sessionManager.getUsername());
-                        nuovoCommentoDTO.setCognomeUtente(
-                                sessionManager.getCognome() != null ? sessionManager.getCognome() : "");
-                    }
-                }
-
-                VBox commentoBox = creaBoxCommento(nuovoCommentoDTO);
-                campiCommentiContainer.getChildren().add(commentoBox);
-
-                // Scroll to bottom
-                if (scrollPaneCommenti != null) {
-                    javafx.application.Platform.runLater(() -> scrollPaneCommenti.setVvalue(1.0));
-                }
-            }
+            gestisciSuccessoCommento(risposta, testo);
             txtNuovoCommento.clear();
         } else {
             mostraErrore(risposta != null ? risposta.getMessage() : "Errore nell'inserimento del commento");
         }
     }
 
-    private VBox creaBoxCommento(it.unina.bugboard.dto.CommentoDTO c) {
+    private void gestisciSuccessoCommento(RispostaInserimentoCommentoIssue risposta, String testo) {
+        if (campiCommentiContainer == null)
+            return;
+
+        nascondiPlaceholderCommenti();
+
+        CommentoDTO nuovoCommentoDTO = creaCommentoDaRisposta(risposta, testo);
+        VBox commentoBox = creaBoxCommento(nuovoCommentoDTO);
+        campiCommentiContainer.getChildren().add(commentoBox);
+
+        scrollToBottomCommenti();
+    }
+
+    private void nascondiPlaceholderCommenti() {
+        if (placeholderCommenti != null && placeholderCommenti.isVisible()) {
+            placeholderCommenti.setVisible(false);
+            placeholderCommenti.setManaged(false);
+            campiCommentiContainer.getChildren().remove(placeholderCommenti);
+        }
+    }
+
+    private CommentoDTO creaCommentoDaRisposta(RispostaInserimentoCommentoIssue risposta, String testo) {
+        CommentoDTO commentoDTO = risposta.getCommento();
+
+        if (commentoDTO == null) {
+            return creaCommentoVuoto(testo);
+        }
+
+        if (commentoDTO.getNomeUtente() == null) {
+            completaInfoUtente(commentoDTO);
+        }
+
+        return commentoDTO;
+    }
+
+    private CommentoDTO creaCommentoVuoto(String testo) {
+        CommentoDTO commentoDTO = new CommentoDTO();
+        commentoDTO.setTesto(testo);
+        completaInfoUtente(commentoDTO);
+        commentoDTO.setData(java.time.LocalDate.now());
+        return commentoDTO;
+    }
+
+    private void completaInfoUtente(CommentoDTO commentoDTO) {
+        String nome = sessionManager.getNome() != null ? sessionManager.getNome() : sessionManager.getUsername();
+        String cognome = sessionManager.getCognome() != null ? sessionManager.getCognome() : "";
+        commentoDTO.setNomeUtente(nome);
+        commentoDTO.setCognomeUtente(cognome);
+    }
+
+    private VBox creaBoxCommento(CommentoDTO c) {
         VBox commentoBox = new VBox(5);
         commentoBox.setStyle(
                 "-fx-background-color: #F8F9F9; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #E5E8E8; -fx-border-radius: 5;");
 
-        String autore = (c.getNomeUtente() != null ? c.getNomeUtente() : "") + " "
-                + (c.getCognomeUtente() != null ? c.getCognomeUtente() : "");
-        if (autore.trim().isEmpty())
-            autore = "Tu";
+        String autore = determineAutore(c);
 
         Label lblAutore = new Label(autore);
         lblAutore.setStyle("-fx-font-weight: bold; -fx-text-fill: #2C3E50;");
 
-        Label lblData = new Label(c.getData() != null ? c.getData().toString() : java.time.LocalDate.now().toString());
+        String dataStr = c.getData() != null ? c.getData().toString() : java.time.LocalDate.now().toString();
+        Label lblData = new Label(dataStr);
         lblData.setStyle("-fx-text-fill: #7F8C8D; -fx-font-size: 11px;");
 
         Label lblTesto = new Label(c.getTesto());
@@ -465,5 +539,32 @@ public class DettaglioIssueController implements Initializable {
 
         commentoBox.getChildren().addAll(lblAutore, lblData, lblTesto);
         return commentoBox;
+    }
+
+    private String determineAutore(CommentoDTO c) {
+        String autore = (c.getNomeUtente() != null ? c.getNomeUtente() : "") + " "
+                + (c.getCognomeUtente() != null ? c.getCognomeUtente() : "");
+        return autore.trim().isEmpty() ? "Tu" : autore;
+    }
+
+    private void apriImmagineIngrandita(Image image) {
+        if (image == null)
+            return;
+
+        javafx.stage.Stage stage = new javafx.stage.Stage();
+        stage.setTitle("Visualizzazione Immagine");
+
+        ImageView imageView = new ImageView(image);
+        imageView.setPreserveRatio(true);
+
+        javafx.scene.layout.StackPane root = new javafx.scene.layout.StackPane(imageView);
+        root.setStyle("-fx-background-color: rgba(0,0,0,0.9);");
+
+        imageView.fitWidthProperty().bind(root.widthProperty());
+        imageView.fitHeightProperty().bind(root.heightProperty());
+
+        javafx.scene.Scene scene = new javafx.scene.Scene(root, 1000, 800);
+        stage.setScene(scene);
+        stage.show();
     }
 }

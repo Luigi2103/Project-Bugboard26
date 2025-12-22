@@ -137,3 +137,87 @@
     -fx-font-size: 16px;
     -fx-font-weight: 700;
 }
+
+/* Action Buttons */
+.action-button {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-text-fill: #2980B9;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-background-radius: 12;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+    -fx-border-color: #2980B9;
+    -fx-border-width: 2;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(three-pass-box, rgba(41, 128, 185, 0.3), 8, 0, 0, 2);
+}
+
+.action-button:hover {
+    -fx-background-color: #2980B9;
+    -fx-text-fill: white;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(three-pass-box, rgba(41, 128, 185, 0.5), 12, 0, 0, 3);
+}
+
+.save-btn {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-text-fill: #27AE60;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-background-radius: 12;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+    -fx-border-color: #27AE60;
+    -fx-border-width: 2;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(three-pass-box, rgba(39, 174, 96, 0.3), 8, 0, 0, 2);
+}
+
+.save-btn:hover {
+    -fx-background-color: #27AE60;
+    -fx-text-fill: white;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(three-pass-box, rgba(39, 174, 96, 0.5), 12, 0, 0, 3);
+}
+
+.cancel-btn {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-text-fill: #7F8C8D;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-background-radius: 12;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+    -fx-border-color: #7F8C8D;
+    -fx-border-width: 2;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(three-pass-box, rgba(127, 140, 141, 0.3), 8, 0, 0, 2);
+}
+
+.cancel-btn:hover {
+    -fx-background-color: #7F8C8D;
+    -fx-text-fill: white;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(three-pass-box, rgba(127, 140, 141, 0.5), 12, 0, 0, 3);
+}
+
+.small-action-button {
+    -fx-background-color: #2980B9;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-background-radius: 12;
+    -fx-padding: 5 15;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(41, 128, 185, 0.3), 5, 0, 0, 2);
+}
+
+.small-action-button:hover {
+    -fx-background-color: #1F618D;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}

@@ -53,7 +53,7 @@ public class InsertIssueController {
     private final it.unina.bugboard.common.SessionManager sessionManager;
 
     public InsertIssueController(InsertIssueApiService apiService,
-            it.unina.bugboard.common.SessionManager sessionManager) {
+                                 it.unina.bugboard.common.SessionManager sessionManager) {
         this.apiService = apiService;
         this.sessionManager = sessionManager;
     }
@@ -62,7 +62,6 @@ public class InsertIssueController {
     public void initialize() {
         inizializzaComboTipo();
         inizializzaComboPriorita();
-        inizializzaListeners();
         inizializzaListeners();
         inizializzaBindings();
         inizializzaUpload();
@@ -98,7 +97,6 @@ public class InsertIssueController {
     private void inizializzaListeners() {
         campoTitolo.textProperty().addListener((obs, old, neu) -> resetErrorStyles());
         areaDescrizione.textProperty().addListener((obs, old, neu) -> resetErrorStyles());
-        // Forza validazione dinamica al cambio tipo
     }
 
     private void inizializzaUpload() {
@@ -109,9 +107,8 @@ public class InsertIssueController {
 
     private void aggiornaCampiDinamici(String tipo) {
         containerCampiDinamici.getChildren().clear();
-        if (tipo == null) {
+        if (tipo == null)
             return;
-        }
 
         switch (tipo) {
             case ISSUE_BUG -> aggiungiCampoTesto("Istruzioni per riprodurre", "Inserisci i passaggi...");
@@ -184,7 +181,6 @@ public class InsertIssueController {
             }
         });
 
-        // Per Text area usiamo CTRL+ENTER per inviare direttamente o TAB per navigare
         areaDescrizione.setOnKeyPressed(e -> {
             if (e.isControlDown() && e.getCode() == javafx.scene.input.KeyCode.ENTER) {
                 if (!pulsanteInserisci.isDisable())
@@ -193,7 +189,6 @@ public class InsertIssueController {
             }
         });
 
-        // Combo
         comboTipo.setOnKeyPressed(e -> {
             if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
                 comboPriorita.requestFocus();
@@ -238,60 +233,25 @@ public class InsertIssueController {
 
     @FXML
     private void gestisciInserimento() {
-        // La validazione statica è gestita dal disableProperty
-        // Validiamo solo i campi dinamici
         if (!validaCampiDinamici()) {
             mostraErroreAlert("Compila tutti i campi obbligatori");
             return;
         }
 
-        DatiIssue dati = recuperaDatiIssue();
+        DatiIssueInterni dati = recuperaDatiIssue();
 
         Integer idSegnalatore = ottieniIdSegnalatore();
-        if (idSegnalatore == null) {
+        if (idSegnalatore == null)
             return;
-        }
 
         inviaIssueAlServer(dati, idSegnalatore);
-    }
-
-    private boolean validaInput() {
-        resetErrorStyles();
-        boolean valido = true;
-
-        if (isEmpty(campoTitolo.getText())) {
-            mostraErrore(campoTitolo, erroreTitolo, "Il titolo è obbligatorio");
-            valido = false;
-        }
-
-        if (isEmpty(areaDescrizione.getText())) {
-            mostraErrore(areaDescrizione, erroreDescrizione, "La descrizione è obbligatoria");
-            valido = false;
-        }
-
-        if (comboTipo.getValue() == null) {
-            mostraErrore(comboTipo, erroreTipo, "Seleziona un tipo di issue");
-            valido = false;
-        }
-
-        if (comboPriorita.getValue() == null) {
-            mostraErrore(comboPriorita, errorePriorita, "Seleziona una priorità");
-            valido = false;
-        }
-
-        if (!validaCampiDinamici()) {
-            valido = false;
-        }
-
-        return valido;
     }
 
     private boolean validaCampiDinamici() {
         boolean valido = true;
         for (javafx.scene.Node node : containerCampiDinamici.getChildren()) {
-            if (!(node instanceof VBox box) || box.getChildren().size() < 3) {
+            if (!(node instanceof VBox box) || box.getChildren().size() < 3)
                 continue;
-            }
 
             if (box.getChildren().get(1) instanceof TextField tf &&
                     box.getChildren().get(2) instanceof Label errLbl &&
@@ -303,8 +263,8 @@ public class InsertIssueController {
         return valido;
     }
 
-    private DatiIssue recuperaDatiIssue() {
-        DatiIssue dati = new DatiIssue();
+    private DatiIssueInterni recuperaDatiIssue() {
+        DatiIssueInterni dati = new DatiIssueInterni();
         dati.titolo = campoTitolo.getText();
         dati.descrizione = areaDescrizione.getText();
         dati.tipo = comboTipo.getValue();
@@ -317,9 +277,8 @@ public class InsertIssueController {
     }
 
     private byte[] caricaImmagine() {
-        if (fileSelezionato == null) {
+        if (fileSelezionato == null)
             return new byte[0];
-        }
 
         try {
             return java.nio.file.Files.readAllBytes(fileSelezionato.toPath());
@@ -329,11 +288,10 @@ public class InsertIssueController {
         }
     }
 
-    private void recuperaCampiDinamici(DatiIssue dati) {
+    private void recuperaCampiDinamici(DatiIssueInterni dati) {
         for (javafx.scene.Node node : containerCampiDinamici.getChildren()) {
-            if (!(node instanceof VBox box) || box.getChildren().size() < 2) {
+            if (!(node instanceof VBox box) || box.getChildren().size() < 2)
                 continue;
-            }
 
             if (box.getChildren().get(1) instanceof TextField tf) {
                 String labelText = ((Label) box.getChildren().get(0)).getText();
@@ -343,18 +301,17 @@ public class InsertIssueController {
         }
     }
 
-    private void assegnaCampoDinamico(DatiIssue dati, String labelText, String valore) {
-        if (labelText.contains("Istruzioni")) {
+    private void assegnaCampoDinamico(DatiIssueInterni dati, String labelText, String valore) {
+        if (labelText.contains("Istruzioni"))
             dati.istruzioni = valore;
-        } else if (labelText.contains("Domanda") || labelText.contains("Richiesta specifica")) {
+        else if (labelText.contains("Domanda") || labelText.contains("Richiesta specifica"))
             dati.richiestaSpecifica = valore;
-        } else if (labelText.contains("Titolo Documento")) {
+        else if (labelText.contains("Titolo Documento"))
             dati.titoloDoc = valore;
-        } else if (labelText.contains("Descrizione Problema")) {
+        else if (labelText.contains("Descrizione Problema"))
             dati.descDoc = valore;
-        } else if (labelText.contains("Richiesta Funzionalità")) {
+        else if (labelText.contains("Richiesta Funzionalità"))
             dati.richiestaFunz = valore;
-        }
     }
 
     private Integer ottieniIdSegnalatore() {
@@ -366,24 +323,35 @@ public class InsertIssueController {
         return userId.intValue();
     }
 
-    private void inviaIssueAlServer(DatiIssue dati, Integer idSegnalatore) {
+    private void inviaIssueAlServer(DatiIssueInterni dati, Integer idSegnalatore) {
         new Thread(() -> {
             try {
-                RispostaIssueService risposta = apiService.inserisciIssue(
+                InsertIssueApiService.DatiBase base = new InsertIssueApiService.DatiBase(
                         dati.titolo,
                         dati.descrizione,
-                        dati.immagineBytes,
+                        dati.immagineBytes);
+
+                InsertIssueApiService.DatiTipologia tipologia = new InsertIssueApiService.DatiTipologia(
                         dati.tipo,
                         "TO-DO",
                         dati.priorita,
                         dati.istruzioni,
                         dati.richiestaSpecifica,
+                        dati.richiestaFunz);
+
+                InsertIssueApiService.DatiDocumento documento = new InsertIssueApiService.DatiDocumento(
                         dati.titoloDoc,
-                        dati.descDoc,
-                        dati.richiestaFunz,
+                        dati.descDoc);
+
+                InsertIssueApiService.DatiContesto contesto = new InsertIssueApiService.DatiContesto(
                         java.time.LocalDate.now(),
-                        1, // ID Progetto hardcoded per ora
+                        1,
                         idSegnalatore);
+
+                InsertIssueApiService.DatiIssue datiIssue = new InsertIssueApiService.DatiIssue(
+                        base, tipologia, documento, contesto);
+
+                RispostaIssueService risposta = apiService.inserisciIssue(datiIssue);
 
                 javafx.application.Platform.runLater(() -> gestisciRisposta(risposta));
 
@@ -447,9 +415,9 @@ public class InsertIssueController {
         label.setVisible(false);
     }
 
-    /* -------------------------- CLASSE DATI -------------------------- */
+    /* -------------------------- CLASSE DATI INTERNI -------------------------- */
 
-    private static class DatiIssue {
+    private static class DatiIssueInterni {
         String titolo;
         String descrizione;
         String tipo;

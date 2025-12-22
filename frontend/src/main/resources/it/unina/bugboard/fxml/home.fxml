@@ -28,10 +28,7 @@
             </HBox>
 
             <!-- Navigation -->
-            <VBox spacing="5" VBox.vgrow="ALWAYS" styleClass="sidebar-nav">
-                <padding>
-                    <Insets top="20" right="15" left="15"/>
-                </padding>
+            <VBox spacing="15" VBox.vgrow="ALWAYS" styleClass="sidebar-nav" style="-fx-padding: 20 15 20 25;">
 
             
                 <Button fx:id="btnIssueProgetto" text="Issue del Progetto" styleClass="nav-btn" onAction="#vediIssueProgetto"/>

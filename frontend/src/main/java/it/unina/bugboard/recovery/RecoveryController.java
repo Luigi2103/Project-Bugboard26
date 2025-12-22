@@ -67,8 +67,9 @@ public class RecoveryController implements Initializable {
     private static final int LOGIN_WIDTH = 900;
     private static final int LOGIN_HEIGHT = 930;
     private static final String LOGIN_TITLE = "BugBoard - Login";
+    private static final String ERR_MSG = "text-field-error";
 
-    Logger logger = Logger.getLogger(RecoveryController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(RecoveryController.class.getName());
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -87,17 +88,14 @@ public class RecoveryController implements Initializable {
             impostaListenerLarghezza(contenitoreRecovery.getScene());
         } else {
             contenitoreRecovery.sceneProperty().addListener((obs, oldScene, newScene) -> {
-                if (newScene != null) {
+                if (newScene != null)
                     impostaListenerLarghezza(newScene);
-                }
             });
         }
     }
 
     private void impostaListenerLarghezza(javafx.scene.Scene scene) {
-        javafx.beans.value.ChangeListener<Number> sizeListener = (obs, oldValue, newValue) -> {
-            aggiornaScala(scene);
-        };
+        javafx.beans.value.ChangeListener<Number> sizeListener = (obs, oldValue, newValue) -> aggiornaScala(scene);
 
         scene.widthProperty().addListener(sizeListener);
         scene.heightProperty().addListener(sizeListener);
@@ -109,14 +107,12 @@ public class RecoveryController implements Initializable {
         double width = scene.getWidth();
         double height = scene.getHeight();
 
-        // Logica di resize per il padding (adattata da LoginController)
         if (width < 600) {
             contenitoreRecovery.setPadding(new javafx.geometry.Insets(30, 20, 30, 20));
         } else {
             contenitoreRecovery.setPadding(new javafx.geometry.Insets(30, 40, 30, 40));
         }
 
-        // Logica di scaling
         double baseWidth = 1200.0;
         double baseHeight = 800.0;
 
@@ -125,8 +121,7 @@ public class RecoveryController implements Initializable {
 
         double scale = Math.min(scaleX, scaleY);
 
-        // Clamp tra 1.0 e 1.3
-        scale = Math.max(1.0, Math.min(scale, 1.3));
+        scale = Math.clamp(scale, 1.0, 1.3);
 
         contenitoreRecovery.setScaleX(scale);
         contenitoreRecovery.setScaleY(scale);
@@ -134,11 +129,15 @@ public class RecoveryController implements Initializable {
 
     private void caricaLogo() {
         try {
-            Image logo = new Image(
-                    getClass().getResource("/it/unina/bugboard/foto/logoCompleto.png").toExternalForm());
-            logoImmagine.setImage(logo);
+            URL logoUrl = getClass().getResource("/it/unina/bugboard/foto/logoCompleto.png");
+            if (logoUrl != null) {
+                Image logo = new Image(logoUrl.toExternalForm());
+                logoImmagine.setImage(logo);
+            } else {
+                LOGGER.warning("Logo non trovato nel path specificato");
+            }
         } catch (Exception e) {
-            logger.info("Errore caricamento logo: " + e.getMessage());
+            LOGGER.info("Errore caricamento logo: " + e.getMessage());
         }
     }
 
@@ -151,7 +150,6 @@ public class RecoveryController implements Initializable {
     }
 
     private void inizializzaTogglePassword() {
-
         campoPasswordVisibile.textProperty().bindBidirectional(campoPassword.textProperty());
         campoNuovaPasswordVisibile.textProperty().bindBidirectional(campoNuovaPassword.textProperty());
 
@@ -172,55 +170,43 @@ public class RecoveryController implements Initializable {
     }
 
     private void aggiornaVisibilitaPassword(boolean visibile) {
+        aggiornaVisibilitaCampo(visibile, togglePassword, campoPassword, campoPasswordVisibile);
+    }
 
-        FontAwesomeIconView icon = new FontAwesomeIconView(
-                visibile ? FontAwesomeIcon.EYE_SLASH : FontAwesomeIcon.EYE);
-        icon.setSize("18");
+    private void aggiornaVisibilitaNuovaPassword(boolean visibile) {
+        aggiornaVisibilitaCampo(visibile, toggleNuovaPassword, campoNuovaPassword, campoNuovaPasswordVisibile);
+    }
 
-        togglePassword.setGraphic(icon);
-        togglePassword.setText(null);
+    private void aggiornaVisibilitaCampo(boolean visibile, Button toggleButton,
+            PasswordField campoPassword, TextField campoVisibile) {
+        aggiornaIconaToggle(toggleButton, visibile);
 
         campoPassword.setVisible(!visibile);
-        campoPasswordVisibile.setVisible(visibile);
+        campoVisibile.setVisible(visibile);
 
         if (visibile) {
-            campoPasswordVisibile.requestFocus();
-            campoPasswordVisibile.positionCaret(campoPasswordVisibile.getText().length());
+            campoVisibile.requestFocus();
+            campoVisibile.positionCaret(campoVisibile.getText().length());
         } else {
             campoPassword.requestFocus();
             campoPassword.positionCaret(campoPassword.getText().length());
         }
     }
 
-    private void aggiornaVisibilitaNuovaPassword(boolean visibile) {
-
+    private void aggiornaIconaToggle(Button toggleButton, boolean visibile) {
         FontAwesomeIconView icon = new FontAwesomeIconView(
                 visibile ? FontAwesomeIcon.EYE_SLASH : FontAwesomeIcon.EYE);
         icon.setSize("18");
-
-        toggleNuovaPassword.setGraphic(icon);
-        toggleNuovaPassword.setText(null);
-
-        campoNuovaPassword.setVisible(!visibile);
-        campoNuovaPasswordVisibile.setVisible(visibile);
-
-        if (visibile) {
-            campoNuovaPasswordVisibile.requestFocus();
-            campoNuovaPasswordVisibile.positionCaret(campoNuovaPasswordVisibile.getText().length());
-        } else {
-            campoNuovaPassword.requestFocus();
-            campoNuovaPassword.positionCaret(campoNuovaPassword.getText().length());
-        }
+        toggleButton.setGraphic(icon);
+        toggleButton.setText(null);
     }
 
     @FXML
     private void gestisciAnnulla() {
-        // Torna al login
         SceneRouter.cambiaScena(LOGIN_FXML, LOGIN_WIDTH, LOGIN_HEIGHT, LOGIN_TITLE);
     }
 
     private void inizializzaBindingCancella() {
-        // Cancella Tutto si abilita se almeno un campo è compilato
         pulsanteCancella.disableProperty().bind(
                 campoUsername.textProperty().isEmpty()
                         .and(campoPassword.textProperty().isEmpty())
@@ -239,40 +225,40 @@ public class RecoveryController implements Initializable {
 
     @FXML
     private void tornaIndietro() {
-        // Torna al login o alla scena precedente
         SceneRouter.tornaIndietro();
     }
 
     private void configuraNavigazioneEnter() {
+        configuraNavigazioneUsername();
+        configuraNavigazionePassword();
+        configuraNavigazioneNuovaPassword();
+    }
+
+    private void configuraNavigazioneUsername() {
         campoUsername.setOnKeyPressed(event -> {
             if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
-                if (passwordVisibile) {
-                    campoPasswordVisibile.requestFocus();
-                } else {
-                    campoPassword.requestFocus();
-                }
+                focusPasswordField();
                 event.consume();
             }
         });
+    }
 
+    private void configuraNavigazionePassword() {
         javafx.event.EventHandler<javafx.scene.input.KeyEvent> goToNuova = event -> {
             if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
-                if (nuovaPasswordVisibile) {
-                    campoNuovaPasswordVisibile.requestFocus();
-                } else {
-                    campoNuovaPassword.requestFocus();
-                }
+                focusNuovaPasswordField();
                 event.consume();
             }
         };
         campoPassword.setOnKeyPressed(goToNuova);
         campoPasswordVisibile.setOnKeyPressed(goToNuova);
+    }
 
+    private void configuraNavigazioneNuovaPassword() {
         javafx.event.EventHandler<javafx.scene.input.KeyEvent> doConfirm = event -> {
             if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
-                if (!pulsanteConferma.isDisable()) {
+                if (!pulsanteConferma.isDisable())
                     gestisciConferma();
-                }
                 event.consume();
             }
         };
@@ -280,56 +266,99 @@ public class RecoveryController implements Initializable {
         campoNuovaPasswordVisibile.setOnKeyPressed(doConfirm);
     }
 
+    private void focusPasswordField() {
+        if (passwordVisibile) {
+            campoPasswordVisibile.requestFocus();
+        } else {
+            campoPassword.requestFocus();
+        }
+    }
+
+    private void focusNuovaPasswordField() {
+        if (nuovaPasswordVisibile) {
+            campoNuovaPasswordVisibile.requestFocus();
+        } else {
+            campoNuovaPassword.requestFocus();
+        }
+    }
+
     @FXML
     private void gestisciConferma() {
         resetErrori();
 
-        // La validazione vuota è gestita dal disableProperty del bottone
-
-        if (!campoNuovaPassword.getText().equals(campoPassword.getText())) {
-            mostraErrore(erroreNuovaPassword, "Password non valida");
-            setErrorStyle(campoPassword);
-            setErrorStyle(campoNuovaPassword);
-            setErrorStyle(campoPasswordVisibile);
-            setErrorStyle(campoNuovaPasswordVisibile);
-            animaShake();
+        if (!validaPassword()) {
             return;
         }
 
-        logger.info("Recupero password per: " + campoUsername.getText());
+        eseguiAggiornamentoPassword();
+    }
+
+    private boolean validaPassword() {
+
+        if (campoPassword.getText().length() < 8) {
+            mostraErrore(errorePassword, "La password deve essere di almeno 8 caratteri");
+            setErrorStyle(campoPassword);
+            setErrorStyle(campoPasswordVisibile);
+            animaShake();
+            return false;
+        }
+
+        if (!campoNuovaPassword.getText().equals(campoPassword.getText())) {
+            mostraErrore(erroreNuovaPassword, "Le password non coincidono");
+            setErrorStyle(campoNuovaPassword);
+            setErrorStyle(campoNuovaPasswordVisibile);
+            animaShake();
+            return false;
+        }
+        return true;
+    }
+
+    private void eseguiAggiornamentoPassword() {
+        LOGGER.info("Recupero password per: " + campoUsername.getText());
 
         try {
             RecoveryApiService apiService = new RecoveryApiService();
             RecoveryRespond response = apiService.updateApi(campoUsername.getText(), campoNuovaPassword.getText());
 
             if (response.isSuccess()) {
-                logger.info("Password aggiornata con successo! " + response.getMessage());
-                SceneRouter.mostraAlert(javafx.scene.control.Alert.AlertType.INFORMATION,
-                        "Successo",
-                        "Password aggiornata",
-                        "La tua password è stata aggiornata con successo.");
-                SceneRouter.cambiaScena(LOGIN_FXML, LOGIN_WIDTH, LOGIN_HEIGHT, LOGIN_TITLE);
+                gestisciSuccesso(response);
             } else {
-                logger.info("Errore aggiornamento: " + response.getMessage());
-                mostraErrore(erroreNuovaPassword,
-                        response.getMessage() != null ? response.getMessage() : "Errore durante l'aggiornamento");
-                animaShake();
+                gestisciErroreResponse(response);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            mostraErrore(erroreNuovaPassword, "Errore di connessione al server");
-            animaShake();
+            gestisciErroreConnessione();
         }
     }
 
+    private void gestisciSuccesso(RecoveryRespond response) {
+        LOGGER.info("Password aggiornata con successo! " + response.getMessage());
+        SceneRouter.mostraAlert(javafx.scene.control.Alert.AlertType.INFORMATION,
+                "Successo",
+                "Password aggiornata",
+                "La tua password è stata aggiornata con successo.");
+        SceneRouter.cambiaScena(LOGIN_FXML, LOGIN_WIDTH, LOGIN_HEIGHT, LOGIN_TITLE);
+    }
+
+    private void gestisciErroreResponse(RecoveryRespond response) {
+        LOGGER.info("Errore aggiornamento: " + response.getMessage());
+        mostraErrore(erroreNuovaPassword,
+                response.getMessage() != null ? response.getMessage() : "Errore durante l'aggiornamento");
+        animaShake();
+    }
+
+    private void gestisciErroreConnessione() {
+        mostraErrore(erroreNuovaPassword, "Errore di connessione al server");
+        animaShake();
+    }
+
     private void setErrorStyle(javafx.scene.control.Control control) {
-        if (!control.getStyleClass().contains("text-field-error")) {
-            control.getStyleClass().add("text-field-error");
+        if (!control.getStyleClass().contains(ERR_MSG)) {
+            control.getStyleClass().add(ERR_MSG);
         }
     }
 
     private void removeErrorStyle(javafx.scene.control.Control control) {
-        control.getStyleClass().remove("text-field-error");
+        control.getStyleClass().remove(ERR_MSG);
     }
 
     private void mostraErrore(Label label, String msg) {

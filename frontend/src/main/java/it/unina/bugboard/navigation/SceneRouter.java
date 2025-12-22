@@ -21,9 +21,12 @@ import it.unina.bugboard.issues.MyIssuesController;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
+import java.util.Deque;
+import java.util.ArrayDeque;
+import java.util.logging.Logger;
 
 public final class SceneRouter {
+    private static final Logger LOGGER = Logger.getLogger(SceneRouter.class.getName());
     private static Stage primaryStage;
     private static final it.unina.bugboard.common.SessionManager sessionManager = new it.unina.bugboard.common.SessionManager();
     private static final LoginApiService loginApiService = new LoginApiService();
@@ -34,7 +37,7 @@ public final class SceneRouter {
             sessionManager);
     private static final Map<Class<?>, Callback<Class<?>, Object>> controllerFactories = new HashMap<>();
 
-    private static final Stack<SceneData> history = new Stack<>();
+    private static final Deque<SceneData> history = new ArrayDeque<>();
     private static SceneData currentSceneData;
 
     private static Integer currentIssueId;
@@ -67,20 +70,19 @@ public final class SceneRouter {
         eseguiCambioScena(fxml, width, height, title, null, false);
     }
 
-    // NUOVO METODO
     public static void cambiaScenaConIssue(String fxml, double width, double height, String title, Integer issueId) {
-        currentIssueId = issueId; // Set static for immediate use by controller factory/init if needed
+        currentIssueId = issueId;
         eseguiCambioScena(fxml, width, height, title, issueId, false);
     }
 
     public static void cambiaScenaModificaIssue(String fxml, double width, double height, String title,
-            Integer issueId) {
+                                                Integer issueId) {
         currentIssueId = issueId;
         eseguiCambioScena(fxml, width, height, title, issueId, true);
     }
 
     private static void eseguiCambioScena(String fxml, double width, double height, String title, Integer issueId,
-            boolean editMode) {
+                                          boolean editMode) {
         pushHistory();
         currentSceneData = new SceneData(fxml, width, height, title, issueId);
         currentEditMode = editMode;
@@ -92,14 +94,13 @@ public final class SceneRouter {
     }
 
     private static void pushHistory() {
-        if (currentSceneData != null) {
+        if (currentSceneData != null)
             history.push(currentSceneData);
-        }
     }
 
     public static void tornaIndietro() {
         if (history.isEmpty()) {
-            System.out.println("Nessuna cronologia disponibile.");
+            LOGGER.info("Nessuna cronologia disponibile.");
             return;
         }
 
@@ -116,9 +117,8 @@ public final class SceneRouter {
 
     public static void mostraAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
-        if (primaryStage != null && primaryStage.isShowing()) {
+        if (primaryStage != null && primaryStage.isShowing())
             alert.initOwner(primaryStage);
-        }
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(content);
@@ -126,12 +126,9 @@ public final class SceneRouter {
     }
 
     private static void mostraMessaggioErrore(String fxml, Exception e) {
-        e.printStackTrace();
-
         String msg = "Impossibile caricare " + fxml + "\n" + e.getMessage();
-        if (e.getCause() != null) {
+        if (e.getCause() != null)
             msg += "\nCausa: " + e.getCause().getMessage();
-        }
         mostraAlert(Alert.AlertType.ERROR, "Errore caricamento scena", null, msg);
     }
 
@@ -155,8 +152,7 @@ public final class SceneRouter {
 
             javafx.scene.Parent root = loader.load();
 
-            if (currentIssueId != null && loader.getController() instanceof DettaglioIssueController) {
-                DettaglioIssueController controller = (DettaglioIssueController) loader.getController();
+            if (currentIssueId != null && loader.getController() instanceof DettaglioIssueController controller) {
                 controller.setIssueId(currentIssueId);
                 controller.setModificaMode(currentEditMode);
             }
@@ -164,13 +160,11 @@ public final class SceneRouter {
             currentEditMode = false;
 
             if (primaryStage.getScene() == null) {
-
                 Scene scene = new Scene(root, width, height);
                 primaryStage.setTitle(title);
                 setupGlobalShortcuts(scene);
                 primaryStage.setScene(scene);
             } else {
-
                 primaryStage.getScene().setRoot(root);
                 primaryStage.setTitle(title);
                 setupGlobalShortcuts(primaryStage.getScene());
@@ -184,49 +178,57 @@ public final class SceneRouter {
         } catch (IOException e) {
             throw new SceneLoadException("Impossibile caricare la scena: " + fxml, e);
         }
-
     }
 
     private static void setupGlobalShortcuts(Scene scene) {
-        javafx.scene.input.KeyCombination insertIssue = new javafx.scene.input.KeyCodeCombination(
-                javafx.scene.input.KeyCode.I, javafx.scene.input.KeyCombination.CONTROL_DOWN);
-        javafx.scene.input.KeyCombination registerUser = new javafx.scene.input.KeyCodeCombination(
-                javafx.scene.input.KeyCode.U, javafx.scene.input.KeyCombination.CONTROL_DOWN);
-        javafx.scene.input.KeyCombination logout = new javafx.scene.input.KeyCodeCombination(
-                javafx.scene.input.KeyCode.L, javafx.scene.input.KeyCombination.CONTROL_DOWN);
-
-        // BACK SHORTCUT
+        javafx.scene.input.KeyCombination insertIssue = createKeyCombination(javafx.scene.input.KeyCode.I);
+        javafx.scene.input.KeyCombination registerUser = createKeyCombination(javafx.scene.input.KeyCode.U);
+        javafx.scene.input.KeyCombination logout = createKeyCombination(javafx.scene.input.KeyCode.L);
+        javafx.scene.input.KeyCombination recovery = createKeyCombination(javafx.scene.input.KeyCode.P);
         javafx.scene.input.KeyCombination back = new javafx.scene.input.KeyCodeCombination(
                 javafx.scene.input.KeyCode.ESCAPE);
 
-        // RECOVERY SHORTCUT
-        javafx.scene.input.KeyCombination recovery = new javafx.scene.input.KeyCodeCombination(
-                javafx.scene.input.KeyCode.P, javafx.scene.input.KeyCombination.CONTROL_DOWN);
-
         scene.setOnKeyPressed(event -> {
             if (insertIssue.match(event)) {
-                if (sessionManager.isLoggedIn()) {
-                    cambiaScena("/it/unina/bugboard/fxml/insert_issue.fxml", 600, 650, "Inserisci Nuova Issue");
-                }
+                handleInsertIssue();
             } else if (recovery.match(event)) {
-                if (!sessionManager.isLoggedIn()) {
-                    cambiaScena("/it/unina/bugboard/fxml/recovery.fxml", 600, 700, "BugBoard - Recupero Password");
-                }
+                handleRecovery();
             } else if (registerUser.match(event)) {
-                if (sessionManager.isLoggedIn() && sessionManager.isAdmin()) {
-                    cambiaScena("/it/unina/bugboard/fxml/insert_user.fxml", 450, 600, "Registra Nuovo Utente");
-                }
+                handleRegisterUser();
             } else if (logout.match(event)) {
-                if (sessionManager.isLoggedIn()) {
-                    sessionManager.logout();
-                    history.clear(); // Clear history logic
-                    currentSceneData = null;
-                    cambiaScena("/it/unina/bugboard/fxml/login.fxml", 400, 500, "BugBoard - Login");
-                }
+                handleLogout();
             } else if (back.match(event)) {
                 tornaIndietro();
             }
         });
+    }
+
+    private static javafx.scene.input.KeyCombination createKeyCombination(javafx.scene.input.KeyCode keyCode) {
+        return new javafx.scene.input.KeyCodeCombination(keyCode, javafx.scene.input.KeyCombination.CONTROL_DOWN);
+    }
+
+    private static void handleInsertIssue() {
+        if (sessionManager.isLoggedIn())
+            cambiaScena("/it/unina/bugboard/fxml/insert_issue.fxml", 600, 650, "Inserisci Nuova Issue");
+    }
+
+    private static void handleRecovery() {
+        if (!sessionManager.isLoggedIn())
+            cambiaScena("/it/unina/bugboard/fxml/recovery.fxml", 600, 700, "BugBoard - Recupero Password");
+    }
+
+    private static void handleRegisterUser() {
+        if (sessionManager.isLoggedIn() && sessionManager.isAdmin())
+            cambiaScena("/it/unina/bugboard/fxml/insert_user.fxml", 450, 600, "Registra Nuovo Utente");
+    }
+
+    private static void handleLogout() {
+        if (sessionManager.isLoggedIn()) {
+            sessionManager.logout();
+            history.clear();
+            currentSceneData = null;
+            cambiaScena("/it/unina/bugboard/fxml/login.fxml", 400, 500, "BugBoard - Login");
+        }
     }
 
     public static void apriPopupModifica(it.unina.bugboard.dto.IssueDTO issue, Runnable onSaveSuccess) {
@@ -236,9 +238,8 @@ public final class SceneRouter {
 
             javafx.scene.Parent root = loader.load();
 
-            Object controllerObj = loader.getController();
-            if (controllerObj instanceof it.unina.bugboard.popup.ModificaIssuePopupController) {
-                it.unina.bugboard.popup.ModificaIssuePopupController controller = (it.unina.bugboard.popup.ModificaIssuePopupController) controllerObj;
+            // REFACTORED: Pattern matching per instanceof
+            if (loader.getController() instanceof it.unina.bugboard.popup.ModificaIssuePopupController controller) {
                 controller.setApiService(issueApiService);
                 controller.setData(issue, onSaveSuccess);
             }
@@ -252,7 +253,6 @@ public final class SceneRouter {
             popupStage.showAndWait();
 
         } catch (IOException e) {
-            e.printStackTrace();
             mostraAlert(Alert.AlertType.ERROR, "Errore", "Impossibile aprire popup", e.getMessage());
         }
     }
