@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class InsertUserApiService {
 
-    private static final String BASE_URL = "http://localhost:8080/api/users";
+    private static final String BASE_URL = "http://72.146.234.83:8080/api/users";
     private static final String HEADER_CONTENT_TYPE = "Content-Type";
     private static final String HEADER_AUTHORIZATION = "Authorization";
     private static final String CONTENT_TYPE_JSON = "application/json";
@@ -27,7 +27,7 @@ public class InsertUserApiService {
         this.sessionManager = sessionManager;
     }
 
-    // REFACTORED: Grouped parameters into data classes
+
     public static class DatiUtente {
         private final DatiAnagrafici anagrafici;
         private final DatiAccesso accesso;

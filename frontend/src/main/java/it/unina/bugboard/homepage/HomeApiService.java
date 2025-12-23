@@ -46,7 +46,7 @@ public class HomeApiService {
                 queryParams.append("&sortDirection=").append(URLEncoder.encode(sortDirection, StandardCharsets.UTF_8));
             }
 
-            String url = "http://localhost:8080/api/issues" + queryParams.toString();
+            String url = "http://72.146.234.83:8080/api/issues" + queryParams.toString();
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))

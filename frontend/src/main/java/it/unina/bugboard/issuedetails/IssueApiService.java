@@ -32,7 +32,7 @@ public class IssueApiService {
     private static final String MSG_ERRORE_CONNESSIONE = "Errore di connessione: ";
 
 
-    private static final String BASE_URL = "http://localhost:8080/api/issues/";
+    private static final String BASE_URL = "http://72.146.234.83:8080/api/issues/";
 
     private final SessionManager sessionManager;
     private final HttpClient client = HttpClient.newHttpClient();

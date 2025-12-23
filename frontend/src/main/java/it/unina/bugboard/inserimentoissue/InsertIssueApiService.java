@@ -187,7 +187,7 @@ public class InsertIssueApiService {
             String token = this.sessionManager.getToken();
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8080/api/issues"))
+                    .uri(URI.create("http://72.146.234.83:8080/api/issues"))
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + token)
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
