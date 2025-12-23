@@ -2,10 +2,11 @@ package it.unina.bugboard.service;
 
 import it.unina.bugboard.dto.RichiestaInserimentoIssue;
 import it.unina.bugboard.dto.RispostaInserimentoIssue;
-import it.unina.bugboard.entity.Issue;
 import it.unina.bugboard.repository.InserimentoIssueRepository;
+import it.unina.bugboard.entity.Issue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class InserimentoIssueServiceImpl implements InserimentoIssueService {
@@ -18,9 +19,9 @@ public class InserimentoIssueServiceImpl implements InserimentoIssueService {
     }
 
     @Override
+    @Transactional
     public RispostaInserimentoIssue insert(RichiestaInserimentoIssue richiesta) {
         try {
-            // Mapping DTO to Entity
             Issue issue = Issue.builder()
                     .titolo(richiesta.getTitolo())
                     .descrizione(richiesta.getDescrizione())
@@ -39,10 +40,12 @@ public class InserimentoIssueServiceImpl implements InserimentoIssueService {
                     .build();
 
             insertIssue.save(issue);
+
             return new RispostaInserimentoIssue("Issue inserita con successo", true);
 
         } catch (Exception e) {
             return new RispostaInserimentoIssue("Errore durante l'inserimento: " + e.getMessage(), false);
         }
     }
+
 }

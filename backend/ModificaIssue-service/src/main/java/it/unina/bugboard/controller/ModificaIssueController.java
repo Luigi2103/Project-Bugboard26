@@ -1,5 +1,6 @@
 package it.unina.bugboard.controller;
 
+import it.unina.bugboard.JwtUtils;
 import it.unina.bugboard.dto.RichiestaModificaIssue;
 import it.unina.bugboard.dto.RispostaModificaIssue;
 import it.unina.bugboard.service.ModificaIssueService;
@@ -13,18 +14,24 @@ import org.springframework.web.bind.annotation.*;
 public class ModificaIssueController {
 
     private final ModificaIssueService modificaIssueService;
+    private final JwtUtils jwtUtils;
 
     @Autowired
-    public ModificaIssueController(ModificaIssueService modificaIssueService) {
+    public ModificaIssueController(ModificaIssueService modificaIssueService, JwtUtils jwtUtils) {
         this.modificaIssueService = modificaIssueService;
+        this.jwtUtils = jwtUtils;
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RispostaModificaIssue> modificaIssue(
-            @PathVariable Integer id,
-            @RequestBody RichiestaModificaIssue richiesta) {
+    public ResponseEntity<RispostaModificaIssue> modificaIssue(@PathVariable Integer id,
+            @RequestBody RichiestaModificaIssue richiesta, @RequestHeader("Authorization") String authHeader) {
 
-        RispostaModificaIssue risposta = modificaIssueService.modificaIssue(id, richiesta);
+        String token = authHeader.replace("Bearer ", "");
+        Long userId = jwtUtils.extractUserId(token);
+        String nome = jwtUtils.extractClaim(token, claims -> claims.get("nome", String.class));
+        String cognome = jwtUtils.extractClaim(token, claims -> claims.get("cognome", String.class));
+
+        RispostaModificaIssue risposta = modificaIssueService.modificaIssue(id, richiesta, userId, nome, cognome);
         if (risposta.isSuccess()) {
             return ResponseEntity.ok(risposta);
         } else {

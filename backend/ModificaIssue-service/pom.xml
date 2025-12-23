@@ -77,5 +77,11 @@
             <optional>true</optional>
         </dependency>
 
+        <dependency>
+            <groupId>it.unina.bugboard</groupId>
+            <artifactId>jwt-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 </project>

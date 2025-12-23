@@ -1,13 +1,16 @@
 package it.unina.bugboard.service;
 
 import it.unina.bugboard.dto.CommentoDTO;
+import it.unina.bugboard.dto.CronologiaDTO;
 import it.unina.bugboard.dto.IssueDTO;
 import it.unina.bugboard.dto.RichiestaRecuperoIssue;
 import it.unina.bugboard.dto.RispostaDettaglioIssue;
 import it.unina.bugboard.dto.RispostaRecuperoIssue;
 import it.unina.bugboard.entity.Commento;
+import it.unina.bugboard.entity.Cronologia;
 import it.unina.bugboard.entity.Issue;
 import it.unina.bugboard.repository.CommentoRepository;
+import it.unina.bugboard.repository.CronologiaRepository;
 import it.unina.bugboard.repository.RecuperoIssueRepository;
 import it.unina.bugboard.repository.UtenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +31,17 @@ public class RecuperoIssueServiceImpl implements RecuperoIssueService {
     private final RecuperoIssueRepository issueRepository;
     private final UtenteRepository utenteRepository;
     private final CommentoRepository commentoRepository;
+    private final CronologiaRepository cronologiaRepository;
 
     @Autowired
     public RecuperoIssueServiceImpl(RecuperoIssueRepository issueRepository,
-                                    UtenteRepository utenteRepository,
-                                    CommentoRepository commentoRepository) {
+            UtenteRepository utenteRepository,
+            CommentoRepository commentoRepository,
+            CronologiaRepository cronologiaRepository) {
         this.issueRepository = issueRepository;
         this.utenteRepository = utenteRepository;
         this.commentoRepository = commentoRepository;
+        this.cronologiaRepository = cronologiaRepository;
     }
 
     @Override
@@ -72,7 +78,8 @@ public class RecuperoIssueServiceImpl implements RecuperoIssueService {
                     .map(this::convertToDTO)
                     .toList();
 
-            RispostaRecuperoIssue response = new RispostaRecuperoIssue(true, "Issue recuperate con successo", issueDTOs);
+            RispostaRecuperoIssue response = new RispostaRecuperoIssue(true, "Issue recuperate con successo",
+                    issueDTOs);
             response.setTotalPages(pageResult.getTotalPages());
             response.setTotalElements(pageResult.getTotalElements());
             return response;
@@ -100,7 +107,15 @@ public class RecuperoIssueServiceImpl implements RecuperoIssueService {
                     .map(this::convertCommentoToDTO)
                     .toList();
 
-            return new RispostaDettaglioIssue(true, "Issue recuperata con successo", dto, foto, commentiDTO);
+            List<Cronologia> cronologiaList = cronologiaRepository.findByIdIssueOrderByDataAsc(idIssue);
+            List<CronologiaDTO> cronologiaDTO = cronologiaList.stream()
+                    .map(this::convertCronologiaToDTO)
+                    .toList();
+
+            RispostaDettaglioIssue risposta = new RispostaDettaglioIssue(true, "Issue recuperata con successo", dto,
+                    foto, commentiDTO);
+            risposta.setCronologia(cronologiaDTO);
+            return risposta;
 
         } catch (Exception e) {
             return new RispostaDettaglioIssue(false, "Errore durante il recupero: " + e.getMessage(), null, null, null);
@@ -145,6 +160,19 @@ public class RecuperoIssueServiceImpl implements RecuperoIssueService {
             dto.setIdUtente(commento.getUtente().getIdUtente());
             dto.setNomeUtente(commento.getUtente().getNome());
             dto.setCognomeUtente(commento.getUtente().getCognome());
+        }
+        return dto;
+    }
+
+    private CronologiaDTO convertCronologiaToDTO(Cronologia cronologia) {
+        CronologiaDTO dto = new CronologiaDTO();
+        dto.setIdCronologia(cronologia.getIdCronologia());
+        dto.setData(cronologia.getData());
+        dto.setDescrizione(cronologia.getDescrizione());
+        if (cronologia.getUtente() != null) {
+            dto.setIdUtente(cronologia.getUtente().getIdUtente());
+            dto.setNomeUtente(cronologia.getUtente().getNome());
+            dto.setCognomeUtente(cronologia.getUtente().getCognome());
         }
         return dto;
     }
