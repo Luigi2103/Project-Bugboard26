@@ -53,7 +53,7 @@ public class InsertIssueController {
     private final it.unina.bugboard.common.SessionManager sessionManager;
 
     public InsertIssueController(InsertIssueApiService apiService,
-                                 it.unina.bugboard.common.SessionManager sessionManager) {
+            it.unina.bugboard.common.SessionManager sessionManager) {
         this.apiService = apiService;
         this.sessionManager = sessionManager;
     }
@@ -70,11 +70,7 @@ public class InsertIssueController {
     }
 
     private void inizializzaBindings() {
-        pulsanteInserisci.disableProperty().bind(
-                campoTitolo.textProperty().isEmpty()
-                        .or(areaDescrizione.textProperty().isEmpty())
-                        .or(comboTipo.valueProperty().isNull())
-                        .or(comboPriorita.valueProperty().isNull()));
+        aggiornaStatoBottone();
     }
 
     private void inizializzaComboPriorita() {
@@ -95,8 +91,16 @@ public class InsertIssueController {
     }
 
     private void inizializzaListeners() {
-        campoTitolo.textProperty().addListener((obs, old, neu) -> resetErrorStyles());
-        areaDescrizione.textProperty().addListener((obs, old, neu) -> resetErrorStyles());
+        campoTitolo.textProperty().addListener((obs, old, neu) -> {
+            resetErrorStyles();
+            aggiornaStatoBottone();
+        });
+        areaDescrizione.textProperty().addListener((obs, old, neu) -> {
+            resetErrorStyles();
+            aggiornaStatoBottone();
+        });
+        comboTipo.valueProperty().addListener((obs, old, neu) -> aggiornaStatoBottone());
+        comboPriorita.valueProperty().addListener((obs, old, neu) -> aggiornaStatoBottone());
     }
 
     private void inizializzaUpload() {
@@ -139,9 +143,29 @@ public class InsertIssueController {
             textField.getStyleClass().remove(MSG_INPUT_ERROR);
             errorLabel.setManaged(false);
             errorLabel.setVisible(false);
+            aggiornaStatoBottone();
         });
 
         VBox box = new VBox(5, label, textField, errorLabel);
+
+        // Logic for Enter key navigation
+        textField.setOnKeyPressed(e -> {
+            if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                int currentIndex = containerCampiDinamici.getChildren().indexOf(box);
+                if (currentIndex >= 0 && currentIndex < containerCampiDinamici.getChildren().size() - 1) {
+                    javafx.scene.Node nextNode = containerCampiDinamici.getChildren().get(currentIndex + 1);
+                    if (nextNode instanceof VBox nextBox && nextBox.getChildren().size() >= 2) {
+                        nextBox.getChildren().get(1).requestFocus();
+                    }
+                } else {
+                    if (!pulsanteInserisci.isDisable()) {
+                        gestisciInserimento();
+                    }
+                }
+                e.consume();
+            }
+        });
+
         containerCampiDinamici.getChildren().add(box);
     }
 
@@ -199,8 +223,14 @@ public class InsertIssueController {
 
         comboPriorita.setOnKeyPressed(e -> {
             if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
-                if (!pulsanteInserisci.isDisable())
+                if (!containerCampiDinamici.getChildren().isEmpty()) {
+                    javafx.scene.Node node = containerCampiDinamici.getChildren().get(0);
+                    if (node instanceof VBox box && box.getChildren().size() > 1) {
+                        box.getChildren().get(1).requestFocus();
+                    }
+                } else if (!pulsanteInserisci.isDisable()) {
                     gestisciInserimento();
+                }
                 e.consume();
             }
         });
@@ -416,6 +446,31 @@ public class InsertIssueController {
     }
 
     /* -------------------------- CLASSE DATI INTERNI -------------------------- */
+
+    private void aggiornaStatoBottone() {
+        boolean staticiValidi = !isEmpty(campoTitolo.getText()) &&
+                !isEmpty(areaDescrizione.getText()) &&
+                comboTipo.getValue() != null &&
+                comboPriorita.getValue() != null;
+
+        if (!staticiValidi) {
+            pulsanteInserisci.setDisable(true);
+            return;
+        }
+
+        boolean dinamiciValidi = true;
+        for (javafx.scene.Node node : containerCampiDinamici.getChildren()) {
+            if (node instanceof VBox box && box.getChildren().size() >= 2
+                    && box.getChildren().get(1) instanceof TextField tf) {
+                if (isEmpty(tf.getText())) {
+                    dinamiciValidi = false;
+                    break;
+                }
+            }
+        }
+
+        pulsanteInserisci.setDisable(!dinamiciValidi);
+    }
 
     private static class DatiIssueInterni {
         String titolo;

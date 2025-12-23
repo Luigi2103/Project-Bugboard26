@@ -304,7 +304,7 @@ public class MyIssuesController implements Initializable {
         btnAction.setOnAction(e -> SceneRouter.cambiaScenaConIssue(
                 "/it/unina/bugboard/fxml/issue_details.fxml",
                 1200, 800,
-                "BugBoard - Dettaglio Issue #" + issue.getIdIssue(),
+                "Dettaglio Issue: " + issue.getTitolo(),
                 issue.getIdIssue()));
         return btnAction;
     }

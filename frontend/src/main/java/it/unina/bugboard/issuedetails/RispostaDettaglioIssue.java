@@ -13,9 +13,18 @@ public class RispostaDettaglioIssue {
     private IssueDTO issue;
     private byte[] foto;
     private List<CommentoDTO> commenti;
+    private List<it.unina.bugboard.dto.CronologiaDTO> cronologia;
 
     public RispostaDettaglioIssue() {
-        //costruttore vuoto
+        // costruttore vuoto
+    }
+
+    public List<it.unina.bugboard.dto.CronologiaDTO> getCronologia() {
+        return cronologia;
+    }
+
+    public void setCronologia(List<it.unina.bugboard.dto.CronologiaDTO> cronologia) {
+        this.cronologia = cronologia;
     }
 
     public boolean isSuccess() {

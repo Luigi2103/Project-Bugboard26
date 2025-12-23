@@ -126,9 +126,11 @@
                 <!-- BOTTOM RIGHT: History -->
                 <VBox styleClass="side-panel" spacing="10">
                     <Label text="Cronologia Modifiche" styleClass="section-label" style="-fx-font-weight: bold;"/>
-                    <VBox VBox.vgrow="ALWAYS" styleClass="placeholder-box">
-                        <Label text="Area Cronologia (Presto disponibile)" styleClass="placeholder-text"/>
-                    </VBox>
+                    <ScrollPane fx:id="scrollPaneCronologia" fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="history-scroll">
+                        <VBox fx:id="cronologiaContainer" spacing="8" styleClass="history-container">
+                            <Label text="Nessuna modifica registrata." fx:id="placeholderCronologia" styleClass="placeholder-text" visible="false" managed="false"/>
+                        </VBox>
+                    </ScrollPane>
                 </VBox>
 
             </SplitPane>

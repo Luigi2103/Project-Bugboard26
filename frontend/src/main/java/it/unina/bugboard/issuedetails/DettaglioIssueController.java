@@ -73,6 +73,12 @@ public class DettaglioIssueController implements Initializable {
     private javafx.scene.control.ComboBox<String> cmbPriorita;
     @FXML
     private javafx.scene.control.ScrollPane scrollPaneCommenti;
+    @FXML
+    private javafx.scene.control.ScrollPane scrollPaneCronologia;
+    @FXML
+    private VBox cronologiaContainer;
+    @FXML
+    private Label placeholderCronologia;
 
     private final IssueApiService apiService;
     private final SessionManager sessionManager;
@@ -173,6 +179,8 @@ public class DettaglioIssueController implements Initializable {
         if (risposta != null && risposta.isSuccess()) {
             aggiornaIssueDopoModifica(risposta, nuovoStato, nuovaPriorita);
             ripristinaVista();
+            // Ricarica la pagina per aggiornare la cronologia
+            caricaDettagli();
         } else {
             mostraErrore(risposta != null ? risposta.getMessage() : "Errore durante il salvataggio");
         }
@@ -255,6 +263,7 @@ public class DettaglioIssueController implements Initializable {
         IssueDTO issue = risposta.getIssue();
         popolaCampi(issue);
         popolaCommenti(risposta.getCommenti());
+        popolaCronologia(risposta.getCronologia());
 
         if (risposta.getFoto() != null && risposta.getFoto().length > 0) {
             mostraImmagine(risposta.getFoto());
@@ -300,14 +309,27 @@ public class DettaglioIssueController implements Initializable {
 
         if (commenti == null || commenti.isEmpty()) {
             mostraPlaceholderCommenti();
-            return;
+        } else {
+            for (CommentoDTO c : commenti) {
+                campiCommentiContainer.getChildren().add(creaBoxCommento(c));
+            }
         }
-
-        for (CommentoDTO c : commenti) {
-            campiCommentiContainer.getChildren().add(creaBoxCommento(c));
-        }
-
         scrollToBottomCommenti();
+    }
+
+    private void popolaCronologia(List<it.unina.bugboard.dto.CronologiaDTO> cronologia) {
+        if (cronologiaContainer == null)
+            return;
+        cronologiaContainer.getChildren().clear();
+
+        if (cronologia == null || cronologia.isEmpty()) {
+            mostraPlaceholderCronologia();
+        } else {
+            for (it.unina.bugboard.dto.CronologiaDTO c : cronologia) {
+                cronologiaContainer.getChildren().add(creaBoxCronologia(c));
+            }
+        }
+        scrollToBottomCronologia();
     }
 
     private void mostraPlaceholderCommenti() {
@@ -318,10 +340,41 @@ public class DettaglioIssueController implements Initializable {
         }
     }
 
+    private void mostraPlaceholderCronologia() {
+        if (placeholderCronologia != null) {
+            placeholderCronologia.setVisible(true);
+            placeholderCronologia.setManaged(true);
+            cronologiaContainer.getChildren().add(placeholderCronologia);
+        }
+    }
+
     private void scrollToBottomCommenti() {
         if (scrollPaneCommenti != null) {
             javafx.application.Platform.runLater(() -> scrollPaneCommenti.setVvalue(1.0));
         }
+    }
+
+    private void scrollToBottomCronologia() {
+        if (scrollPaneCronologia != null) {
+            javafx.application.Platform.runLater(() -> scrollPaneCronologia.setVvalue(1.0));
+        }
+    }
+
+    private VBox creaBoxCronologia(it.unina.bugboard.dto.CronologiaDTO c) {
+        VBox cronologiaBox = new VBox(5);
+        cronologiaBox.setStyle(
+                "-fx-background-color: #F8F9F9; -fx-padding: 8; -fx-background-radius: 4; -fx-border-color: #E5E8E8; -fx-border-radius: 4; -fx-border-width: 0 0 0 4; -fx-border-color: #AAB7B8;");
+
+        String dataStr = c.getData() != null ? formattaData(c.getData().toString()) : "N/D";
+        Label lblData = new Label(dataStr);
+        lblData.setStyle("-fx-text-fill: #7F8C8D; -fx-font-size: 10px;");
+
+        Label lblDescrizione = new Label(c.getDescrizione());
+        lblDescrizione.setWrapText(true);
+        lblDescrizione.setStyle("-fx-text-fill: #34495E; -fx-font-size: 12px;");
+
+        cronologiaBox.getChildren().addAll(lblData, lblDescrizione);
+        return cronologiaBox;
     }
 
     private void popolaCampiSpecificiPerTipologia(IssueDTO issue) {
