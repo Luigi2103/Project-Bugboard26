@@ -396,8 +396,44 @@ public class InsertIssueController {
         if (risposta != null && risposta.isSuccess()) {
             mostraSuccessoAlert("Issue inserita con successo!");
             tornaIndietro();
+        } else if (risposta != null && risposta.getFieldErrors() != null && !risposta.getFieldErrors().isEmpty()) {
+            risposta.getFieldErrors().forEach(this::mappaErroreAlCampo);
         } else {
             mostraErroreAlert(risposta != null ? risposta.getMessage() : "Errore sconosciuto");
+        }
+    }
+
+    private void mappaErroreAlCampo(String campo, String messaggio) {
+        switch (campo.toLowerCase()) {
+            case "titolo":
+                mostraErrore(campoTitolo, erroreTitolo, messaggio);
+                break;
+            case "descrizione":
+                mostraErrore(areaDescrizione, erroreDescrizione, messaggio);
+                break;
+            case "tipologia":
+                mostraErrore(comboTipo, erroreTipo, messaggio);
+                break;
+            case "priorita":
+                mostraErrore(comboPriorita, errorePriorita, messaggio);
+                break;
+            default:
+                // Se è un campo dinamico, cerchiamo nel container
+                cercaErroreInCampiDinamici(campo, messaggio);
+                break;
+        }
+    }
+
+    private void cercaErroreInCampiDinamici(String campo, String messaggio) {
+        for (javafx.scene.Node node : containerCampiDinamici.getChildren()) {
+            if (node instanceof VBox box && box.getChildren().size() >= 3) {
+                Label lbl = (Label) box.getChildren().get(0);
+                if (lbl.getText().toLowerCase().contains(campo.toLowerCase())) {
+                    TextField tf = (TextField) box.getChildren().get(1);
+                    Label errLbl = (Label) box.getChildren().get(2);
+                    mostraErrore(tf, errLbl, messaggio);
+                }
+            }
         }
     }
 

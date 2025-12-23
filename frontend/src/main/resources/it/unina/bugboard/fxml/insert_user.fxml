@@ -160,7 +160,7 @@
                     </GridPane>
 
                     <!-- Label Errore -->
-                    <Label fx:id="etichettaErrore" text="" textFill="red" visible="false" wrapText="true"/>
+                    <Label fx:id="etichettaErrore" text="" styleClass="error-label" visible="false" wrapText="true"/>
 
                     <!-- Pulsanti Azione -->
                     <HBox spacing="15" alignment="CENTER">

@@ -81,7 +81,6 @@ public class InsertUserController {
     private Label erroreCampoPassword;
 
     private static final String MSG_CAMPO_OBBLIGATORIO = "Campo obbligatorio";
-    private static final String MSG_TXTFIELD_OBBLIGATORIO = "text-field-error";
     private final InsertUserApiService insertUserApiService;
     private boolean passwordVisibile = false;
     private boolean confermaPasswordVisibile = false;
@@ -426,13 +425,52 @@ public class InsertUserController {
     }
 
     private void mostraErroreInserimento(RispostaInserimentoUser risposta) {
-        String messaggioErrore = costruisciMessaggioErrore(risposta);
+        if (risposta != null && risposta.getFieldErrors() != null && !risposta.getFieldErrors().isEmpty()) {
+            risposta.getFieldErrors().forEach(this::mappaErroreAlCampo);
+        } else {
+            String messaggio = (risposta != null) ? risposta.getMessage() : "Errore durante la registrazione";
+            mostraErroreInline(etichettaErrore, messaggio);
+        }
+    }
 
-        it.unina.bugboard.navigation.SceneRouter.mostraAlert(
-                Alert.AlertType.ERROR,
-                "Errore Inserimento",
-                "Non è stato possibile completare la registrazione",
-                messaggioErrore);
+    private void mappaErroreAlCampo(String campo, String messaggio) {
+        switch (campo.toLowerCase()) {
+            case "nome":
+                setErrorStyle(campoNome);
+                mostraErroreInline(erroreNome, messaggio);
+                break;
+            case "cognome":
+                setErrorStyle(campoCognome);
+                mostraErroreInline(erroreCognome, messaggio);
+                break;
+            case "codicefiscale":
+                setErrorStyle(campoCodiceFiscale);
+                mostraErroreInline(erroreCodiceFiscale, messaggio);
+                break;
+            case "sesso":
+                setErrorStyle(comboSesso);
+                mostraErroreInline(erroreSesso, messaggio);
+                break;
+            case "datanascita":
+                setErrorStyle(campoDataNascita);
+                mostraErroreInline(erroreDataNascita, messaggio);
+                break;
+            case "email", "mail":
+                setErrorStyle(campoEmail);
+                mostraErroreInline(erroreEmail, messaggio);
+                break;
+            case "username":
+                setErrorStyle(campoUsername);
+                mostraErroreInline(erroreUsername, messaggio);
+                break;
+            case "password":
+                setErrorStyle(campoPassword);
+                mostraErroreInline(erroreCampoPassword, messaggio);
+                break;
+            default:
+                mostraErroreInline(etichettaErrore, messaggio);
+                break;
+        }
     }
 
     private void mostraErroreComunicazione(Exception e) {
@@ -443,30 +481,11 @@ public class InsertUserController {
                 e.getMessage());
     }
 
-    private String costruisciMessaggioErrore(RispostaInserimentoUser risposta) {
-        if (risposta == null)
-            return "Errore generico dal server";
-
-        StringBuilder messaggioErrore = new StringBuilder();
-        messaggioErrore.append(risposta.getMessage());
-
-        if (risposta.getFieldErrors() != null && !risposta.getFieldErrors().isEmpty()) {
-            messaggioErrore.append("\n\nDettagli:\n");
-            risposta.getFieldErrors().forEach((campo, errore) -> messaggioErrore.append("• ")
-                    .append(campo)
-                    .append(": ")
-                    .append(errore)
-                    .append("\n"));
-        }
-
-        return messaggioErrore.toString();
-    }
-
     private boolean verificaCampiObbligatori() {
         boolean validi = true;
 
-        validi &= validaCampoTesto(campoNome, erroreNome);
-        validi &= validaCampoTesto(campoCognome, erroreCognome);
+        validi &= validaSoloLettere(campoNome, erroreNome);
+        validi &= validaSoloLettere(campoCognome, erroreCognome);
         validi &= validaCampoTesto(campoCodiceFiscale, erroreCodiceFiscale);
         validi &= validaComboBox(comboSesso, erroreSesso);
         validi &= validaDatePicker(campoDataNascita, erroreDataNascita);
@@ -476,6 +495,19 @@ public class InsertUserController {
         validi &= validaCampoPassword(campoConfermaPassword, errorePassword);
 
         return validi;
+    }
+
+    private boolean validaSoloLettere(TextField campo, Label labelErrore) {
+        if (!validaCampoTesto(campo, labelErrore))
+            return false;
+
+        String testo = campo.getText();
+        if (!testo.matches("^[a-zA-Z\\sÀ-ÿ]*$")) {
+            setErrorStyle(campo);
+            mostraErroreInline(labelErrore, "Deve contenere solo lettere");
+            return false;
+        }
+        return true;
     }
 
     private boolean validaCampoTesto(TextField campo, Label labelErrore) {
@@ -506,9 +538,16 @@ public class InsertUserController {
     }
 
     private boolean validaDatePicker(DatePicker datePicker, Label labelErrore) {
-        if (datePicker.getValue() == null) {
+        String testo = datePicker.getEditor().getText();
+        if (testo == null || testo.trim().isEmpty()) {
             setErrorStyle(datePicker);
             mostraErroreInline(labelErrore, MSG_CAMPO_OBBLIGATORIO);
+            return false;
+        }
+
+        if (datePicker.getValue() == null) {
+            setErrorStyle(datePicker);
+            mostraErroreInline(labelErrore, "Data non valida");
             return false;
         }
         return true;
@@ -541,12 +580,18 @@ public class InsertUserController {
     }
 
     private void setErrorStyle(Control control) {
-        if (!control.getStyleClass().contains(MSG_TXTFIELD_OBBLIGATORIO))
-            control.getStyleClass().add(MSG_TXTFIELD_OBBLIGATORIO);
+        String styleClass = "text-field-error";
+        if (control instanceof ComboBox)
+            styleClass = "combo-box-error";
+        else if (control instanceof DatePicker)
+            styleClass = "combo-box-error";
+
+        if (!control.getStyleClass().contains(styleClass))
+            control.getStyleClass().add(styleClass);
     }
 
     private void removeErrorStyle(Control control) {
-        control.getStyleClass().remove(MSG_TXTFIELD_OBBLIGATORIO);
+        control.getStyleClass().removeAll("text-field-error", "combo-box-error");
     }
 
     private void resetErrorStyles() {
@@ -566,6 +611,7 @@ public class InsertUserController {
             removeErrorStyle(c);
         for (Label l : labels)
             nascondiErrore(l);
+        nascondiErrore(etichettaErrore);
     }
 
     private void mostraErroreInline(Label label, String messaggio) {
