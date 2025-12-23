@@ -16,6 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.input.KeyCode;
 
 import java.io.ByteArrayInputStream;
 import java.net.URL;
@@ -93,6 +94,13 @@ public class DettaglioIssueController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         if (btnInvia != null && txtNuovoCommento != null) {
             btnInvia.disableProperty().bind(txtNuovoCommento.textProperty().isEmpty());
+
+            txtNuovoCommento.setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.ENTER && event.isShiftDown()) {
+                    inviaCommento();
+                    event.consume();
+                }
+            });
         }
 
         inizializzaComboBoxes();
@@ -605,6 +613,9 @@ public class DettaglioIssueController implements Initializable {
             return;
 
         javafx.stage.Stage stage = new javafx.stage.Stage();
+        if (imageFoto.getScene() != null && imageFoto.getScene().getWindow() != null) {
+            stage.initOwner(imageFoto.getScene().getWindow());
+        }
         stage.setTitle("Visualizzazione Immagine");
 
         ImageView imageView = new ImageView(image);
