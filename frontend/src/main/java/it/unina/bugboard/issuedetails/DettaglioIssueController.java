@@ -84,6 +84,7 @@ public class DettaglioIssueController implements Initializable {
     private final IssueApiService apiService;
     private final SessionManager sessionManager;
     private Integer issueId;
+    private boolean canEdit = false;
 
     public DettaglioIssueController(IssueApiService apiService, SessionManager sessionManager) {
         this.apiService = apiService;
@@ -216,8 +217,10 @@ public class DettaglioIssueController implements Initializable {
 
     private void toggleBottoniModifica(boolean modalitaModifica) {
         if (btnModifica != null) {
-            btnModifica.setVisible(!modalitaModifica);
-            btnModifica.setManaged(!modalitaModifica);
+
+            boolean visible = !modalitaModifica && canEdit;
+            btnModifica.setVisible(visible);
+            btnModifica.setManaged(visible);
         }
         if (btnSalva != null) {
             btnSalva.setVisible(modalitaModifica);
@@ -235,7 +238,7 @@ public class DettaglioIssueController implements Initializable {
     }
 
     private void toggleCampoModifica(Label label, javafx.scene.control.ComboBox<String> combo,
-            boolean modalitaModifica) {
+                                     boolean modalitaModifica) {
         if (label != null && combo != null) {
             if (modalitaModifica) {
                 combo.setValue(label.getText());
@@ -269,9 +272,22 @@ public class DettaglioIssueController implements Initializable {
 
     private void processaRispostaDettaglio(RispostaDettaglioIssue risposta) {
         IssueDTO issue = risposta.getIssue();
+
+        // Calcolo permessi
+        boolean isAdmin = sessionManager.isAdmin();
+        Long currentUserIdLong = sessionManager.getUserId();
+        Integer currentUserId = currentUserIdLong != null ? currentUserIdLong.intValue() : null;
+        boolean isAssignee = currentUserId != null && issue.getIdAssegnatario() != null
+                && currentUserId.equals(issue.getIdAssegnatario());
+
+
+        this.canEdit = isAdmin || isAssignee;
+
         popolaCampi(issue);
         popolaCommenti(risposta.getCommenti());
         popolaCronologia(risposta.getCronologia());
+
+        toggleBottoniModifica(false);
 
         if (risposta.getFoto() != null && risposta.getFoto().length > 0) {
             mostraImmagine(risposta.getFoto());
