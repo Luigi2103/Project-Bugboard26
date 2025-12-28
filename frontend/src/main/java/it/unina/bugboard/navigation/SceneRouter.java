@@ -76,13 +76,13 @@ public final class SceneRouter {
     }
 
     public static void cambiaScenaModificaIssue(String fxml, double width, double height, String title,
-                                                Integer issueId) {
+            Integer issueId) {
         currentIssueId = issueId;
         eseguiCambioScena(fxml, width, height, title, issueId, true);
     }
 
     private static void eseguiCambioScena(String fxml, double width, double height, String title, Integer issueId,
-                                          boolean editMode) {
+            boolean editMode) {
         pushHistory();
         currentSceneData = new SceneData(fxml, width, height, title, issueId);
         currentEditMode = editMode;
@@ -184,19 +184,25 @@ public final class SceneRouter {
         javafx.scene.input.KeyCombination insertIssue = createKeyCombination(javafx.scene.input.KeyCode.I);
         javafx.scene.input.KeyCombination registerUser = createKeyCombination(javafx.scene.input.KeyCode.U);
         javafx.scene.input.KeyCombination logout = createKeyCombination(javafx.scene.input.KeyCode.L);
-        javafx.scene.input.KeyCombination recovery = createKeyCombination(javafx.scene.input.KeyCode.P);
+        javafx.scene.input.KeyCombination ctrlP = createKeyCombination(javafx.scene.input.KeyCode.P);
+        javafx.scene.input.KeyCombination ctrlA = createKeyCombination(javafx.scene.input.KeyCode.A);
+        javafx.scene.input.KeyCombination ctrlM = createKeyCombination(javafx.scene.input.KeyCode.M);
         javafx.scene.input.KeyCombination back = new javafx.scene.input.KeyCodeCombination(
                 javafx.scene.input.KeyCode.ESCAPE);
 
         scene.setOnKeyPressed(event -> {
             if (insertIssue.match(event)) {
                 handleInsertIssue();
-            } else if (recovery.match(event)) {
+            } else if (ctrlP.match(event)) {
                 handleRecovery();
+            } else if (ctrlA.match(event)) {
+                handleAllIssues();
             } else if (registerUser.match(event)) {
                 handleRegisterUser();
             } else if (logout.match(event)) {
                 handleLogout();
+            } else if (ctrlM.match(event)) {
+                handleMyIssues();
             } else if (back.match(event)) {
                 tornaIndietro();
             }
@@ -215,6 +221,16 @@ public final class SceneRouter {
     private static void handleRecovery() {
         if (!sessionManager.isLoggedIn())
             cambiaScena("/it/unina/bugboard/fxml/recovery.fxml", 600, 700, "BugBoard - Recupero Password");
+    }
+
+    private static void handleAllIssues() {
+        if (sessionManager.isLoggedIn())
+            cambiaScena("/it/unina/bugboard/fxml/all_issues.fxml", 1200, 800, "BugBoard - Tutte le Issue del Progetto");
+    }
+
+    private static void handleMyIssues() {
+        if (sessionManager.isLoggedIn())
+            cambiaScena("/it/unina/bugboard/fxml/my_issues.fxml", 1200, 800, "BugBoard - Le mie Issue");
     }
 
     private static void handleRegisterUser() {
@@ -238,7 +254,6 @@ public final class SceneRouter {
 
             javafx.scene.Parent root = loader.load();
 
-            // REFACTORED: Pattern matching per instanceof
             if (loader.getController() instanceof it.unina.bugboard.popup.ModificaIssuePopupController controller) {
                 controller.setApiService(issueApiService);
                 controller.setData(issue, onSaveSuccess);

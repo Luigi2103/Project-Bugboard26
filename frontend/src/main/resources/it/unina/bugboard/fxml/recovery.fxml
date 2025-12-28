@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
@@ -21,7 +22,11 @@
             <Button fx:id="pulsanteIndietro" 
                     text="← Indietro" 
                     onAction="#tornaIndietro"
-                    styleClass="back-button"/>
+                    styleClass="back-button">
+                <tooltip>
+                    <Tooltip text="Esc"/>
+                </tooltip>
+            </Button>
         </HBox>
     </top>
 

@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
@@ -21,7 +22,11 @@
             <padding>
                 <Insets top="20" left="30" bottom="10"/>
             </padding>
-            <Button text="← Indietro" onAction="#tornaIndietro" styleClass="back-button-floating"/>
+            <Button text="← Indietro" onAction="#tornaIndietro" styleClass="back-button-floating">
+                <tooltip>
+                    <Tooltip text="Esc"/>
+                </tooltip>
+            </Button>
         </HBox>
     </top>
 

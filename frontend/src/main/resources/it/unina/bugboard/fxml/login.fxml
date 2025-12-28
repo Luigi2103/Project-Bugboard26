@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
@@ -93,7 +94,11 @@
                     <Button fx:id="linkRecuperoPassword"
                             text="Recupera Password"
                             styleClass="link-label"
-                            onAction="#vaiARecuperoPassword"/>
+                            onAction="#vaiARecuperoPassword">
+                        <tooltip>
+                            <Tooltip text="Ctrl+P"/>
+                        </tooltip>
+                    </Button>
                 </VBox>
             </VBox>
         </ScrollPane>

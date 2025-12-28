@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
@@ -32,12 +33,24 @@
 
                 <Button text="Home" styleClass="nav-btn" onAction="#tornaAllaHome"/>
                 <!-- Button removed as per request -->
-                <Button text="Inserisci nuova issue" styleClass="nav-btn" onAction="#segnalaIssue"/>
-                <Button fx:id="btnAggiungiUtente" text="Registra Nuovo Utente" styleClass="nav-btn" onAction="#vaiAInserimentoUtente"/>
+                <Button text="Inserisci nuova issue" styleClass="nav-btn" onAction="#segnalaIssue">
+                    <tooltip>
+                        <Tooltip text="Ctrl+I"/>
+                    </tooltip>
+                </Button>
+                <Button fx:id="btnAggiungiUtente" text="Registra Nuovo Utente" styleClass="nav-btn" onAction="#vaiAInserimentoUtente">
+                    <tooltip>
+                        <Tooltip text="Ctrl+U"/>
+                    </tooltip>
+                </Button>
 
                 <Pane VBox.vgrow="ALWAYS"/> <!-- Spacer -->
 
-                <Button text="Logout" styleClass="nav-btn, logout-btn" onAction="#logout"/>
+                <Button text="Logout" styleClass="nav-btn, logout-btn" onAction="#logout">
+                    <tooltip>
+                        <Tooltip text="Ctrl+L"/>
+                    </tooltip>
+                </Button>
                 <padding><Insets bottom="20"/></padding>
             </VBox>
         </VBox>
