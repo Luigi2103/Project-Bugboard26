@@ -21,14 +21,14 @@ public class ModificaIssueServiceImpl implements ModificaIssueService {
 
     @Autowired
     public ModificaIssueServiceImpl(ModificaIssueRepository repositoryIssueService,
-            CronologiaRepository cronologiaRepository) {
+                                    CronologiaRepository cronologiaRepository) {
         this.repositoryIssueService = repositoryIssueService;
         this.cronologiaRepository = cronologiaRepository;
     }
 
     @Override
     public RispostaModificaIssue modificaIssue(Integer id, RichiestaModificaIssue richiesta,
-            Long userId, String nome, String cognome) {
+                                               Long userId, String nome, String cognome) {
         Optional<Issue> issueOptional = repositoryIssueService.findById(id);
 
         if (issueOptional.isEmpty()) {
@@ -36,41 +36,65 @@ public class ModificaIssueServiceImpl implements ModificaIssueService {
         }
 
         Issue issue = issueOptional.get();
-        boolean modified = false;
+        String nomeCompleto = buildNomeCompleto(nome, cognome);
+
+        boolean statoModificato = modificaStato(issue, richiesta, id, userId, nomeCompleto);
+
+        RispostaModificaIssue rispostaPriorita = modificaPriorita(issue, richiesta, id, userId, nomeCompleto);
+        if (!rispostaPriorita.isSuccess()) {
+            return rispostaPriorita;
+        }
+        boolean prioritaModificata = rispostaPriorita.getIssue() != null;
+
+        return finalizzaModifica(issue, statoModificato || prioritaModificata);
+    }
+
+    private String buildNomeCompleto(String nome, String cognome) {
         String nomeCompleto = (nome != null ? nome : "") + " " + (cognome != null ? cognome : "");
-        nomeCompleto = nomeCompleto.trim();
+        return nomeCompleto.trim();
+    }
 
-        String vecchioStato = issue.getStato();
-        String vecchiaPriorita = issue.getPriorita() != null ? issue.getPriorita().name() : null;
+    private boolean modificaStato(Issue issue, RichiestaModificaIssue richiesta,
+                                  Integer id, Long userId, String nomeCompleto) {
+        String nuovoStato = richiesta.getStato();
+        if (nuovoStato != null && !nuovoStato.isEmpty() && !nuovoStato.equals(issue.getStato())) {
+            issue.setStato(nuovoStato);
+            registraCronologia(id, userId, nomeCompleto + " ha modificato lo stato in: " + nuovoStato);
+            return true;
+        }
+        return false;
+    }
 
-        if (richiesta.getStato() != null && !richiesta.getStato().isEmpty()) {
-            if (!richiesta.getStato().equals(vecchioStato)) {
-                issue.setStato(richiesta.getStato());
-                modified = true;
-                registraCronologia(id, userId, nomeCompleto + " ha modificato lo stato in: " + richiesta.getStato());
-            }
+    private RispostaModificaIssue modificaPriorita(Issue issue, RichiestaModificaIssue richiesta,
+                                                   Integer id, Long userId, String nomeCompleto) {
+        String nuovaPrioritaStr = richiesta.getPriorita();
+        if (nuovaPrioritaStr == null || nuovaPrioritaStr.isEmpty()) {
+            return new RispostaModificaIssue(true, "", null);
         }
 
-        if (richiesta.getPriorita() != null && !richiesta.getPriorita().isEmpty()) {
-            try {
-                Priorita prioritaEnum = Priorita.valueOf(richiesta.getPriorita());
-                if (vecchiaPriorita == null || !richiesta.getPriorita().equals(vecchiaPriorita)) {
-                    issue.setPriorita(prioritaEnum);
-                    modified = true;
-                    registraCronologia(id, userId,
-                            nomeCompleto + " ha modificato la priorità in: " + richiesta.getPriorita());
-                }
-            } catch (IllegalArgumentException e) {
-                return new RispostaModificaIssue(false, "Priorità non valida: " + richiesta.getPriorita(), null);
+        try {
+            Priorita nuovaPriorita = Priorita.valueOf(nuovaPrioritaStr);
+            String vecchiaPriorita = issue.getPriorita() != null ? issue.getPriorita().name() : null;
+
+            if (vecchiaPriorita == null || !nuovaPrioritaStr.equals(vecchiaPriorita)) {
+                issue.setPriorita(nuovaPriorita);
+                registraCronologia(id, userId,
+                        nomeCompleto + " ha modificato la priorità in: " + nuovaPrioritaStr);
+                return new RispostaModificaIssue(true, "", mapToDTO(issue));
             }
+        } catch (IllegalArgumentException e) {
+            return new RispostaModificaIssue(false, "Priorità non valida: " + nuovaPrioritaStr, null);
         }
 
+        return new RispostaModificaIssue(true, "", null);
+    }
+
+    private RispostaModificaIssue finalizzaModifica(Issue issue, boolean modified) {
         if (modified) {
             Issue updatedIssue = repositoryIssueService.save(issue);
             return new RispostaModificaIssue(true, "Issue modificata con successo", mapToDTO(updatedIssue));
-        } else {
-            return new RispostaModificaIssue(true, "Nessuna modifica effettuata", mapToDTO(issue));
         }
+        return new RispostaModificaIssue(true, "Nessuna modifica effettuata", mapToDTO(issue));
     }
 
     private void registraCronologia(Integer idIssue, Long idUtente, String descrizione) {
