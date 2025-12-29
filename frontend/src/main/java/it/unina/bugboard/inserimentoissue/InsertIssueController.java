@@ -148,7 +148,7 @@ public class InsertIssueController {
 
         VBox box = new VBox(5, label, textField, errorLabel);
 
-        // Logic for Enter key navigation
+
         textField.setOnKeyPressed(e -> {
             if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
                 int currentIndex = containerCampiDinamici.getChildren().indexOf(box);
@@ -169,7 +169,7 @@ public class InsertIssueController {
         containerCampiDinamici.getChildren().add(box);
     }
 
-    /* -------------------------- UPLOAD IMMAGINE -------------------------- */
+
 
     private void selezionaImmagine() {
         FileChooser fileChooser = new FileChooser();
@@ -195,7 +195,7 @@ public class InsertIssueController {
         pulsanteRimuoviImmagine.setManaged(false);
     }
 
-    /* -------------------------- NAVIGAZIONE -------------------------- */
+
 
     private void configuraNavigazioneEnter() {
         campoTitolo.setOnKeyPressed(e -> {
@@ -241,7 +241,7 @@ public class InsertIssueController {
         SceneRouter.tornaIndietro();
     }
 
-    /* -------------------------- RESET -------------------------- */
+
 
     @FXML
     private void pulisciCampi() {
@@ -259,7 +259,7 @@ public class InsertIssueController {
         resetErrorStyles();
     }
 
-    /* -------------------------- VALIDAZIONE -------------------------- */
+
 
     @FXML
     private void gestisciInserimento() {
@@ -481,7 +481,7 @@ public class InsertIssueController {
         label.setVisible(false);
     }
 
-    /* -------------------------- CLASSE DATI INTERNI -------------------------- */
+
 
     private void aggiornaStatoBottone() {
         boolean staticiValidi = !isEmpty(campoTitolo.getText()) &&

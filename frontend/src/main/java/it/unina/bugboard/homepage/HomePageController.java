@@ -119,7 +119,7 @@ public class HomePageController implements Initializable {
         desc.getStyleClass().add("issue-card__desc");
         desc.setWrapText(true);
 
-        // Assignee (Current User)
+
         String myName = sessionManager.getNome();
         String mySurname = sessionManager.getCognome();
         String assigneeName = (myName != null ? myName : "") + " " + (mySurname != null ? mySurname : "");

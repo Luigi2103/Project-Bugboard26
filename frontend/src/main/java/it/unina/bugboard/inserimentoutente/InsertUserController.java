@@ -98,11 +98,11 @@ public class InsertUserController {
         inizializzaListenerRuolo();
         campoDataNascita.setEditable(true);
 
-        // Define format pattern
+
         String pattern = "dd/MM/yyyy";
         java.time.format.DateTimeFormatter dateFormatter = java.time.format.DateTimeFormatter.ofPattern(pattern);
 
-        // Set StringConverter for DatePicker
+
         campoDataNascita.setConverter(new javafx.util.StringConverter<LocalDate>() {
             @Override
             public String toString(LocalDate date) {

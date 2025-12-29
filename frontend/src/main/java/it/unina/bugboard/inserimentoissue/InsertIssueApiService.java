@@ -20,7 +20,6 @@ public class InsertIssueApiService {
         this.sessionManager = sessionManager;
     }
 
-    // REFACTORED: Grouped related parameters into data classes
     public static class DatiIssue {
         private final DatiBase base;
         private final DatiTipologia tipologia;
@@ -51,7 +50,7 @@ public class InsertIssueApiService {
         }
     }
 
-    // Base issue information (title, description, image)
+
     public static class DatiBase {
         private final String titolo;
         private final String descrizione;
@@ -76,7 +75,7 @@ public class InsertIssueApiService {
         }
     }
 
-    // Issue type-specific data (tipologia, stato, priorita)
+
     public static class DatiTipologia {
         private final String tipologia;
         private final String stato;
@@ -120,7 +119,7 @@ public class InsertIssueApiService {
         }
     }
 
-    // Document-related data
+
     public static class DatiDocumento {
         private final String titoloDocumento;
         private final String descrizioneDocumento;
@@ -139,7 +138,7 @@ public class InsertIssueApiService {
         }
     }
 
-    // Context data (date, project, reporter)
+
     public static class DatiContesto {
         private final LocalDate dataCreazione;
         private final int idProgetto;

@@ -15,9 +15,7 @@ public class RispostaDettaglioIssue {
     private List<CommentoDTO> commenti;
     private List<it.unina.bugboard.dto.CronologiaDTO> cronologia;
 
-    public RispostaDettaglioIssue() {
-        // costruttore vuoto
-    }
+    public RispostaDettaglioIssue() {}
 
     public List<it.unina.bugboard.dto.CronologiaDTO> getCronologia() {
         return cronologia;

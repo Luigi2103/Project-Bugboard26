@@ -54,16 +54,14 @@ public class LoginController implements Initializable {
     private final LoginApiService loginApiService;
     private final SessionManager sessionManager;
     private static final String MSG_TXTFIELD_ERROR = "text-field-error";
-    private static final Logger log = Logger.getLogger(LoginController.class.getName());
+
 
     public LoginController(LoginApiService loginApiService, SessionManager sessionManager) {
         this.loginApiService = loginApiService;
         this.sessionManager = sessionManager;
     }
 
-    // --------------------------------------------------------
-    // INIZIALIZZAZIONE
-    // --------------------------------------------------------
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -72,14 +70,11 @@ public class LoginController implements Initializable {
         inizializzaCampiInput();
         inizializzaTogglePassword();
         animaFormLogin();
-        aggiornaUI();
         gestisciResponsive();
         Platform.runLater(() -> contenitoreLogin.requestFocus());
     }
 
-    // --------------------------------------------------------
-    // SETUP UI
-    // --------------------------------------------------------
+
 
     private void caricaLogo() {
         try {
@@ -89,7 +84,7 @@ public class LoginController implements Initializable {
             logoImmagine.setPreserveRatio(true);
             logoImmagine.setFitWidth(200);
         } catch (Exception e) {
-            log.info("Errore caricamento logo: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
@@ -138,9 +133,7 @@ public class LoginController implements Initializable {
         }
     }
 
-    // --------------------------------------------------------
-    // ANIMAZIONI
-    // --------------------------------------------------------
+
 
     private void animaFormLogin() {
         dissolvenzaInEntrata(contenitoreLogin, 800);
@@ -188,9 +181,7 @@ public class LoginController implements Initializable {
         ft.play();
     }
 
-    // --------------------------------------------------------
-    // RESPONSIVE
-    // --------------------------------------------------------
+
 
     private void gestisciResponsive() {
         if (contenitoreLogin.getScene() != null) {
@@ -233,18 +224,6 @@ public class LoginController implements Initializable {
         contenitoreLogin.setScaleY(scale);
     }
 
-    // --------------------------------------------------------
-    // UI MODALITÀ
-    // --------------------------------------------------------
-
-    private void aggiornaUI() {
-        // Funzionalità rimossa per login unificato
-    }
-
-    // --------------------------------------------------------
-    // LOGICA LOGIN
-    // --------------------------------------------------------
-
     @FXML
     private void gestisciLogin() {
         resetErrorStyles();
@@ -273,10 +252,6 @@ public class LoginController implements Initializable {
             if (risposta.isSuccess()) {
                 this.sessionManager.setToken(risposta.getToken());
                 boolean isAdmin = this.sessionManager.isAdmin();
-
-                log.info("Login effettuato con successo. ID Utente: " + risposta.getIdUtente() +
-                        ", Username: " + this.sessionManager.getUsername() +
-                        ", Modaità: " + (isAdmin ? "ADMIN" : "USER"));
 
                 SceneRouter.cambiaScena("/it/unina/bugboard/fxml/home.fxml", 1200, 850,
                         "BugBoard - Home");

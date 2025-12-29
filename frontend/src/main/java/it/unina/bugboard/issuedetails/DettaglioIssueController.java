@@ -188,7 +188,6 @@ public class DettaglioIssueController implements Initializable {
         if (risposta != null && risposta.isSuccess()) {
             aggiornaIssueDopoModifica(risposta, nuovoStato, nuovaPriorita);
             ripristinaVista();
-            // Ricarica la pagina per aggiornare la cronologia
             caricaDettagli();
         } else {
             mostraErrore(risposta != null ? risposta.getMessage() : "Errore durante il salvataggio");
@@ -273,7 +272,7 @@ public class DettaglioIssueController implements Initializable {
     private void processaRispostaDettaglio(RispostaDettaglioIssue risposta) {
         IssueDTO issue = risposta.getIssue();
 
-        // Calcolo permessi
+
         boolean isAdmin = sessionManager.isAdmin();
         Long currentUserIdLong = sessionManager.getUserId();
         Integer currentUserId = currentUserIdLong != null ? currentUserIdLong.intValue() : null;
