@@ -21,14 +21,14 @@ public class ModificaIssueServiceImpl implements ModificaIssueService {
 
     @Autowired
     public ModificaIssueServiceImpl(ModificaIssueRepository repositoryIssueService,
-                                    CronologiaRepository cronologiaRepository) {
+            CronologiaRepository cronologiaRepository) {
         this.repositoryIssueService = repositoryIssueService;
         this.cronologiaRepository = cronologiaRepository;
     }
 
     @Override
     public RispostaModificaIssue modificaIssue(Integer id, RichiestaModificaIssue richiesta,
-                                               Long userId, String nome, String cognome) {
+            Long userId, String nome, String cognome) {
         Optional<Issue> issueOptional = repositoryIssueService.findById(id);
 
         if (issueOptional.isEmpty()) {
@@ -37,6 +37,10 @@ public class ModificaIssueServiceImpl implements ModificaIssueService {
 
         Issue issue = issueOptional.get();
         String nomeCompleto = buildNomeCompleto(nome, cognome);
+
+        if (richiesta.getStato() != null && richiesta.getStato().isEmpty()) {
+            return new RispostaModificaIssue(false, "Stato non valido", null);
+        }
 
         boolean statoModificato = modificaStato(issue, richiesta, id, userId, nomeCompleto);
 
@@ -54,8 +58,8 @@ public class ModificaIssueServiceImpl implements ModificaIssueService {
         return nomeCompleto.trim();
     }
 
-    private boolean modificaStato(Issue issue, RichiestaModificaIssue richiesta,
-                                  Integer id, Long userId, String nomeCompleto) {
+    private boolean modificaStato(Issue issue, RichiestaModificaIssue richiesta, Integer id, Long userId,
+            String nomeCompleto) {
         String nuovoStato = richiesta.getStato();
         if (nuovoStato != null && !nuovoStato.isEmpty() && !nuovoStato.equals(issue.getStato())) {
             issue.setStato(nuovoStato);
@@ -65,11 +69,16 @@ public class ModificaIssueServiceImpl implements ModificaIssueService {
         return false;
     }
 
-    private RispostaModificaIssue modificaPriorita(Issue issue, RichiestaModificaIssue richiesta,
-                                                   Integer id, Long userId, String nomeCompleto) {
+    private RispostaModificaIssue modificaPriorita(Issue issue, RichiestaModificaIssue richiesta, Integer id,
+            Long userId, String nomeCompleto) {
         String nuovaPrioritaStr = richiesta.getPriorita();
-        if (nuovaPrioritaStr == null || nuovaPrioritaStr.isEmpty()) {
+
+        if (nuovaPrioritaStr == null) {
             return new RispostaModificaIssue(true, "", null);
+        }
+
+        if (nuovaPrioritaStr.isEmpty()) {
+            return new RispostaModificaIssue(false, "Priorità non valida", null);
         }
 
         try {
